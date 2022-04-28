@@ -90,8 +90,6 @@ def main():
         bed_rbp = BedTool(os.path.join(rbp_path, rbp_file))
         # intersect bed int rbp
         bed_out = bed_rbp.intersect(bed_int, s=True, u=True)
-        bed_out2 = bed_rbp.intersect(bed_int, s=True) ### Kristina
-        bed_out2.saveas(rbp_file+'test_output.bed') #### Kristina
         # count nb of intersections
         real_nb_overlaps = bed_out.count()
 
@@ -113,7 +111,7 @@ def main():
         # compute pval
         #pval = n / nb_shuffle
         with open(outfile, 'a+') as w:
-            w.write(','.join([os.path.basename(int_file), os.path.basename(rbp_file), str(n), str(prev_nb_shuffle)]) + '\n')
+            w.write('\t'.join([os.path.basename(int_file), os.path.basename(rbp_file), str(n), str(prev_nb_shuffle)]) + '\n')
         # the resulting file will have the followin columns:
         # sno filename, rbp filename, nb of times shuffled >= real, number of tests done
         # the p-val = nb of times shuffled >= real / number of tests done
