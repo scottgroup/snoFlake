@@ -1,14 +1,25 @@
 rule sno_rbp_transcript: # snoRNA binds to RBP transcript
     input:
     output:
-    parmas:
+    params:
         
     log:
         os.path.join(config["logs"],"sno_rbp_transcript","{sno}_intersect.log")
     wrapper:
         "v1.3.2/bio/bedtools/intersect"
 
+rule bedtools_intersect:
+    input:
+        left = "",
+        right = ""
+    output:
 
+    params:
+        extra = "-wo -s"
+    log:
+        os.path.join(config["logs"],"bedtools_intersect",".log")
+    wrapper:
+        "v1.3.2/bio/bedtools/intersect"
 
 
 
@@ -22,3 +33,9 @@ rule sno_rbp_transcript: # snoRNA binds to RBP transcript
         os.path.join(config["logs"],"{rbp}_merge.log")
     wrapper:
         "v1.3.1/bio/bedtools/merge"
+
+rule create_out_files:
+    output:
+        os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv"),
+        os.path.join(config["outpath"],"sno_bind_to_rbp_transcript.tsv")
+    shell:

@@ -25,7 +25,7 @@ rbp_list = pd.read_table(config["data"]["rbp_list"]).name.values.tolist()
 
 include: "rules/format_rbp.smk"
 include: "rules/format_snoglobe.smk"
-
+include: "rules/binding.smk"
 
 
 rule all:
