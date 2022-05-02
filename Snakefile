@@ -19,9 +19,9 @@ rule filter_rbp: # filter raw ENCODE RBP data by p-value -log10(p-val) >= 5 and 
     input:
         os.path.join(config["data"]["rbp_ENCODE"],"{encode}","replicate{rep}.bed.gz")
     output:
-        temp(os.path.join(config["data"]["temp"],"{encode}_replicate{rep}_filtered.bed"))
+        temp(os.path.join(config["temp"],"{encode}_replicate{rep}_filtered.bed"))
     params:
-        temp_dir = config["data"]["temp"],
+        temp_dir = config["temp"],
         p_thres = config["p_threshold"] # specify p-value threshold in config.json
     shell:
         "mkdir -p {params.temp_dir} && "
@@ -29,16 +29,16 @@ rule filter_rbp: # filter raw ENCODE RBP data by p-value -log10(p-val) >= 5 and 
 
 rule merge_rep_rbp: # merge RBP replicate data
     input:
-        rep1 = os.path.join(config["data"]["temp"],"{encode}_replicate1_filtered.bed"),
-        rep2 = os.path.join(config["data"]["temp"],"{encode}_replicate2_filtered.bed")
+        rep1 = os.path.join(config["temp"],"{encode}_replicate1_filtered.bed"),
+        rep2 = os.path.join(config["temp"],"{encode}_replicate2_filtered.bed")
     output:
-        temp(os.path.join(config["data"]["temp"],"{encode}_rep_merge.bed"))
+        temp(os.path.join(config["temp"],"{encode}_rep_merge.bed"))
     shell:
         "cat {input.rep1} >> {output} && cat {input.rep2} >> {output}"
 
 rule create_empty_merge_file: # empty temp merge files to automatically delete them after run
     output:
-        temp(os.path.join(config["data"]["temp"],"{rbp}_all_merge_empty.bed"))
+        temp(os.path.join(config["temp"],"{rbp}_all_merge_empty.bed"))
     shell:
         "touch {output}"
 
@@ -48,10 +48,10 @@ rule merge_cell_rbp_temp: # merge by cell line
         dir = config["data"]["rbp_ENCODE"],
         encode = expand(rules.merge_rep_rbp.output, encode=ENCODE)
     output:
-        temp(os.path.join(config["data"]["temp"],"{rbp}_all_merge_temp.bed"))
+        temp(os.path.join(config["temp"],"{rbp}_all_merge_temp.bed"))
     params:
         grep_rbp = "{rbp}_",
-        temp_dir = config["data"]["temp"]
+        temp_dir = config["temp"]
     shell:
         "ls {input.dir} | grep '{params.grep_rbp}' | sed 's/{params.grep_rbp}//g' | while read line;"
         "do "
@@ -62,7 +62,7 @@ rule merge_cell_rbp: # move merged RBP data from temp to final file
     input:
         rules.merge_cell_rbp_temp.output
     output:
-       temp(os.path.join(config["data"]["temp"],"{rbp}_all_merge.bed"))
+       temp(os.path.join(config["temp"],"{rbp}_all_merge.bed"))
     shell:
         "mv {input} {output}"
 
@@ -70,14 +70,14 @@ rule sort_rbp: # sort RBP data
     input:
         rules.merge_cell_rbp.output
     output:
-        temp(os.path.join(config["data"]["temp"],"{rbp}_sort.bed"))
+        temp(os.path.join(config["temp"],"{rbp}_sort.bed"))
     shell:
         "sort -k1,1 -k2,2n {input} > {output}"
 
 rule rbp_formatted_dir: # create directory to store final RBP data & logs
     output:
         rbp = config["data"]["rbp_formatted"],
-        log = config["data"]["logs"]
+        log = config["logs"]
     shell:
         "mkdir -p {output.rbp} && mkdir -p {output.log}"
 
@@ -85,11 +85,11 @@ rule bedtools_merge_rbp: # merge concatenated & sorted RBP data
     input:
         rules.sort_rbp.output
     output:
-        temp(os.path.join(config["data"]["temp"],"{rbp}_bedtools_merge.bed"))
+        temp(os.path.join(config["temp"],"{rbp}_bedtools_merge.bed"))
     params:
         extra="-s -c 4,5,6,7,8 -o distinct,min,distinct,min,min"
     log:
-        os.path.join(config["data"]["logs"],"{rbp}_merge.log")
+        os.path.join(config["logs"],"{rbp}_merge.log")
     wrapper:
         "v1.3.1/bio/bedtools/merge"
 

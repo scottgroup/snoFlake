@@ -1,22 +1,23 @@
 {
   "data":{
-    "path": "/home/kris98/scratch/pipeline/data/",
-    "rbp_ENCODE": "/home/kris98/scratch/pipeline/data/rbp/",
-    "temp": "/home/kris98/scratch/pipeline/data/temp/",
-    "rbp_formatted": "/home/kris98/scratch/pipeline/data/rbp_formatted/",
-    "logs": "/home/kris98/scratch/pipeline/data/logs/",
-    "snoglobe": "/home/kris98/scratch/pipeline/data/snoglobe_predictions/",
-    "snoglobe_formatted": "/home/kris98/scratch/pipeline/data/snoglobe_formatted/",
-    "snoDB": "/home/kris98/scratch/pipeline/data/snoDB.tsv",
-    "snoRNA_list" : "/home/kris98/scratch/pipeline/data/snoRNA.tsv",
-    "rbp_list" : "/home/kris98/scratch/pipeline/data/rbp.tsv",
-    "annotation": "/home/kris98/scratch/pipeline/data/hg38_Ensembl_V101_Scottlab_2020.tsv",
-    "snoDB_host_gene": "/home/kris98/scratch/pipeline/data/snoDB_pc_host_gene.tsv"
+    "rbp_ENCODE": "../data/rbp/",
+    "rbp_formatted": "../data/rbp_formatted/",
+    "snoglobe": "../data/snoglobe_predictions/",
+    "snoglobe_formatted": "../data/snoglobe_formatted/",
+    "snoRNA_list" : "../data/snoRNA.tsv",
+    "rbp_list" : "../data/rbp.tsv",
+    "annotation": "../data/hg38_Ensembl_V101_Scottlab_2020.tsv",
+    "snoDB": "../data/snoDB.tsv",
+    "STRING": "../data/STRING.9606.protein.actions.v11.0.txt.gz",
+    "HTRRI": "../data/htrri_interactions_P_L_S.tsv"
   },
 
   "p_threshold": 3,
+  
+  "logs": "../logs/",
+  "temp": "../temp/",
 
-  "outpath": "/home/kris98/scratch/pipeline/output/",
+  "outpath": "../output/",
 
   "cell_line" : ["HepG2","K562","adrenal_gland"],
 
