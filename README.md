@@ -22,3 +22,11 @@ Types of snoRNA-RBP Interactions:
 - Overlaps of snoRNA and RBP target sites
 - High-throughput RNA-RNA interactions
 - snoGloBe predictions
+
+- Overlap of target sites:
+    - snoRNA-snoRNA
+    - RBP-RBP
+    - snoRNA-RBP
+- Direct binding interactions:
+- Interactions from external database:
+    - STRING
