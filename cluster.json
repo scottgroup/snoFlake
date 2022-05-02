@@ -1,0 +1,12 @@
+{
+    "__default__":
+    {
+        "job-name": "SM.{rule}",
+        "nodes": "1",
+        "cpus-per-task": "1",
+        "mem": "4G",
+        "time": "0-1:00:00",
+        "mail-user": "kristina.song@usherbrooke.ca",
+        "mail-type": "FAIL"
+    }
+}
