@@ -19,19 +19,18 @@ def read_sno_rbp(sno_file, rbp_file):
     return df_sno, df_rbp
 
 def get_interactions(df_htrri,df_sno,df_rbp):
-    df_interactions = pd.DataFrame(columns=['RNA1','RNA2']) # store final interactions
+    df_interactions = pd.DataFrame(columns=['single_id1','single_id2','name1','name2','biotype1','biotype2']) # store final interactions
     for i in range(len(df_sno)):
         sno = df_sno.iloc[i,0] # current sno
         temp = df_htrri[df_htrri['single_id1']==sno].reset_index(drop=True)
         for j in range(len(temp)):
-            if temp.loc[j,'biotype2'] == "snoRNA": # RNA2 == snoRNA
-                if temp.loc[j,'single_id2'] in df_sno.values:
-                    df_new = pd.DataFrame(data = {'RNA1':[temp.loc[j,'single_id1']],'RNA2':[temp.loc[j,'single_id2']]})
-                    df_interactions = pd.concat([df_interactions, df_new],ignore_index=True)
+            if temp.loc[j,'single_id1'] == temp.loc[j,'single_id2']: # remove self-loop interactions
+                continue
+            elif temp.loc[j,'biotype2'] == "snoRNA" and temp.loc[j,'single_id2'] in df_sno.values: # RNA2 == snoRNA
+                df_interactions = pd.concat([df_interactions, temp.iloc[[j]]],ignore_index=True)
             else: # RNA2 == protein_coding
-                if temp.loc[j,'name2'] in df_rbp.values:
-                    df_new = pd.DataFrame(data = {'RNA1':[temp.loc[j,'single_id1']],'RNA2':[temp.loc[j,'name2']]})   
-                    df_interactions = pd.concat([df_interactions, df_new],ignore_index=True)
+                if temp.loc[j,'name2'] in df_rbp.values: 
+                    df_interactions = pd.concat([df_interactions, temp.iloc[[j]]],ignore_index=True)
     # add interaction type column
     df_interactions['interaction'] = 'htrri'
     # drop duplicate rows
