@@ -25,7 +25,7 @@ rbp_list = pd.read_table(config["data"]["rbp_list"]).name.values.tolist()
 
 include: "rules/format_rbp.smk"
 include: "rules/format_snoglobe.smk"
-include: "rules/binding.smk"
+include: "rules/htrri.smk"
 
 
 rule all:
@@ -33,7 +33,8 @@ rule all:
         expand(os.path.join(config["data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"),rbp=rbp_list),
         #os.path.join(config["outpath"],"sno_embedded_in_rbp_host_gene.tsv"),
         #os.path.join(config["outpath"],"snoglobe_targets.tsv"),
-        expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list)
+        expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list),
+        os.path.join(config["outpath"],"filtered_HTRRI.tsv")
 
 """
 rule sno_embedded_in_host_gene: # find snoRNAs that have protein coding host genes and keep those that belong to our RBP group

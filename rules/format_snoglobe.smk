@@ -1,4 +1,5 @@
-rule snoglobe_uniq: # format snoglobe prediction for snoRNA-RBP p-val calculation
+rule snoglobe_uniq:
+    """ Format snoglobe predictions for snoRNA-RBP p-val calculations. """
     input:
         os.path.join(config["data"]["snoglobe"],"pred_{sno}.98_3.gene.tsv")
     output:
