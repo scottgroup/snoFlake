@@ -34,7 +34,16 @@ rule all:
         #os.path.join(config["outpath"],"sno_embedded_in_rbp_host_gene.tsv"),
         #os.path.join(config["outpath"],"snoglobe_targets.tsv"),
         expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list),
-        os.path.join(config["outpath"],"filtered_HTRRI.tsv")
+        os.path.join(config["outpath"],"filtered_HTRRI.tsv"),
+        os.path.join(config["outpath"],"interaction_count.tsv")
+
+rule merge_interaction_count_files:
+    """ Merge all interaction counts into one file """
+    input:
+    output:
+        os.path.join(config["outpath"],"interaction_count.tsv")
+    shell:
+        "touch {output}"
 
 """
 rule sno_embedded_in_host_gene: # find snoRNAs that have protein coding host genes and keep those that belong to our RBP group

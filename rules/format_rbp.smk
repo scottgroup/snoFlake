@@ -7,8 +7,8 @@ rule filter_rbp: # filter raw ENCODE RBP data by p-value and by fold-enrichment 
         temp(os.path.join(config["temp"],"{encode}_filtered.bed"))
     params:
         temp_dir = config["temp"],
-        p_thres = config["p_threshold"], # specified p-value threshold in config.json
-        sig_val_thres = config["sig_val_threshold"] # specified signal value threshold in config.json
+        p_thres = config["ENCODE_p_threshold"], # specified p-value threshold in config.json
+        sig_val_thres = config["ENCODE_sig_val_threshold"] # specified signal value threshold in config.json
     shell:
         "mkdir -p {params.temp_dir} && "
         "gunzip -c {input.rep1} | sort -k8 -n | awk -F'\t' '$8>={params.p_thres} && $7>={params.sig_val_thres}' >> {output} && "

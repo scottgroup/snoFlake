@@ -12,8 +12,9 @@
     "HTRRI": "../network_data/htrri_interactions_P_L_S.tsv"
   },
 
-  "p_threshold": 3,
-  "sig_val_threshold": 3,
+  "ENCODE_p_threshold": 3,
+  "ENCODE_sig_val_threshold": 3,
+  "STRING_score_threshold": 900,
   
   "logs": "../network_data/logs/",
   "temp": "../network_data/temp/",
