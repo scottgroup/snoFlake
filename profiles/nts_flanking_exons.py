@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+### Gabrielle's script ###
 """ nts_flanking_exons.py: plot the interaction profiles inside the exons and in the 100 nts upstream and downstream """
 
 

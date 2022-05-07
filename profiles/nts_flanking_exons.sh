@@ -20,17 +20,18 @@ source /home/desg2718/venv36/bin/activate &&
 scorelist=(98)
 nb_list=(3)
 
-snofile=$MYPROJ/sno12_chromo.txt
+profiles_data=$SCRATCH/network_analysis/profiles_data
+snofile=$profiles_data/sno8_chromo.txt
 gtf=$MYPROJ/human_ensembl_87_wo_dup_v3.csv
 
 
 for score in ${scorelist[@]}; do
     echo 'score' $score;
-    path=$SABOU/pred_trx/prise3/all_$score/flush_ends/
+    path=$profiles_data/snoglobe_htrri_merged
     cd $path
     for n in ${nb_list[@]}; do
         echo 'min nb windows:' $n;
-        python3 ~/sno_targets/nts_flanking_exons.py $gtf $path $n $snofile $SLURM_CPUS_PER_TASK;
+        python3 nts_flanking_exons.py $gtf $path $n $snofile $SLURM_CPUS_PER_TASK;
     done;
 done &&
 
