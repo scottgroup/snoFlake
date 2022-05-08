@@ -23,11 +23,12 @@ def read_htrri(file):
 
 def read_snodb(file,id): # get snoRNA start & end position in the genome from snoDB
     df = pd.read_csv(file, sep='\t', usecols=['ensembl_id','chr','start','end','length'])
-    sno_start = df[df["ensembl_id"]==id].loc[0,'start']
-    print(sno_start)
-    sno_end = df[df["ensembl_id"]==id].end
-    print(sno_end)
-    sno_length = df[df["ensembl_id"]==id].length
+    df_sno = df[df["ensembl_id"]==id].reset_index(drop=True)
+    if len(df_sno) == 0: # exact ensembl id match not found
+        df_sno = df[df["ensembl_id"].str.contains(id,na=False)].reset_index(drop=True)
+    sno_start = df_sno.loc[0,'start']
+    sno_end = df_sno.loc[0,'end']
+    sno_length = df_sno.loc[0,'length']
     return sno_start, sno_end, sno_length
 
 def compute_sno_window(df,id,snodb):
@@ -43,7 +44,7 @@ def compute_sno_window(df,id,snodb):
         if int(df.iloc[i,1]) >= sno_end:
             window_end = sno_length
         else:
-            window_end = df.iloc[i,1] - sno_start + 1
+            window_end = df.iloc[i,1] - df.iloc[i,0] + window_start
         curr = pd.DataFrame([[window_start,window_end]], columns=['sno_window_start','sno_window_end'])
         result = pd.concat([result,curr],ignore_index=True)
     return result
@@ -56,41 +57,39 @@ def format_htrri(df,sno_id, snodb):
                                     'snoid', 'count', 'strand', 'sno_window_start',
                                     'sno_window_end', 'mean_score', 'min_score', 'max_score', 'target'])
     # get all HTRRI interactions for the current sno_id in single_id1 column
-    sno1 = df[df["single_id1"]== sno_id]
+    sno1 = df[df["single_id1"]== sno_id].reset_index(drop=True)
     if len(sno1)>1:
-        temp1.seqname = df.chr2
-        temp1.target_window_start = df.start2
-        temp1.target_window_end = df.end2
-        temp1.snoid = df.single_id1
-        temp1.count = df.count
-        temp1.strand = df.strand2
+        temp1['seqname'] = "chr"+sno1['chr2']
+        temp1['target_window_start'] = sno1['start2']
+        temp1['target_window_end'] = sno1['end2']
+        temp1['snoid'] = sno1['single_id1']
+        temp1['count'] = sno1['count']
+        temp1['strand'] = sno1['strand2']
         # compute sno window
-        df_computed = compute_sno_window(df[['start1','end1']],sno_id,snodb)
-        temp1.sno_window_start = df_computed.sno_window_start
-        temp1.sno_window_end = df_computed.sno_window_end
-        temp1.mean_score = df.mean_score
-        temp1.min_score = df.min_score
-        temp1.max_score = df.max_score
-        temp1.target = df.single_id2
+        df_computed = compute_sno_window(sno1[['start1','end1']],sno_id,snodb)
+        temp1['sno_window_start'] = df_computed['sno_window_start']
+        temp1['sno_window_end'] = df_computed['sno_window_end']
+        temp1['mean_score'] = sno1['mean_score']
+        temp1['min_score'] = sno1['min_score']
+        temp1['max_score'] = sno1['max_score']
+        temp1['target'] = sno1['single_id2']
     # get all HTRRI interactions for the current sno_id in single_id2 column
-    sno2 = df[df["single_id2"]== sno_id]
+    sno2 = df[df["single_id2"]== sno_id].reset_index(drop=True)
     if len(sno2)>1:
-        temp2.seqname = df.chr1
-        temp2.target_window_start = df.start1
-        temp2.target_window_end = df.end2
-        temp2.snoid = df.single_id2
-        temp2.count = df.count
-        temp2.strand = df.strand1
+        temp2['seqname'] = "chr"+sno2['chr1']
+        temp2['target_window_start'] = sno2['start1']
+        temp2['target_window_end'] = sno2['end1']
+        temp2['snoid'] = sno2['single_id2']
+        temp2['count'] = sno2['count']
+        temp2['strand'] = sno2['strand1']
         # compute sno window
-        df_computed = compute_sno_window(df[['start2','end2']],sno_id,snodb)
-        temp2.sno_window_start = df_computed.sno_window_start
-        temp2.sno_window_end = df_computed.sno_window_end
-        temp2.mean_score = df.mean_score
-        temp2.min_score = df.min_score
-        temp2.max_score = df.max_score
-        temp2.target = df.single_id1
-    print(temp1)
-    print(temp2)
+        df_computed = compute_sno_window(sno1[['start2','end2']],sno_id,snodb)
+        temp2['sno_window_start'] = df_computed['sno_window_start']
+        temp2['sno_window_end'] = df_computed['sno_window_end']
+        temp2['mean_score'] = sno2['mean_score']
+        temp2['min_score'] = sno2['min_score']
+        temp2['max_score'] = sno2['max_score']
+        temp2['target'] = sno2['single_id1']
     df_formatted = pd.concat([temp1,temp2],ignore_index=True)
     return df_formatted
 
@@ -100,24 +99,26 @@ def read_snoglobe(file):
                                     'sno_window_end', 'mean_score', 'min_score', 'max_score', 'target'])
     return df
 
-def merge_interactions(snoglobe_file, htrri_file, snoid, snodb):
-    #df_snoglobe = read_snoglobe(snoglobe_file)
-    df_htrri = read_htrri(htrri_file)
-    print(read_snodb(snodb,snoid))
-    #df_htrri_formatted = format_htrri(df_htrri, snoid, snodb)
-    print(snoid)
-    #return pd.concat([df_snoglobe, df_htrri_formatted], ignore_index=True)
-    return df_htrri
+def merge_interactions(snoglobe_file, df_htrri, snoid, snodb):
+    df_snoglobe = read_snoglobe(snoglobe_file)
+    df_htrri_formatted = format_htrri(df_htrri, snoid, snodb)
+    return pd.concat([df_snoglobe, df_htrri_formatted], ignore_index=True)
 
 def main():
     snoglobe = sys.argv[1] # path to snoglobe predictions directory
     htrri = sys.argv[2] # HTRRI file
-    sno_list = sys.argv[3] # csv file containing chromosome, snoRNA ENSEMBL ID, snoRNA name
-    snodb = sys.argv[4]
+    sno_file = sys.argv[3] # csv file containing chromosome, snoRNA ENSEMBL ID, snoRNA name
+    snodb = sys.argv[4] # snoDB file
     outdir = sys.argv[5] # output directory to store merged snoRNA interaction files
     
-    out = merge_interactions(snoglobe, htrri, sno_list, snodb)
-    out.to_csv(outdir, sep='\t',index=None)
+    df_htrri = read_htrri(htrri)
+
+    sno_list = pd.read_csv(sno_file,sep=',',names=['chromosome','ensembl_id','name']).ensembl_id.tolist()
+    for sno in sno_list:
+        print(sno)
+        prediction_file = os.path.join(snoglobe,"pred_"+sno+".98_3.gene.tsv")
+        out_file = os.path.join(outdir,"pred_"+sno+".98_3.gene.htrri.tsv")
+        merge_interactions(prediction_file, df_htrri,sno,snodb).to_csv(out_file,sep='\t',index=None,header=None)
 
 if __name__ == '__main__':
     main()
