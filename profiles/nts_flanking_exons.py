@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-### Gabrielle's script ###
+""" Adpated from Gabrielle's script """
 """ nts_flanking_exons.py: plot the interaction profiles inside the exons and in the 100 nts upstream and downstream """
 
 
@@ -119,14 +119,14 @@ def calc_sno_coverage(df, df_int, region):
 
 
 def merge_df(df_all, df_to_add):
-    df_all = df_all.append(df_to_add)
+    df_all = pd.concat([df_all, df_to_add], ignore_index=True)
     df_all = df_all.groupby('rel_pos').counts.sum().reset_index()
     return df_all
 
 
 def compute_sno(args):
     snoid, df_up, df_exon, df_down, inpath, len_dict, norm_factor, nb_windows, nb_exons, outpath, snoname = args
-    int_file = os.path.join(inpath, 'pred_%s.98_3.gene.tsv' % (snoid))
+    int_file = os.path.join(inpath, 'pred_%s.98_3.gene.htrri.tsv' % (snoid))
     df_int = pd.read_csv(int_file, sep='\t',
                          names=['seqname', 'target_window_start', 'target_window_end', 'snoid', 'count',
                                 'strand', 'sno_window_start', 'sno_window_end', 'mean_score', 'min_score',
@@ -173,9 +173,9 @@ def compute_sno(args):
     return sno_cov_up , sno_cov_exon, sno_cov_down, tot_int, nb_int
 
 
-def calc_coverage(df_up, df_exon, df_down, inpath, nb_windows, snolist, nb_threads, sno_dict):
+def calc_coverage(df_up, df_exon, df_down, inpath, outdir, nb_windows, snolist, nb_threads, sno_dict):
     norm_factor = 10E6
-    outpath = os.path.join(inpath, 'exon_flanking_region')
+    outpath = os.path.join(outdir, 'exon_flanking_region')
     os.makedirs(outpath, exist_ok=True)
 
     len_dict = {}
@@ -240,9 +240,10 @@ def bed_to_df(bed, side):
 def main():
     gtf_file = sys.argv[1] # full human gtf file in csv format
     inpath = os.path.abspath(sys.argv[2]) # path to predicted interaction files
-    nb_windows = int(sys.argv[3]) # minimal number of consecutive windows
-    snofile = sys.argv[4] #csv file with chromosome and sno_id
-    nb_threads = int(sys.argv[5]) # nb of threads to use in parallel
+    outdir = os.path.abspath(sys.argv[3]) # path to output directory
+    nb_windows = int(sys.argv[4]) # minimal number of consecutive windows
+    snofile = sys.argv[5] #csv file with chromosome and sno_id
+    nb_threads = int(sys.argv[6]) # nb of threads to use in parallel
 
     with open(snofile, 'r') as f:
         snolist = f.readlines()
@@ -254,7 +255,7 @@ def main():
             pass
 
     # read_gtf
-    df_gtf = pd.read_csv(gtf_file, dtype={'seqname': str})
+    df_gtf = pd.read_csv(gtf_file, sep='\t',dtype={'seqname': str})
     chromo_dict = df_gtf[df_gtf.feature == 'gene'].set_index('gene_id').seqname.to_dict()
     df_sno = df_gtf[(df_gtf.feature == 'gene') & (df_gtf.gene_biotype == 'snoRNA')][['gene_id', 'gene_name']]
     sno_dict = df_sno.set_index('gene_id').gene_name.to_dict()
@@ -287,7 +288,7 @@ def main():
     df_down['chrom'] = df_down.chrom.map(chromo_dict)
     df_exon['chrom'] = df_exon.gene_id.map(chromo_dict)
     df_exon = df_exon[['chrom', 'start', 'end', 'name', 'score', 'strand']]
-    calc_coverage(df_up, df_exon, df_down, inpath, nb_windows, snolist, nb_threads, sno_dict)
+    calc_coverage(df_up, df_exon, df_down, inpath, outdir, nb_windows, snolist, nb_threads, sno_dict)
 
 
 if __name__ == '__main__':

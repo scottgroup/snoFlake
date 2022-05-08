@@ -4,8 +4,6 @@
 #SBATCH --mail-user=kristina.song@usherbrooke.ca
 #SBATCH --mail-type=END,FAIL
 #SBATCH --time=24:00:00
-#SBATCH --output=%u.%x-%A[%a].out
-#SBATCH --error=%u.%x-%A[%a].err
 #SBATCH --mem=32000M
 #SBATCH --cpus-per-task=16
 
@@ -15,7 +13,8 @@ ml nixpkgs/16.09 &&
 ml gcc/6.4.0 &&
 ml bedtools &&
 ml python/3.6.3 &&
-source /home/desg2718/venv36/bin/activate &&
+ml scipy-stack &&
+source /home/kris98/venv310/bin/activate &&
 
 inpath = os.path.abspath(sys.argv[1]) # path to the interaction files
     sno_fasta = os.path.abspath(sys.argv[2]) # fasta file of snoRNA sequences
