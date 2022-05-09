@@ -1,3 +1,9 @@
+rule unzip:
+    input:
+        config["data"]["STRING"]
+    output:
+        
+
 rule get_rbp_rbp:
     """ Keep physical binding STRING interactions only """
     input:

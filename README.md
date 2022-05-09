@@ -12,7 +12,9 @@ A pipeline to gather snoRNA and RBP interactions to perform a sno-RBP interactio
     - Target category: select 'RNA binding protein'
 - snoGloBe predictions against all protein coding biotypes
 - snoDB: all snoRNAs that have protein coding host genes
-- list of RBPs and snoRNAs in 
+- HTRRI
+- list of snoRNAs (Ensembl_id, name, type)
+- list of RBPs (protein_id, name, type)
 
 **Types of snoRNA-RBP Interactions:**
 - Overlap of target sites:

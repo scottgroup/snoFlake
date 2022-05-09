@@ -30,7 +30,11 @@ def get_interactions(df_htrri,df_sno,df_rbp):
                 df_interactions = pd.concat([df_interactions, temp.iloc[[j]]],ignore_index=True)
             else: # RNA2 == protein_coding
                 if temp.loc[j,'name2'] in df_rbp.values: 
-                    df_interactions = pd.concat([df_interactions, temp.iloc[[j]]],ignore_index=True)
+                    # different format for sno-RBP interactions
+                    # sno_id, rbp_name, sno_name, rbp_name, biotype1, biotype2
+                    row = {'single_id1':temp.loc[j,'single_id1'],'single_id2':temp.loc[j,'name2'],'name1':temp.loc[j,'name1'],
+                        'name2':temp.loc[j,'name2'],'biotype1':temp.loc[j,'biotype1'],'biotype2':temp.loc[j,'biotype2']}
+                    df_interactions = df_interactions.append(row, ignore_index=True)
     # add interaction type column
     df_interactions['interaction'] = 'htrri'
     # drop duplicate rows

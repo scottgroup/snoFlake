@@ -17,7 +17,7 @@ ENCODE, = glob_wildcards(os.path.join(config["data"]["rbp_ENCODE"],"{encode}","r
 #### load snoRNA and RBP list ####
 
 sno_list = pd.read_table(config["data"]["snoRNA_list"]).id.values.tolist()
-rbp_list = pd.read_table(config["data"]["rbp_list"]).name.values.tolist()
+rbp_list = pd.read_table(config["data"]["rbp_list"]).name1.values.tolist()
 
 
 
@@ -34,8 +34,8 @@ rule all:
         #os.path.join(config["outpath"],"sno_embedded_in_rbp_host_gene.tsv"),
         #os.path.join(config["outpath"],"snoglobe_targets.tsv"),
         expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list),
-        os.path.join(config["outpath"],"filtered_HTRRI.tsv"),
-        os.path.join(config["outpath"],"interaction_count.tsv")
+        os.path.join(config["outpath"],"filtered_HTRRI.tsv")
+        #os.path.join(config["outpath"],"interaction_count.tsv")
 
 rule merge_interaction_count_files:
     """ Merge all interaction counts into one file """
