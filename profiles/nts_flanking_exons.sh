@@ -6,8 +6,8 @@
 #SBATCH --time=24:00:00
 #SBATCH --mem=32000M
 #SBATCH --cpus-per-task=16
-#SBATCH --output=/home/kris98/scratch/network_analysis/logs/%j.out
-#SBATCH --error=/home/kris98/scratch/network_analysis/logs/%j.err
+#SBATCH --output=/home/kris98/scratch/network_analysis/logs/%j_%x.out
+#SBATCH --error=/home/kris98/scratch/network_analysis/logs/%j_%x.err
 
 #### Adapted from Gabrielle's script ####
 

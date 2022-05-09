@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+""" Adapted from Gabrielle's script """
 """ interaction_region.py: plot the interaction region profile in the snoRNAs """
 
 
@@ -173,15 +174,16 @@ def plot_all_sno(df_all, score, nb_windows, fpath, ytype):
 
 
 def main():
-    inpath = os.path.abspath(sys.argv[1]) # path to the interaction files
-    sno_fasta = os.path.abspath(sys.argv[2]) # fasta file of snoRNA sequences
-    score = sys.argv[3] # score cutoff (used for filename and fig title)
-    nb_windows = int(sys.argv[4]) # nb of consecutive windows cutoff
-    relplot_path = os.path.abspath(sys.argv[5]) # path to relplot utility from viennaRNA
+    inpath = sys.argv[1] # path to the interaction files
+    outpath = sys.argv[2] # path to output directory
+    sno_fasta = sys.argv[3] # fasta file of snoRNA sequences
+    score = sys.argv[4] # score cutoff (used for filename and fig title)
+    nb_windows = int(sys.argv[5]) # nb of consecutive windows cutoff
+    relplot_path = sys.argv[6] # path to relplot utility from viennaRNA
 
     # create folder for figures
-    os.makedirs(os.path.join(inpath, 'sno_int_region'), exist_ok=True)
-    os.chdir(os.path.join(inpath, 'sno_int_region'))
+    os.makedirs(os.path.join(outpath, 'sno_int_region'), exist_ok=True)
+    os.chdir(os.path.join(outpath, 'sno_int_region'))
 
     # read snoRNA fasta
     sno_dict = SeqIO.to_dict(SeqIO.parse(sno_fasta, 'fasta'))
@@ -192,7 +194,7 @@ def main():
         df_sno = pd.DataFrame()
         if snoid in ['NR_003072', 'NR_003073', 'ENSG00000252284']:
             continue
-        infile = os.path.join(inpath, 'pred_%s.%s_%s.gene.tsv' % (snoid, score, nb_windows))
+        infile = os.path.join(inpath, 'pred_%s.%s_%s.gene.htrri.tsv' % (snoid, score, nb_windows))
         try:
             df = pd.read_csv(infile,
                              sep='\t',
@@ -206,26 +208,26 @@ def main():
             df = df.drop_duplicates()
             df = df[['snoid', 'sno_window_start', 'sno_window_end', 'count']]
             df = df[df['count'] >= nb_windows]
-            df_sno = df_sno.append(df)
+            df_sno = pd.concat([df_sno, df], ignore_index=True)
         except FileNotFoundError:
             print('File not found: %s' % infile, file=sys.stderr)
             continue
         if df_sno.empty:
             print('No %s interaction met the criteria: %s, %d'%(snoid, score, nb_windows), file=sys.stderr)
             continue
-        plot_region(df_sno, snoid, sno_dict[snoid], score, nb_windows, inpath, relplot_path)
+        plot_region(df_sno, snoid, sno_dict[snoid], score, nb_windows, outpath, relplot_path)
         df_sno['length'] = len(sno_dict[snoid]['seq'])
         df_sno['proportion'] =  1 / len(df_sno)
-        df_all = df_all.append(df_sno)
+        df_all = pd.concat([df_all, df_sno], ignore_index=True)
     df_all['sno_window_start'] = ((df_all['sno_window_start']) / df_all['length']).round(4)
     df_all['sno_window_end'] = ((df_all['sno_window_end']) / df_all['length']).round(4)
     df_count = df_all.groupby(['sno_window_start', 'sno_window_end'])['proportion'].count().reset_index()
     df_prop = df_all.groupby(['sno_window_start', 'sno_window_end'])['proportion'].sum().reset_index()
     # with "prop" option, the profiles are normalize by the number of interactions for each snoRNA, the total of all
     # interactions for one snoRNA is 1.
-    plot_all_sno(df_prop, score, nb_windows, inpath, 'prop')
+    plot_all_sno(df_prop, score, nb_windows, outpath, 'prop')
     # with "count" option, all the interactions are counted once.
-    plot_all_sno(df_count, score, nb_windows, inpath, 'count')
+    plot_all_sno(df_count, score, nb_windows, outpath, 'count')
 
 
 if __name__ == '__main__':

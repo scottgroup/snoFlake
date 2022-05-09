@@ -6,26 +6,29 @@
 #SBATCH --time=24:00:00
 #SBATCH --mem=32000M
 #SBATCH --cpus-per-task=16
+#SBATCH --output=/home/kris98/scratch/network_analysis/logs/%j_%x.out
+#SBATCH --error=/home/kris98/scratch/network_analysis/logs/%j_%x.err
+
+#### Adapted from Gabrielle's script ####
 
 set -o pipefail
 
-ml nixpkgs/16.09 &&
-ml gcc/6.4.0 &&
-ml bedtools &&
-ml python/3.6.3 &&
+ml python/3.8 &&
 ml scipy-stack &&
-source /home/kris98/venv310/bin/activate &&
+ml StdEnv/2020 && 
+ml viennarna/2.4.17 &&
+source /home/kris98/venv38/bin/activate &&
 
-inpath = os.path.abspath(sys.argv[1]) # path to the interaction files
-    sno_fasta = os.path.abspath(sys.argv[2]) # fasta file of snoRNA sequences
-    score = sys.argv[3] # score cutoff (used for filename and fig title)
-    nb_windows = int(sys.argv[4]) # nb of consecutive windows cutoff
-    relplot_path = os.path.abspath(sys.argv[5]) # path to relplot utility from viennaRNA
-
-interactions=
-sno_fasta=$SCRATCH/profiles_data/sno8.fa
+interactions=$SCRATCH/network_analysis/profiles_data/snoglobe_htrri_merged
+sno_fasta=$SCRATCH/network_analysis/profiles_data/sno8.fa
 score=98
 nb_windows=3
-relplot_path=
+relplot_path=$SCRATCH/ViennaRNA-2.5.0/src/Utils/relplot.pl
+outpath=$SCRATCH/network_analysis/profiles_output
+
+mkdir -p $outpath &&
+
+python3 interaction_region.py $interactions $outpath $sno_fasta $score $nb_windows $relplot_path &&
+
 
 echo 'Done'
