@@ -26,38 +26,25 @@ rbp_list = pd.read_table(config["data"]["rbp_list"]).name1.values.tolist()
 include: "rules/format_rbp.smk"
 include: "rules/format_snoglobe.smk"
 include: "rules/htrri.smk"
+include: "rules/snodb.smk"
 
 
 rule all:
     input:
         expand(os.path.join(config["data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"),rbp=rbp_list),
-        #os.path.join(config["outpath"],"sno_embedded_in_rbp_host_gene.tsv"),
         #os.path.join(config["outpath"],"snoglobe_targets.tsv"),
         expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list),
-        os.path.join(config["outpath"],"filtered_HTRRI.tsv")
+        os.path.join(config["outpath"],"filtered_HTRRI.tsv"),
+        os.path.join(config["outpath"],"snoDB_rbp_as_host_gene.tsv")
         #os.path.join(config["outpath"],"interaction_count.tsv")
-
+"""
 rule merge_interaction_count_files:
-    """ Merge all interaction counts into one file """
+    # Merge all interaction counts into one file 
     input:
     output:
         os.path.join(config["outpath"],"interaction_count.tsv")
     shell:
         "touch {output}"
-
-"""
-rule sno_embedded_in_host_gene: # find snoRNAs that have protein coding host genes and keep those that belong to our RBP group
-    input:
-        snorna = config["data"]["snoRNA_list"],
-        rbp = config["data"]["rbp_list"],
-        snodb = config["data"]["snoDB_host_gene"]
-    output:
-        os.path.join(config["outpath"],"sno_embedded_in_rbp_host_gene.tsv")
-    shell:
-        "echo \"snoRNA\tRBP\tinteraction\"> {output} && "
-        "cat {input.snorna} | while read line; do if grep -q $line {input.snodb}; then "
-        "result=$(grep $line {input.snodb}); rbp=$(awk '{{print $2}}' <<< $result); "
-        "if grep -q $rbp {input.rbp}; then echo $line\"\t\"$rbp\"\t\"\"embedded_sno\" >> {output}; fi; fi; done"
 
 rule snoglobe_targets: # get all unique targets for each snoRNA from snoGloBe predictions
     input:

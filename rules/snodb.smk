@@ -1,13 +1,10 @@
-rule access_snodb:
-    """ Get all snoRNAs with Ensembl id that have protein coding host genes in snoDB """
+rule filter_snodb_host_gene:
+    """ Find snoRNAs that have RBPs as host genes in snoDB """
     input:
-        config["data"]["snoDB"]
+        snodb = config["data"]["snoDB"],
+        snolist = config["data"]["snoRNA_list"],
+        rbplist = config["data"]["rbp_list"]
     output:
-        temp(os.path.join(config["temp"],"snodb_pc_host_gene.tsv"))
+        os.path.join(config["outpath"],"snoDB_rbp_as_host_gene.tsv")
     shell:
-        'python scripts/get_snoDB_pc_host_gene.py '
-
-rule filter_host_gene:
-    input:
-        rules.access_snodb.output
-    output:
+        'python scripts/snoDB_host_gene.py {input.snodb} {input.snolist} {input.rbplist} {output}'
