@@ -8,5 +8,9 @@
         "time": "0-1:00:00",
         "mail-user": "kristina.song@usherbrooke.ca",
         "mail-type": "FAIL"
+    },
+    "sno_rbp_transcript_bedtools_intersect":
+    {
+        "time": "3:00:00"
     }
 }

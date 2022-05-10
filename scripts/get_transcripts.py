@@ -2,9 +2,9 @@
 
 """
 Get transcripts from transcriptome annotation file
-[1] Get all transcripts
-[2] Get pre-mRNA transcripts for RBPs
-[3] Get snoRNA transcripts
+[1] all: Get all transcripts
+[2] rbp: Get pre-mRNA transcripts for RBPs
+[3] sno: Get snoRNA transcripts
 """
 
 import pandas as pd
@@ -24,7 +24,7 @@ def read_node_list(node_list): # get RBP or snoRNA list
 def rbp_transcript(df_gtf, df_rbp): # get transcripts for RBPs only
     df = pd.DataFrame(columns=df_gtf.columns)
     for i in range(len(df_rbp)):
-        curr_rbp = df_rbp.iloc[i,0]
+        curr_rbp = df_rbp.loc[i,'name1']
         if curr_rbp == "TROVE2": # TROVE2 exists as RO60 in annotation (synonyms)
             curr_rbp = "RO60"
         df_temp = df_gtf[df_gtf["gene_name"]==curr_rbp]
@@ -45,7 +45,7 @@ def all_transcripts(df): # get all trancripts in annotation file
 def sno_transcript(df_gtf, df_sno): # get transcripts for snoRNA only
     df = pd.DataFrame(columns=df_gtf.columns)
     for i in range(len(df_sno)):
-        curr_sno = df_sno.iloc[i,0]
+        curr_sno = df_sno.loc[i,'id']
         df_temp = df_gtf[df_gtf["gene_id"]==curr_sno]
         df = pd.concat([df,df_temp], ignore_index=True)
     df = df[['seqname','start','end','gene_id','score','strand']]
@@ -53,24 +53,24 @@ def sno_transcript(df_gtf, df_sno): # get transcripts for snoRNA only
     return df
 
 def main():
-    option = sys.argv[1]
-    annotation = sys.argv[2]
-    rbp = sys.argv[3]
-    sno = sys.argv[4]
-    out = sys.argv[5]
+    option = sys.argv[1] # choose from: all, rbp, sno
+    annotation = sys.argv[2] # genome annotation in gtf format
+    rbp = sys.argv[3] # RBP list in tsv 
+    sno = sys.argv[4] # snoRNA list in tsv
+    out = sys.argv[5] # output file
 
     transcripts = read_annotation(annotation)
 
-    if option == str(1): # all transcripts
-        df_result = all_transcripts(transcripts)
-    elif option == str(2): # RBP transcripts
+    if option == "all": # all transcripts
+        all_transcripts(transcripts).to_csv(out,sep='\t',index=None,header=False)
+    elif option == "rbp": # RBP transcripts
         rbp_lst = read_node_list(rbp)
-        df_result = rbp_transcript(transcripts, rbp_lst)
-    else: # option == 3 --> snoRNA transcripts
+        rbp_transcript(transcripts, rbp_lst).to_csv(out,sep='\t',index=None,header=False)
+    elif option == "sno": # snoRNA transcripts
         sno_lst = read_node_list(sno)
-        df_result = sno_transcript(transcripts, sno_lst)
-    
-    df_result.to_csv(out,sep='\t',index=None,header=False)
+        sno_transcript(transcripts, sno_lst).to_csv(out,sep='\t',index=None,header=False)
+    else: # not a valid argument
+        print("Transcript argument type not valid. Choose between ALL, RBP and SNO in lower case.")
 
 if __name__ == '__main__':
     main()

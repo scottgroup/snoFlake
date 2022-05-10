@@ -27,15 +27,17 @@ include: "rules/format_rbp.smk"
 include: "rules/format_snoglobe.smk"
 include: "rules/htrri.smk"
 include: "rules/snodb.smk"
+include: "rules/binding.smk"
 
 
 rule all:
     input:
         expand(os.path.join(config["data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"),rbp=rbp_list),
-        #os.path.join(config["outpath"],"snoglobe_targets.tsv"),
         expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list),
         os.path.join(config["outpath"],"filtered_HTRRI.tsv"),
-        os.path.join(config["outpath"],"snoDB_rbp_as_host_gene.tsv")
+        os.path.join(config["outpath"],"snoDB_rbp_as_host_gene.tsv"),
+        os.path.join(config["outpath"],"sno_bind_to_rbp_transcript.tsv"),
+        os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
         #os.path.join(config["outpath"],"interaction_count.tsv")
 """
 rule merge_interaction_count_files:
