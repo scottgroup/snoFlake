@@ -39,3 +39,5 @@ rule create_out_files:
         os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv"),
         os.path.join(config["outpath"],"sno_bind_to_rbp_transcript.tsv")
     shell:
+
+### not necessaary kjlkjfsdkjlkslkjfksdjflksjdlfkj
