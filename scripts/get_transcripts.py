@@ -19,7 +19,7 @@ def read_annotation(gtf):
     return df
 
 def read_node_list(node_list): # get RBP or snoRNA list
-    return pd.read_csv(node_list, sep='\t',header=None)
+    return pd.read_csv(node_list, sep='\t')
 
 def rbp_transcript(df_gtf, df_rbp): # get transcripts for RBPs only
     df = pd.DataFrame(columns=df_gtf.columns)
