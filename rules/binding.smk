@@ -54,9 +54,11 @@ rule sno_rbp_transcript_out_file:
         expand(rules.sno_rbp_transcript_bedtools_intersect.output,sno=sno_list)
     output:
         os.path.join(config["outpath"],"sno_bind_to_rbp_transcript.tsv")
+    params:
+        config["temp"]
     shell:
-        #"echo -e \"snoRNA\tRBP\tinteraction\" >> {output} && "
-        "awk '{{print $4\"\t\"$10\"\tsno_rbp_transcript\"}}' {input} | uniq >> {output}"
+        "echo -e \"snoRNA\tRBP\tinteraction\" >> {output} && "
+        "awk '{{print $4\"\t\"$10\"\tsno_rbp_transcript\"}}' {params}*_rbp_transcript_intersect.tsv | uniq >> {output}"
 
 rule rbp_sno_transcript_out_file:
     """ Format interactions to fit network data format """
@@ -64,7 +66,9 @@ rule rbp_sno_transcript_out_file:
         expand(rules.rbp_sno_transcript_bedtools_intersect.output,rbp=rbp_list)
     output:
         os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
+    params:
+        config["temp"]
     shell:
-        #"echo -e \"RBP\tsnoRNA\tinteraction\" >> {output} && "
-        "name=$(basename {input} | sed 's/_uniq_regions.bed//g')"
-        "awk -v var=name '{{print var\"\t\"$10\"\trbp_sno_transcript\"}}' {input} | uniq >> {output}"
+        "echo -e \"RBP\tsnoRNA\tinteraction\" >> {output} && "
+        "name=$(basename {params}*_sno_transcript_intersect.tsv | sed 's/_sno_transcript_intersect.tsv//g') && "
+        "awk -v var=$name '{{print var\"\t\"$10\"\trbp_sno_transcript\"}}' {params}*_sno_transcript_intersect.tsv | uniq >> {output}"
