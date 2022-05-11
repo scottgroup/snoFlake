@@ -67,8 +67,9 @@ rule rbp_sno_transcript_out_file:
     output:
         os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
     params:
-        config["temp"]
+        temp_dir = config["temp"],
+        temp_file = os.path.join(config["temp"],"temp_rbp_bind_to_sno_transcript.tsv")
     shell:
-        "echo -e \"RBP\tsnoRNA\tinteraction\" >> {output} && "
-        "name=$(basename {params}*_sno_transcript_intersect.tsv | sed 's/_sno_transcript_intersect.tsv//g') && "
-        "awk -v var=$name '{{print var\"\t\"$10\"\trbp_sno_transcript\"}}' {params}*_sno_transcript_intersect.tsv | uniq >> {output}"
+        "echo -e \"RBP\tsnoRNA\tinteraction\" >> {params.temp_file} && "
+        "awk '{{print $4\"\t\"$10\"\trbp_sno_transcript\"}}' {params.temp_dir}*_sno_transcript_intersect.tsv >> {params.temp_file} && "
+        "awk -F\'\t\' \'{{sub(/\_.+$/,\"\",$1)}}1\' OFS=\'\t\' {params.temp_file} | uniq > {output} && rm {params.temp_file}"
