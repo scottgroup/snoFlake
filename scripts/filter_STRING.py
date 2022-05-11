@@ -5,37 +5,39 @@
 import pandas as pd
 import sys
 
-def rbp_list(file): # 2 columns
-    return pd.read_csv(file,sep='\t',header=None)
+def rbp_list(file): # 2 columns (protein_id, name)
+    return pd.read_csv(file,sep='\t')
 
-def string_df(file): # 2 columns
-    return pd.read_csv(file,sep='\t',header=None)
+def string_df(file): # 7 columns (item_id_a, item_id_b, mode, action, is_directional, a_is_acting, score)
+    return pd.read_csv(file,sep='\t')
 
-def select_interactions(df_rbp, df_string):
-    df_interactions = pd.DataFrame(columns=['RBP1','RBP2']) # store final interactions
+def select_interactions(rbp_file, string_file):
+    # create df
+    df_rbp = rbp_list(rbp_file)
+    df_string = string_df(string_file)
+    df_interactions = pd.DataFrame(columns=df_string.columns) # store final interactions
+
+    # extract interactions for each RBP
     for i in range(len(df_rbp)):
-        rbp = df_rbp.iloc[i,1] # current RBP
-        temp = df_string[df_string.iloc[:, 0]==rbp].reset_index(drop=True)
+        rbp = df_rbp.loc[i,'protein_id'] # current RBP
+        temp = df_string[df_string.loc[:, 'item_id_a']==rbp].reset_index(drop=True)
         for j in range(len(temp)):
-            if temp.iloc[j,1] in df_rbp.iloc[:, 1].values:
-                name = df_rbp[df_rbp.iloc[:,1]==temp.iloc[j,1]].iloc[0,0] # want RBP name not id
-                df_new = pd.DataFrame(data = {'RBP1':[df_rbp.iloc[i,0]],'RBP2':[name]})
+            if temp.loc[j,'item_id_b'] in df_rbp.loc[:, 'protein_id'].values:
+                name = df_rbp[df_rbp.loc[:,'protein_id']==temp.loc[j,'item_id_b']].reset_index(drop=True).loc[0,'name'] # want RBP name not id
+                #################### NEED TO FIX FROM HERE ##############
+                df_new = pd.DataFrame(data = {'RBP1':[df_rbp.loc[i,'name']],'RBP2':[name]}) 
                 df_interactions = pd.concat([df_interactions, df_new],ignore_index=True)
-    # add interaction type column
-    df_interactions['interaction'] = 'STRING'
     # drop duplicate rows
     df_interactions.drop_duplicates(ignore_index=True,inplace=True)
+    # check for reverse cases?
     return df_interactions
 
 def main():
-    rbp = sys.argv[1]
-    string = sys.argv[2]
-    out = sys.argv[3]
+    rbp = sys.argv[1] # rbp list with protein id
+    string = sys.argv[2] # unzipped STRING interaction file
+    out = sys.argv[3] # output file
 
-    df_rbp = rbp_list(rbp)
-    df_string = string_df(string)
-    df_final = select_interactions(df_rbp,df_string)
-    df_final.to_csv(out, sep='\t',index=False)
+    select_interactions(rbp,string).to_csv(out, sep='\t',index=False)
 
 if __name__ == '__main__':
     main()

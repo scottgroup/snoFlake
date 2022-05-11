@@ -28,6 +28,7 @@ include: "rules/format_snoglobe.smk"
 include: "rules/htrri.smk"
 include: "rules/snodb.smk"
 include: "rules/binding.smk"
+include: "rules/string.smk"
 
 
 rule all:
@@ -37,7 +38,8 @@ rule all:
         os.path.join(config["outpath"],"filtered_HTRRI.tsv"),
         os.path.join(config["outpath"],"snoDB_rbp_as_host_gene.tsv"),
         os.path.join(config["outpath"],"sno_bind_to_rbp_transcript.tsv"),
-        os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
+        os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv"),
+        os.path.join(config["outpath"],"filtered_STRING.tsv")
         #os.path.join(config["outpath"],"interaction_count.tsv")
 """
 rule merge_interaction_count_files:
