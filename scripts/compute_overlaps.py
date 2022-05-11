@@ -4,6 +4,8 @@ import sys
 import os
 from multiprocessing import Pool
 
+""" Adapted from Gabrielle's script """
+""" Compute p-values for overlapping target interactions for 2 entities: snoRNA-snoRNA, RBP-RBP, snoRNA-RBP """
 
 def shuffle_val(args):
     bed_int, genome_file, pc_bed, i, outfile_prefix = args
