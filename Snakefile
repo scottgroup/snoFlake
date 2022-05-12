@@ -39,25 +39,14 @@ rule all:
         os.path.join(config["outpath"],"snoDB_rbp_as_host_gene.tsv"),
         os.path.join(config["outpath"],"sno_bind_to_rbp_transcript.tsv"),
         os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv"),
-        os.path.join(config["outpath"],"filtered_STRING.tsv")
-        #os.path.join(config["outpath"],"interaction_count.tsv")
-"""
+        os.path.join(config["outpath"],"STRING_physical_binding.tsv"),
+        os.path.join(config["outpath"],"interaction_counts.tsv")
+
 rule merge_interaction_count_files:
     # Merge all interaction counts into one file 
     input:
+        string = rules.merge_all_STRING_counts.output
     output:
-        os.path.join(config["outpath"],"interaction_count.tsv")
+        os.path.join(config["outpath"],"interaction_counts.tsv")
     shell:
-        "touch {output}"
-
-rule snoglobe_targets: # get all unique targets for each snoRNA from snoGloBe predictions
-    input:
-        config["data"]["snoRNA_list"]
-    output:
-        os.path.join(config["outpath"],"snoglobe_targets.tsv")
-    params:
-        config["data"]["snoglobe"]
-    shell:
-        "echo \"snoRNA\ttarget\tinteraction\"> {output} && "
-        "cat {input} | while read line; do cat {params}pred_$line.98_3.gene.tsv | cut -f 4,12 | sort -u | awk '{{print $1\"\t\"$2\"\t\"\"snoglobe\"}}' >> {output}; done "
-"""
+        "echo -e \"INTERACTION_TYPE\t$(basename {input.string})\" >> {output} && cat {input.string} >> {output}"
