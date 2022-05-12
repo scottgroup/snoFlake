@@ -45,8 +45,10 @@ rule all:
 rule merge_interaction_count_files:
     # Merge all interaction counts into one file 
     input:
-        string = rules.merge_all_STRING_counts.output
+        string = rules.merge_all_STRING_counts.output,
+        host_gene = rules.filter_snodb_host_gene.output.counts
     output:
         os.path.join(config["outpath"],"interaction_counts.tsv")
     shell:
-        "echo -e \"INTERACTION_TYPE\t$(basename {input.string})\" >> {output} && cat {input.string} >> {output}"
+        "echo -e \"INTERACTION_TYPE\t$(basename {input.string})\" >> {output} && cat {input.string} >> {output}; "
+        "echo -e \"INTERACTION_TYPE\t$(basename {input.host_gene})\" >> {output} && cat {input.host_gene} >> {output}; "
