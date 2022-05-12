@@ -43,7 +43,7 @@ rule all:
         os.path.join(config["outpath"],"interaction_counts.tsv")
 
 rule merge_interaction_count_files:
-    # Merge all interaction counts into one file 
+    message: "Merge all interaction counts into one file."
     input:
         string = rules.merge_all_STRING_counts.output,
         host_gene = rules.filter_snodb_host_gene.output.counts
