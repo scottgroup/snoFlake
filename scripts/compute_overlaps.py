@@ -17,10 +17,10 @@ def shuffle_val(args):
 
 
 def calc_overlap(args):
-    shuffled_prefix, real_nb_overlaps, bed_rbp, i = args
+    shuffled_prefix, real_nb_overlaps, bed_target, i = args
     shuffled = BedTool(shuffled_prefix + str(i) + '.bed')
-    # intersect shuffled int_bed rbp
-    bed_out = bed_rbp.intersect(shuffled, s=True, u=True)
+    # intersect shuffled int_bed target
+    bed_out = bed_target.intersect(shuffled, s=True, u=True)
     # count nb of shuffled int
     shuffle_nb_overlaps = bed_out.count()
     if shuffle_nb_overlaps >= real_nb_overlaps:
@@ -31,20 +31,36 @@ def calc_overlap(args):
     os.remove(out_fn)
     return n
 
+def sno_ovlp(int_file): # format snoGloBe predictions for snoRNA overlap calculations
+    df = pd.read_csv(int_file,
+                     sep='\t',
+                     names=['seqname', 'target_window_start', 'target_window_end', 'snoid', 'count', 'strand']) 
+    return df
+
+def rbp_rbp_ovlp(int_file): # format ENCODE RBP binding interactions for RBP overlap calculations
+    df = pd.read_csv(int_file,
+                     sep='\t',
+                     names=['seqname', 'target_window_start', 'target_window_end',
+                            'rep', 'score', 'strand']) 
+    df = df.drop(['rep'], axis=1)
+    rbp = os.path.basename(int_file).split("_")
+    df['rbp_name'] = rbp[0]
+    return df
 
 def main():
-    int_file = sys.argv[1] # file with predicted interactions
-    rbp_path = sys.argv[2] # path to all rbp merged bed
-    gtf_file = sys.argv[3] # full human gtf file in csv format
+    int_file = sys.argv[1] # source file (snoGloBe predicted interactions for sno-RBP overlap calculation)
+    target_path = sys.argv[2] # target file (path to all rbp merged bed for sno-RBP overlap calculation)
+    gtf_file = sys.argv[3] # full human gtf file in tsv format
     genome_file = sys.argv[4] # tsv file with name and length of every chromosome
-    outfile = sys.argv[5] # output file name with complete path
+    outfile = sys.argv[5] # output file name with complete path (one file per source)
     nb_threads = int(sys.argv[6]) # nb of threads to use in parallel
     temp_dir = sys.argv[7] # $SLURM_TMPDIR
+    ovlp_type = sys.argv[8] # choose between: sno, rbp, sno_rbp
 
     helpers.set_tempdir(temp_dir)
 
     # create pc_region +- 12 nts bed
-    df_gtf = pd.read_csv(gtf_file, sep='\t', usecols=['seqname', 'start', 'end', 'strand', 'feature', 'gene_biotype'],
+    df_gtf = pd.read_csv(gtf_file, sep='\t', usecols=['seqname', 'start', 'end', 'strand', 'feature', 'gene_biotype'], # gtf
                          dtype={'seqname': str})
     df_gtf = df_gtf[(df_gtf.feature == 'gene') & (df_gtf.gene_biotype == 'protein_coding')]
     df_gtf['start'] -= 12
@@ -56,19 +72,18 @@ def main():
     pc_bed = BedTool.from_dataframe(df_gtf[['seqname', 'start', 'end', 'name', 'score', 'strand']])
     del df_gtf
 
-    rbp_list = os.listdir(rbp_path)
+    target_list = os.listdir(target_path)
 
-    # intersect bed int rbp
-    df = pd.read_csv(int_file,
-                     sep='\t',
-                     names=['seqname', 'target_window_start', 'target_window_end',
-                            'snoid', 'count', 'strand', 'sno_window_start',
-                            'sno_window_end', 'mean_score', 'min_score', 'max_score', 'target'])
-    df = df[df.snoid != 'snoid']  # drop header if present
-    df = df.drop(['target'], axis=1)
-    df = df.drop_duplicates()
-    df = df[['seqname', 'target_window_start', 'target_window_end', 'snoid', 'count', 'strand']]
-    bed_int = BedTool.from_dataframe(df)
+    # intersect source & target interactions depending on overlap type
+    df = None
+    if ovlp_type == "sno_rbp" or ovlp_type == "sno":
+        df = sno_ovlp(int_file)
+    elif ovlp_type == "rbp":
+        df = rbp_rbp_ovlp(int_file)
+    else:
+        sys.exit('Option not supported by this script. Please choose between: sno_rbp, sno, rbp.')
+
+    bed_int = BedTool.from_dataframe(df) # source interactions in bed format
 
     max_iteration = 100000
 
@@ -79,7 +94,7 @@ def main():
         res_shuffle = p.map(shuffle_val, [[bed_int, genome_file, pc_bed, i, shuffle_prefix]
                                   for i in range(max_iteration)])
 
-    # avoid re-running the sno-rbp pair if was already computed (example if job timed out)
+    # avoid re-running the source-target pair if was already computed (example if job timed out)
     already_done = ''
     try:
         with open(outfile) as f:
@@ -88,12 +103,18 @@ def main():
     except FileNotFoundError:
         pass
 
-    for rbp_file in rbp_list:
-        if os.path.basename(rbp_file) in already_done:
+    for target_file in target_list:
+        if os.path.basename(int_file) == os.path.basename(target_file): # don't run self pairs for sno-sno and rbp-rbp overlap calculations
             continue
-        bed_rbp = BedTool(os.path.join(rbp_path, rbp_file))
-        # intersect bed int rbp
-        bed_out = bed_rbp.intersect(bed_int, s=True, u=True)
+        if os.path.basename(target_file) in already_done:
+            continue
+        bed_target = None
+        if ovlp_type == "sno":
+            bed_target = BedTool.from_dataframe(sno_ovlp(target_file))
+        else: # rbp file as target
+            bed_target = BedTool(os.path.join(target_path, target_file))
+        # intersect bed int target
+        bed_out = bed_target.intersect(bed_int, s=True, u=True)
         # count nb of intersections
         real_nb_overlaps = bed_out.count()
 
@@ -106,7 +127,7 @@ def main():
         # then continue to 100 tests, and so on until max_iteration is reached
         while n <= 1 and nb_shuffle <= max_iteration :
             with Pool(nb_threads) as p:
-                res = p.map(calc_overlap, [[shuffle_prefix, real_nb_overlaps, bed_rbp, i]
+                res = p.map(calc_overlap, [[shuffle_prefix, real_nb_overlaps, bed_target, i]
                                           for i in range(prev_nb_shuffle, nb_shuffle)])
             n += sum(res)
             prev_nb_shuffle = nb_shuffle
@@ -115,9 +136,9 @@ def main():
         # compute pval
         #pval = n / nb_shuffle
         with open(outfile, 'a+') as w:
-            w.write('\t'.join([os.path.basename(int_file), os.path.basename(rbp_file), str(n), str(prev_nb_shuffle)]) + '\n')
+            w.write('\t'.join([os.path.basename(int_file), os.path.basename(target_file), str(n), str(prev_nb_shuffle)]) + '\n')
         # the resulting file will have the followin columns:
-        # sno filename, rbp filename, nb of times shuffled >= real, number of tests done
+        # sno filename, target filename, nb of times shuffled >= real, number of tests done
         # the p-val = nb of times shuffled >= real / number of tests done
 
 if __name__ == '__main__':
