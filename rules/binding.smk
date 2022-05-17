@@ -76,4 +76,4 @@ rule rbp_sno_transcript_out_file:
         "echo -e \"RBP\tsnoRNA\tinteraction\" >> {params.temp_file} && "
         "awk '{{print $4\"\t\"$10\"\trbp_sno_transcript\"}}' {params.temp_dir}*_sno_transcript_intersect.tsv >> {params.temp_file} && "
         "awk -F\'\t\' \'{{sub(/\_.+$/,\"\",$1)}}1\' OFS=\'\t\' {params.temp_file} | uniq > {output.interactions} && rm {params.temp_file} && "
-        "int_cnt=$(grep -c ^ {output.interactions}) && int_cnt=$(($int_cnt-1)) && echo -e \"{rule}\t$int_cnt\" >> {output.counts}""
+        "int_cnt=$(grep -c ^ {output.interactions}) && int_cnt=$(($int_cnt-1)) && echo -e \"{rule}\t$int_cnt\" >> {output.counts}"
