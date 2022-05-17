@@ -29,7 +29,7 @@ include: "rules/htrri.smk"
 include: "rules/snodb.smk"
 include: "rules/binding.smk"
 include: "rules/string.smk"
-include: "rules/overlaps.smk"
+#include: "rules/overlaps.smk"
 
 
 rule all:
@@ -41,18 +41,20 @@ rule all:
         os.path.join(config["outpath"],"sno_bind_to_rbp_transcript.tsv"),
         os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv"),
         os.path.join(config["outpath"],"STRING_physical_binding.tsv"),
-        os.path.join(config["outpath"],"interaction_counts.tsv"),
-        expand(os.path.join(config["outpath"],"sno_rbp_overlaps_p_vals","{sno}.tsv"),sno=sno_list),
-        expand(os.path.join(config["outpath"],"sno_sno_overlaps_p_vals","{sno}.tsv"),sno=sno_list),
-        expand(os.path.join(config["outpath"],"rbp_rbp_overlaps_p_vals","{rbp}.tsv"),rbp=rbp_list)
+        os.path.join(config["outpath"],"interaction_counts.tsv")
+        #expand(os.path.join(config["outpath"],"sno_rbp_overlaps_p_vals","{sno}.tsv"),sno=sno_list),
+        #expand(os.path.join(config["outpath"],"sno_sno_overlaps_p_vals","{sno}.tsv"),sno=sno_list),
+        #expand(os.path.join(config["outpath"],"rbp_rbp_overlaps_p_vals","{rbp}.tsv"),rbp=rbp_list)
 
 rule merge_interaction_count_files:
     message: "Merge all interaction counts into one file."
     input:
         string = rules.merge_all_STRING_counts.output,
-        host_gene = rules.filter_snodb_host_gene.output.counts
+        host_gene = rules.filter_snodb_host_gene.output.counts,
+        htrri = rules.get_htrri.output.counts
     output:
         os.path.join(config["outpath"],"interaction_counts.tsv")
     shell:
         "echo -e \"INTERACTION_TYPE\t$(basename {input.string})\" >> {output} && cat {input.string} >> {output}; "
         "echo -e \"INTERACTION_TYPE\t$(basename {input.host_gene})\" >> {output} && cat {input.host_gene} >> {output}; "
+        "echo -e \"INTERACTION_TYPE\t$(basename {input.htrri})\" >> {output} && cat {input.htrri} >> {output}; "
