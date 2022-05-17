@@ -60,7 +60,7 @@ rule sno_rbp_transcript_out_file:
     shell:
         "echo -e \"snoRNA\tRBP\tinteraction\" >> {output.interactions} && "
         "awk '{{print $4\"\t\"$10\"\tsno_rbp_transcript\"}}' {params}*_rbp_transcript_intersect.tsv | uniq >> {output.interactions} && "
-        "int_cnt=$(grep -c ^ {output.interactions}) && int_cnt=$(($int_cnt-1)) && echo -e \"{rule}\t$int_cnt\" >> {output.counts}""
+        "int_cnt=$(grep -c ^ {output.interactions}) && int_cnt=$(($int_cnt-1)) && echo -e \"{rule}\t$int_cnt\" >> {output.counts}"
 
 rule rbp_sno_transcript_out_file:
     """ Format interactions to fit network data format """
