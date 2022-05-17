@@ -2,8 +2,6 @@
     "__default__":
     {
         "job-name": "SM.{rule}",
-        "cpus-per-task": "1",
-        "mem-per-cpu": "4000M",
         "time": "0-1:00:00",
         "mail-user": "kristina.song@usherbrooke.ca",
         "mail-type": "FAIL"
@@ -12,18 +10,18 @@
     {
         "time": "20:00:00",
         "mem": "190000M",
-        "cpus-per-task": "48"
+        "cpus-per-task": "44"
     },
     "sno_sno_overlap":
     {
         "time": "24:00:00",
         "mem": "190000M",
-        "cpus-per-task": "48"
+        "cpus-per-task": "44"
     },
     "rbp_rbp_overlap":
     {
         "time": "48:00:00",
         "mem": "190000M",
-        "cpus-per-task": "48"
+        "cpus-per-task": "44"
     }
 }
