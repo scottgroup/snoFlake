@@ -17,9 +17,9 @@ rule sno_rbp_overlap:
         "mkdir -p {params.outdir} && "
         "python3 ../scripts/compute_overlaps.py {input} {params.rbp_path} {params.gtf} "
         "{params.genome} {output} {params.cpus_per_task} {params.tmpdir} sno_rbp"
-
+"""
 rule sno_sno_overlap:
-    """ Caculate p-value for each snoRNA-snoRNA overlapping target interaction. """
+    \"\"\" Caculate p-value for each snoRNA-snoRNA overlapping target interaction. \"\"\"
     input:
         rules.snoglobe_uniq.output
     output:
@@ -39,7 +39,7 @@ rule sno_sno_overlap:
         "{params.genome} {output} {params.cpus_per_task} {params.tmpdir} sno"
 
 rule rbp_rbp_overlap:
-    """ Caculate p-value for each RBP-RBP overlapping target interaction. """
+    \"\"\" Caculate p-value for each RBP-RBP overlapping target interaction. \"\"\"
     input:
         rules.rbp_final_sort.output
     output:
@@ -57,3 +57,4 @@ rule rbp_rbp_overlap:
         "mkdir -p {params.outdir} && "
         "python3 ../scripts/compute_overlaps.py {input} {params.rbp_path} {params.gtf} "
         "{params.genome} {output} {params.cpus_per_task} {params.tmpdir} rbp"
+"""
