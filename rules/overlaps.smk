@@ -15,7 +15,7 @@ rule sno_rbp_overlap:
         "../envs/bedtools.yaml"
     shell:
         "mkdir -p {params.outdir} && "
-        "python3 ../scripts/compute_overlaps.py {input} {params.rbp_path} {params.gtf} "
+        "python3 scripts/compute_overlaps.py {input} {params.rbp_path} {params.gtf} "
         "{params.genome} {output} {params.cpus_per_task} {params.tmpdir} sno_rbp"
 
 rule sno_sno_overlap:
@@ -35,7 +35,7 @@ rule sno_sno_overlap:
         "../envs/bedtools.yaml"
     shell:
         "mkdir -p {params.outdir} && "
-        "python3 ../scripts/com_pute_overlaps.py {input} {params.sno_path} {params.gtf} "
+        "python3 scripts/compute_overlaps.py {input} {params.sno_path} {params.gtf} "
         "{params.genome} {output} {params.cpus_per_task} {params.tmpdir} sno"
 
 rule rbp_rbp_overlap:
@@ -55,5 +55,5 @@ rule rbp_rbp_overlap:
         "../envs/bedtools.yaml"
     shell:
         "mkdir -p {params.outdir} && "
-        "python3 ../scripts/compute_overlaps.py {input} {params.rbp_path} {params.gtf} "
+        "python3 scripts/compute_overlaps.py {input} {params.rbp_path} {params.gtf} "
         "{params.genome} {output} {params.cpus_per_task} {params.tmpdir} rbp"
