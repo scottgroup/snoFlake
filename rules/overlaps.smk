@@ -23,7 +23,7 @@ rule sno_sno_overlap:
     input:
         rules.snoglobe_uniq.output
     output:
-        os.path.join(config["outpath"],"sno_sno_overlaps_p_vals","{sno}.tsv")
+        temp(os.path.join(config["outpath"],"sno_sno_overlaps_p_vals","{sno}.tsv"))
     params:
         tmpdir = config["slurm_tmpdir"],
         cpus_per_task = config["slurm_cpus_per_task"],
@@ -43,7 +43,7 @@ rule rbp_rbp_overlap:
     input:
         rules.rbp_final_sort.output
     output:
-        os.path.join(config["outpath"],"rbp_rbp_overlaps_p_vals","{rbp}.tsv")
+        temp(os.path.join(config["outpath"],"rbp_rbp_overlaps_p_vals","{rbp}.tsv"))
     params:
         tmpdir = config["slurm_tmpdir"],
         cpus_per_task = config["slurm_cpus_per_task"],
