@@ -11,7 +11,8 @@
     "chrLength": "../network_data/chrNameLength.txt",
     "snoDB": "../network_data/snoDB.tsv",
     "STRING": "../network_data/STRING.9606.protein.actions.v11.0.txt.gz",
-    "HTRRI": "../network_data/htrri_interactions_P_L_S.tsv"
+    "HTRRI": "../network_data/htrri_interactions_P_L_S.tsv",
+    "tpm": "../network_data/coco_tpm.tsv"
   },
 
   "ENCODE_p_threshold": 3,
