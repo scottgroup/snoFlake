@@ -18,12 +18,10 @@
   "ENCODE_p_threshold": 3,
   "ENCODE_sig_val_threshold": 3,
   "STRING_score_threshold": 900,
+  "ovlp_p_val_threshold": 100000,
   
   "logs": "../network_data/logs/",
   "temp": "../network_data/temp/",
 
-  "outpath": "../network_output/",
-
-  "slurm_tmpdir": "$SLURM_TMPDIR",
-  "slurm_cpus_per_task": "$SLURM_CPUS_PER_TASK"
+  "outpath": "../network_output/"
 }
