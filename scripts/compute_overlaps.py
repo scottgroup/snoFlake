@@ -47,6 +47,14 @@ def rbp_rbp_ovlp(int_file): # format ENCODE RBP binding interactions for RBP ove
     df['rbp_name'] = rbp[0]
     return df
 
+def get_name(f_name): # extract snoRNA or RBP name from file name
+    name = os.path.basename(f_name).split("_")
+    if name[0] == "NR": # snoRNAs with id staring with 'NR'
+        name = '_'.join([name[0],name[1]])
+    else: # snoRNAs with id starting with 'ENSG00000' or RBP
+        name = name[0]
+    return name
+
 def main():
     int_file = sys.argv[1] # source file (snoGloBe predicted interactions for sno-RBP overlap calculation)
     target_path = sys.argv[2] # target file (path to all rbp merged bed for sno-RBP overlap calculation)
@@ -135,12 +143,12 @@ def main():
 
         # compute pval
         # pval = n / nb_shuffle
-        curr_sno = os.path.basename(int_file).split("_")
-        curr_rbp = os.path.basename(target_file).split("_")
+        curr_source = get_name(int_file)
+        curr_target = get_name(target_file)
         with open(outfile, 'a+') as w:
-            w.write('\t'.join([curr_sno[0], curr_rbp[0], str(n), str(prev_nb_shuffle)]) + '\n')
+            w.write('\t'.join([curr_source, curr_target, str(n), str(prev_nb_shuffle)]) + '\n')
         # the resulting file will have the followin columns:
-        # sno filename, target filename, nb of times shuffled >= real, number of tests done
+        # source filename, target filename, nb of times shuffled >= real, number of tests done
         # the p-val = nb of times shuffled >= real / number of tests done
 
 if __name__ == '__main__':
