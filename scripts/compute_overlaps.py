@@ -134,9 +134,11 @@ def main():
             nb_shuffle *= 10
 
         # compute pval
-        #pval = n / nb_shuffle
+        # pval = n / nb_shuffle
+        curr_sno = os.path.basename(int_file).split("_")
+        curr_rbp = os.path.basename(target_file).split("_")
         with open(outfile, 'a+') as w:
-            w.write('\t'.join([os.path.basename(int_file), os.path.basename(target_file), str(n), str(prev_nb_shuffle)]) + '\n')
+            w.write('\t'.join([curr_sno[0], curr_rbp[0], str(n), str(prev_nb_shuffle)]) + '\n')
         # the resulting file will have the followin columns:
         # sno filename, target filename, nb of times shuffled >= real, number of tests done
         # the p-val = nb of times shuffled >= real / number of tests done
