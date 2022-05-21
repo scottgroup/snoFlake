@@ -29,7 +29,7 @@ include: "rules/htrri.smk"
 include: "rules/snodb.smk"
 include: "rules/binding.smk"
 include: "rules/string.smk"
-#include: "rules/overlaps.smk"
+include: "rules/overlaps.smk"
 
 
 rule all:
@@ -41,10 +41,13 @@ rule all:
         os.path.join(config["outpath"],"sno_bind_to_rbp_transcript.tsv"),
         os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv"),
         os.path.join(config["outpath"],"STRING_physical_binding.tsv"),
-        os.path.join(config["outpath"],"interaction_counts.tsv")
-        #expand(os.path.join(config["outpath"],"sno_rbp_overlaps_p_vals","{sno}.tsv"),sno=sno_list)
-        #expand(os.path.join(config["outpath"],"sno_sno_overlaps_p_vals","{sno}.tsv"),sno=sno_list),
-        #expand(os.path.join(config["outpath"],"rbp_rbp_overlaps_p_vals","{rbp}.tsv"),rbp=rbp_list)
+        os.path.join(config["outpath"],"interaction_counts.tsv"),
+        expand(os.path.join(config["outpath"],"sno_rbp_overlaps_p_vals","{sno}_rbp_overlaps.tsv"),sno=sno_list),
+        expand(os.path.join(config["outpath"],"sno_sno_overlaps_p_vals","{sno}_sno_overlaps.tsv"),sno=sno_list),
+        expand(os.path.join(config["outpath"],"rbp_rbp_overlaps_p_vals","{rbp}_rbp_overlaps.tsv"),rbp=rbp_list),
+        os.path.join(config["outpath"],"significant_sno_rbp_target_overlaps.tsv"),
+        os.path.join(config["outpath"],"significant_rbp_rbp_target_overlaps.tsv"),
+        os.path.join(config["outpath"],"significant_sno_sno_target_overlaps.tsv")
 
 rule merge_interaction_count_files:
     message: "Merge all interaction counts into one file."

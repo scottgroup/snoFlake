@@ -21,7 +21,7 @@ slurm_outdir = '../network_output/slurmout'
 if not os.path.exists(slurm_outdir):
     os.makedirs(slurm_outdir)
     
-cmdline += " --output=../network_output/slurmout/%j.out --error=../network_output/slurmout/%j.err "
+cmdline += " --output=../network_output/slurmout/%x_%j.out --error=../network_output/slurmout/%x_%j.err "
 
 for param, val in job_properties['cluster'].items():
     cmdline += "--{param} {val} ".format(param=param, val=val)
