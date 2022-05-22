@@ -38,17 +38,18 @@ rule all:
         expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list),
         os.path.join(config["outpath"],"filtered_HTRRI.tsv"),
         os.path.join(config["outpath"],"snoDB_rbp_as_host_gene.tsv"),
-        os.path.join(config["outpath"],"sno_bind_to_rbp_transcript.tsv"),
+        os.path.join(config["outpath"],"snoglobe_sno_bind_to_rbp_transcript.tsv"),
         os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv"),
         os.path.join(config["outpath"],"STRING_physical_binding.tsv"),
-        os.path.join(config["outpath"],"interaction_counts.tsv"),
-        expand(os.path.join(config["outpath"],"sno_rbp_overlaps_p_vals","{sno}_rbp_overlaps.tsv"),sno=sno_list),
-        expand(os.path.join(config["outpath"],"sno_sno_overlaps_p_vals","{sno}_sno_overlaps.tsv"),sno=sno_list),
-        expand(os.path.join(config["outpath"],"rbp_rbp_overlaps_p_vals","{rbp}_rbp_overlaps.tsv"),rbp=rbp_list),
-        os.path.join(config["outpath"],"significant_sno_rbp_target_overlaps.tsv"),
-        os.path.join(config["outpath"],"significant_rbp_rbp_target_overlaps.tsv"),
-        os.path.join(config["outpath"],"significant_sno_sno_target_overlaps.tsv")
-
+        os.path.join(config["outpath"],"significant_snoglobe_sno_rbp_target_overlaps.tsv")
+        #os.path.join(config["outpath"],"interaction_counts.tsv"),
+        #expand(os.path.join(config["outpath"],"sno_rbp_overlaps_p_vals","{sno}_rbp_overlaps.tsv"),sno=sno_list),
+        #expand(os.path.join(config["outpath"],"sno_sno_overlaps_p_vals","{sno}_sno_overlaps.tsv"),sno=sno_list),
+        #expand(os.path.join(config["outpath"],"rbp_rbp_overlaps_p_vals","{rbp}_rbp_overlaps.tsv"),rbp=rbp_list),
+        #os.path.join(config["outpath"],"significant_sno_rbp_target_overlaps.tsv"),
+        #os.path.join(config["outpath"],"significant_rbp_rbp_target_overlaps.tsv"),
+        #os.path.join(config["outpath"],"significant_sno_sno_target_overlaps.tsv")
+"""
 rule merge_interaction_count_files:
     message: "Merge all interaction counts into one file."
     input:
@@ -65,3 +66,4 @@ rule merge_interaction_count_files:
         "echo -e \"INTERACTION_TYPE\t$(basename {input.htrri})\" >> {output} && cat {input.htrri} >> {output}; "
         "echo -e \"INTERACTION_TYPE\t$(basename {input.sno_rbp_transcript})\" >> {output} && cat {input.sno_rbp_transcript} >> {output}; "
         "echo -e \"INTERACTION_TYPE\t$(basename {input.rbp_sno_transcript})\" >> {output} && cat {input.rbp_sno_transcript} >> {output}; "
+"""

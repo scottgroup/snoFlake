@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=24:00:00 # time allocated for each task of the job array
+#SBATCH --time=30:00:00 # time allocated for each task of the job array
 #SBATCH --mem=16000M # max required memory per task
 #SBATCH --cpus-per-task=8 #number of cores to use, number of cores can be accessed through $SLURM_CPUS_PER_TASK
 #SBATCH --array=[0-252] #tasks from job array to run, index can be access through $SLURM_ARRAY_TASK_ID

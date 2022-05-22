@@ -53,8 +53,8 @@ rule sno_rbp_transcript_out_file:
     input:
         expand(rules.sno_rbp_transcript_bedtools_intersect.output,sno=sno_list)
     output:
-        interactions = os.path.join(config["outpath"],"sno_bind_to_rbp_transcript.tsv"),
-        counts = temp(os.path.join(config["temp"],"sno_bind_to_rbp_transcript_count.tsv"))
+        interactions = os.path.join(config["outpath"],"snoglobe_sno_bind_to_rbp_transcript.tsv"),
+        counts = temp(os.path.join(config["temp"],"snoglobe_sno_bind_to_rbp_transcript_count.tsv"))
     params:
         config["temp"]
     shell:
