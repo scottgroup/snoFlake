@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --time=30:00:00 # time allocated for each task of the job array
+#SBATCH --time=20:00:00 # time allocated for each task of the job array
 #SBATCH --mem=16000M # max required memory per task
 #SBATCH --cpus-per-task=8 #number of cores to use, number of cores can be accessed through $SLURM_CPUS_PER_TASK
-#SBATCH --array=[0-252] #tasks from job array to run, index can be access through $SLURM_ARRAY_TASK_ID
+#SBATCH --array=[0] #tasks from job array to run, index can be access through $SLURM_ARRAY_TASK_ID
 #SBATCH -o /home/kris98/scratch/network_analysis/network_output/slurmout/sno_sno_overlaps_p_vals/output.%j.out
 #SBATCH -e /home/kris98/scratch/network_analysis/network_output/slurmout/sno_sno_overlaps_p_vals/output.%j.err
 #SBATCH --mail-type=FAIL
@@ -19,13 +19,13 @@ sno_path=$data/snoglobe_formatted
 
 # copy all input data to $SLURM_TMPDIR
 cp -r $sno_path $SLURM_TMPDIR/
-cp $data/snoRNA.tsv $SLURM_TMPDIR/
+cp $data/snoRNA_rerun.tsv $SLURM_TMPDIR/
 cp $data/hg38_Ensembl_V101_Scottlab_2020.tsv $SLURM_TMPDIR/
 cp $data/chrNameLength.txt $SLURM_TMPDIR/
 cp $SCRATCH/network_analysis/sno_RBP_network/scripts/compute_overlaps.py $SLURM_TMPDIR/
 
 # read the snolist into a bash array
-readarray -t snolist < <(awk '(NR>1) {print $1}' $SLURM_TMPDIR/snoRNA.tsv)
+readarray -t snolist < <(awk '(NR>1) {print $1}' $SLURM_TMPDIR/snoRNA_rerun.tsv)
 
 # use the index ($SLURM_ARRAY_TASK_ID) to get the correct snoRNA for this task from the bash array
 sno=${snolist[$SLURM_ARRAY_TASK_ID]}

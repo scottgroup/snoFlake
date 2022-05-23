@@ -18,7 +18,7 @@ rule sno_rbp_overlap:
         "mkdir -p {params.outdir} && "
         "scripts/compute_overlaps.sh {input} {params.rbp_path} {params.gtf} {params.genome} {output} sno_rbp && "
         "echo \'Done\'"
-
+"""
 rule sno_sno_overlap:
     message: "Caculate p-value for each snoRNA-snoRNA overlapping target interaction."
     input:
@@ -36,7 +36,7 @@ rule sno_sno_overlap:
     shell:
         "echo {params.sno} && "
         "mkdir -p {params.outdir} && "
-        "scripts/compute_overlaps.sh {input} {params.sno_path} {params.gtf} {params.genome} {output} sno && "
+        "bash scripts/compute_overlaps.sh {input} {params.sno_path} {params.gtf} {params.genome} {output} sno && "
         "echo \'Done\'"  
 
 rule rbp_rbp_overlap:
@@ -100,3 +100,4 @@ rule format_outfile:
         #"awk \'{{print $1\"\t\"$2\"\t\"\"rbp_rbp_target_overlap\"}}\' {input.in_rbp_rbp} >> {output.out_rbp_rbp}; "
         #"echo -e \"snoRNA1\tsnoRNA2\tinteraction\" >> {output.out_sno_sno} && "
         #"awk \'{{print $1\"\t\"$2\"\t\"\"sno_sno_target_overlap\"}}\' {input.in_sno_sno} >> {output.out_sno_sno}; "
+"""

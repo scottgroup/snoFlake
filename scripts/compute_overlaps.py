@@ -118,7 +118,7 @@ def main():
             continue
         bed_target = None
         if ovlp_type == "sno":
-            bed_target = BedTool.from_dataframe(sno_ovlp(target_file))
+            bed_target = BedTool.from_dataframe(sno_ovlp(os.path.join(target_path, target_file)))
         else: # rbp file as target
             bed_target = BedTool(os.path.join(target_path, target_file))
         # intersect bed int target
