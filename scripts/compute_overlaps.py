@@ -42,7 +42,7 @@ def rbp_rbp_ovlp(int_file): # format ENCODE RBP binding interactions for RBP ove
                      sep='\t',
                      names=['seqname', 'target_window_start', 'target_window_end',
                             'rep', 'score', 'strand']) 
-    df = df.drop(['rep'], axis=1)
+    df.rename(columns={"rep": "rbp_name"},inplace=True)
     rbp = os.path.basename(int_file).split("_")
     df['rbp_name'] = rbp[0]
     return df

@@ -20,7 +20,7 @@
     },
     "rbp_rbp_overlap":
     {
-        "time": "48:00:00",
+        "time": "24:00:00",
         "mem": "16000M",
         "cpus-per-task": "8"
     }
