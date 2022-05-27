@@ -21,11 +21,11 @@ def filter_tpm(df,tpm):
     df_tpm = pd.read_csv(tpm,sep='\t',usecols=['gene_id','gene_name','HCT116_1','HCT116_2','MCF7_1','MCF7_2',
                                                     'PC3_1','PC3_2','SKOV_frg_1','SKOV_frg_2','TOV112D_1','TOV112D_2'])
     # IF snoRNA TPM >= 10 in at least one cell line, THEN the snoRNA is kept in the list
-    sno = pd.DataFrame(columns=['gene_id','gene_name'])
+    sno = pd.DataFrame(columns=['id','name'])
     for i in range(len(df)):
         _,_,max = get_tpm(df.loc[i,'gene_id'],df_tpm)
         if max >= 10:
-            curr_sno = pd.DataFrame({'gene_id':[df.loc[i,'gene_id']],'gene_name':[df.loc[i,'gene_name']]})
+            curr_sno = pd.DataFrame({'id':[df.loc[i,'gene_id']],'name':[df.loc[i,'gene_name']]})
             sno = pd.concat([sno,curr_sno],ignore_index=True)
     return sno
 
@@ -34,24 +34,24 @@ def filter_box(df,snodb):
     df_snodb = pd.read_csv(snodb,sep='\t',usecols=['ensembl_id','refseq_id','gene_name','box_type'])
 
     # filter out snoRNAs with weird gene_ids
-    df = df[~df['gene_id'].str.contains('cluster',na=False)].reset_index(drop=True)
-    df = df[~df['gene_id'].str.contains('snoDB',na=False)].reset_index(drop=True)
+    df = df[~df['id'].str.contains('cluster',na=False)].reset_index(drop=True)
+    df = df[~df['id'].str.contains('snoDB',na=False)].reset_index(drop=True)
 
     # remove box H/ACA snoRNAs, U3, U8,SNORD116
     for n in ['SNORA','U3','U8','SNORD116','SCA']:
-        df = df[~df['gene_name'].str.contains(n,na=False)].reset_index(drop=True)
+        df = df[~df['name'].str.contains(n,na=False)].reset_index(drop=True)
 
     # check box type for snoRNAs with names not starting with 'SNORD'
-    cd = df[df['gene_name'].str.contains('SNORD',na=False)].reset_index(drop=True)
-    others = df[~df['gene_name'].str.contains('SNORD',na=False)].reset_index(drop=True)
+    cd = df[df['name'].str.contains('SNORD',na=False)].reset_index(drop=True)
+    others = df[~df['name'].str.contains('SNORD',na=False)].reset_index(drop=True)
     # check box type from snoDB for others
     for i in range(len(others)):
-        id = others.loc[i,'gene_id']
+        id = others.loc[i,'id']
         info = df_snodb[df_snodb['ensembl_id'].str.contains(id,na=False)].reset_index(drop=True)
         if len(info) == 0:
             info = df_snodb[df_snodb['refseq_id']==id]
         if len(info) != 0 and info.loc[0,'box_type'] == 'C/D':
-            curr_sno = pd.DataFrame({'gene_id':[id],'gene_name':[others.loc[i,'gene_name']]})
+            curr_sno = pd.DataFrame({'id':[id],'name':[others.loc[i,'name']]})
             cd = pd.concat([cd,curr_sno],ignore_index=True)
     return cd
 

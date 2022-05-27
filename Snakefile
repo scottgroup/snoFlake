@@ -16,13 +16,14 @@ ENCODE, = glob_wildcards(os.path.join(config["data"]["rbp_ENCODE"],"{encode}","r
 
 #### load snoRNA and RBP list ####
 
-sno_list = pd.read_table(config["data"]["snoRNA_list"]).id.values.tolist()
-rbp_list = pd.read_table(config["data"]["rbp_list"]).name1.values.tolist()
+#sno_list = pd.read_table(config["data"]["snoRNA_list"]).id.values.tolist()
+#rbp_list = pd.read_table(config["data"]["rbp_list"]).name1.values.tolist()
 
 
 
 #### load rules ####
 
+include: "rules/rank_sno.smk"
 #include: "rules/format_rbp.smk"
 #include: "rules/format_snoglobe.smk"
 #include: "rules/htrri.smk"
@@ -34,6 +35,7 @@ rbp_list = pd.read_table(config["data"]["rbp_list"]).name1.values.tolist()
 
 rule all:
     input:
+        config["data"]["snoRNA_list"]
         #expand(os.path.join(config["data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"),rbp=rbp_list),
         #expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list),
         #os.path.join(config["outpath"],"filtered_HTRRI.tsv"),

@@ -1,12 +1,11 @@
-rule :
+rule get_sno:
+    message: "Create a list of snoRNAs from the annotation and keepy highly expressed ones."
     input:
-        config["data"]["snoRNA_list"]
+        config["data"]["annotation"]
     output:
+        config["data"]["snoRNA_list"]
     params:
-        tpm_matrix = config["data"]["tpm"]
+        tpm = config["data"]["tpm"],
+        snodb = config["data"]["snoDB"]
     shell:
-
-"""
-- Rank snoRNAs by expression level
-- Then rank by # copies
-"""
+        "python3 scripts/get_sno.py {input} {params.tpm} {params.snodb} {output}"

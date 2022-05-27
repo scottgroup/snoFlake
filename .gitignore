@@ -1,2 +1,5 @@
 # Snakemake files
 .snakemake
+
+# Byte-compiled / optimized / DLL files
+scripts/__pycache__/
