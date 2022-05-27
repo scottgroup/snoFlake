@@ -2,7 +2,6 @@
 
 from cmath import nan
 import pandas as pd
-from scipy.fftpack import idctn
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
 import sys
@@ -10,9 +9,6 @@ import math
 
 """ Obtain snoRNA characteristics and create a ranking system. """
 
-def blastn(copy_list):
-    # Compare % identity between snoRNA copies
-    return
 
 def get_tpm(id,tpm):
     # Compute TPM metrics for snoRNA
@@ -76,10 +72,6 @@ def get_sno_info(id,name,tpm,snodb):
     return result
 
 def rank_snornas(df):
-    # remove snoRNAs with min TPM == 0 and max TPM < 10
-    df.drop(df[df.min_TPM < 1].index, inplace=True)
-    df.drop(df[df.max_TPM < 10].index, inplace=True)
-
     # group by number of copies --> rank within group by TPM
     # get number of copies as list (for grouping)
     num_cp_list = list(df.groupby("num_copies").groups.keys())
