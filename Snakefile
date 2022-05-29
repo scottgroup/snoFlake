@@ -35,7 +35,8 @@ include: "rules/rank_sno.smk"
 
 rule all:
     input:
-        config["data"]["snoRNA_list"]
+        config["data"]["snoRNA_list"],
+        os.path.join(config["outpath"],"snoRNA_ranking.tsv")
         #expand(os.path.join(config["data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"),rbp=rbp_list),
         #expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list),
         #os.path.join(config["outpath"],"filtered_HTRRI.tsv"),

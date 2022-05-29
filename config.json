@@ -23,5 +23,5 @@
   "logs": "/home/kris98/scratch/network_analysis/network_data/logs/",
   "temp": "/home/kris98/scratch/network_analysis/network_data/temp/",
 
-  "outpath": "/home/kris98/scratch/network_analysis/network_output/"
+  "outpath": "../network_output/"
 }
