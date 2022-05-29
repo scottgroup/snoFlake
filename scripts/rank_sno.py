@@ -53,13 +53,14 @@ def verify_rfam_members(members,tpm):
         indiv_id = id.split(";")
         for i in indiv_id:
             _,_,max = get_tpm(i,tpm)
-            if max >= 10:
+            if max >= 10: ### CAN CHANGE TPM THRESHOLD HERE
                 exp_members.append(i)
     return exp_members
 
 def get_sno_info(id,name,tpm,snodb):
     # Compute TPM values (AVG, MIN, MAX) for specified snoRNA.
     avg, min, max = get_tpm(id,tpm)
+    ### COMMENT OUT THIS SECTION IF EXACT VALUES NEEDED
     # round numbers 
     rounded = []
     for num in [avg,min,max]:
@@ -82,6 +83,7 @@ def get_sno_info(id,name,tpm,snodb):
     fam_members_list = get_rfam_members(rfam_id,snodb)
     highly_exp_members = len(verify_rfam_members(fam_members_list,tpm))
     num_members = len(fam_members_list)
+
     # 0 --> no Rfam ID present for that snoRNA
     result = pd.DataFrame({'snoRNA': name, 'Ensembl_ID/RefSeq_ID':id,'snoDB_ID': snodb_id, 'rfam_id':rfam_id,'num_fam_members':[num_members],
                             'num_highly_exp_fam_members':[highly_exp_members],'mean_TPM':[avg],'max_TPM':[max],'min_TPM':[min]})
@@ -122,7 +124,7 @@ def main():
     # snoDB in df
     df_snodb = pd.read_csv(snodb_path,sep='\t',usecols=['snodb_id','ensembl_id','rfam_id','refseq_id','gene_name','box_type','length','sequence'])
 
-    df_sno = pd.read_csv(sno_file,sep='\t') 
+    df_sno = pd.read_csv(sno_file,sep='\t',usecols=['id','name']) 
     # extract 'id' and 'name' columns
     id_list = df_sno['id'].values.tolist()
     name_list = df_sno['name'].values.tolist()
@@ -131,8 +133,10 @@ def main():
     # get all characteristics for each snoRNA in the input list
     for i in range(len(id_list)):
         sno_char = pd.concat([sno_char,get_sno_info(id_list[i],name_list[i],df_tpm,df_snodb)],ignore_index=True)
-
-    # rank snoRNAs by their characteristics
+    
+    # ONLY WANT SNO INFO
+    #sno_char.to_csv(outfile,sep='\t',index=None)
+    # RANK SNO
     rank_snornas(sno_char).to_csv(outfile,sep='\t',index=None)
 
 if __name__ == '__main__':

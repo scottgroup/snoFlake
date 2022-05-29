@@ -16,8 +16,8 @@ ENCODE, = glob_wildcards(os.path.join(config["data"]["rbp_ENCODE"],"{encode}","r
 
 #### load snoRNA and RBP list ####
 
-#sno_list = pd.read_table(config["data"]["snoRNA_list"]).id.values.tolist()
-#rbp_list = pd.read_table(config["data"]["rbp_list"]).name1.values.tolist()
+sno_list = pd.read_table(config["data"]["snoRNA_list"]).id.values.tolist()
+rbp_list = pd.read_table(config["data"]["rbp_list"]).name1.values.tolist()
 
 
 
@@ -36,13 +36,13 @@ include: "rules/rank_sno.smk"
 rule all:
     input:
         config["data"]["snoRNA_list"],
-        os.path.join(config["outpath"],"snoRNA_ranking.tsv")
+        os.path.join(config["outpath"],"snoRNA_ranking.tsv"),
         #expand(os.path.join(config["data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"),rbp=rbp_list),
         #expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list),
         #os.path.join(config["outpath"],"filtered_HTRRI.tsv"),
         #os.path.join(config["outpath"],"snoDB_rbp_as_host_gene.tsv"),
         #os.path.join(config["outpath"],"snoglobe_sno_bind_to_rbp_transcript.tsv"),
-        #os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv"),
+        os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
         #os.path.join(config["outpath"],"STRING_physical_binding.tsv"),
         #os.path.join(config["outpath"],"significant_snoglobe_sno_rbp_target_overlaps.tsv")
         #os.path.join(config["outpath"],"interaction_counts.tsv"),
