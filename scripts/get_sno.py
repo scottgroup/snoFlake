@@ -63,7 +63,9 @@ def main():
 
     initial_sno = sno_in_annotation(annotation)
     tpm_10 = filter_tpm(initial_sno,tpm)
-    filter_box(tpm_10,snodb).to_csv(outfile,sep='\t',index=None)
+    df_final = filter_box(tpm_10,snodb)
+    df_final['type'] = 'snoRNA'
+    df_final.to_csv(outfile,sep='\t',index=None)
 
 if __name__ == '__main__':
     main()

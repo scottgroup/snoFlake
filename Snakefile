@@ -10,20 +10,20 @@ configfile:"config.json" # store paths and user-specific variables
 
 #### global wildcard ####
 
-ENCODE, = glob_wildcards(os.path.join(config["data"]["rbp_ENCODE"],"{encode}","replicate1.bed.gz"))
+#ENCODE, = glob_wildcards(os.path.join(config["data"]["rbp_ENCODE"],"{encode}","replicate1.bed.gz"))
 
 
 
 #### load snoRNA and RBP list ####
-
-sno_list = pd.read_table(config["data"]["snoRNA_list"]).id.values.tolist()
-rbp_list = pd.read_table(config["data"]["rbp_list"]).name1.values.tolist()
+# Need to get "nodes" output before importing these files
+#sno_list = pd.read_table(config["data"]["snoRNA_list"]).id.values.tolist()
+#rbp_list = pd.read_table(config["data"]["rbp_list"]).name1.values.tolist()
 
 
 
 #### load rules ####
 
-include: "rules/rank_sno.smk"
+include: "rules/rank_sno_rbp.smk"
 #include: "rules/format_rbp.smk"
 #include: "rules/format_snoglobe.smk"
 #include: "rules/htrri.smk"
@@ -35,14 +35,20 @@ include: "rules/rank_sno.smk"
 
 rule all:
     input:
-        config["data"]["snoRNA_list"],
-        os.path.join(config["outpath"],"snoRNA_ranking.tsv"),
+        # Filtering and sorting snoRNAs and RBPs for node selection
+        # Run FIRST!!!
+        nodes = {
+            config["data"]["snoRNA_list"],
+            config["data"]["rbp_list"],
+            os.path.join(config["outpath"],"snoRNA_ranking.tsv"),
+            os.path.join(config["outpath"],"rbp_ranking.tsv")
+        }
         #expand(os.path.join(config["data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"),rbp=rbp_list),
         #expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list),
         #os.path.join(config["outpath"],"filtered_HTRRI.tsv"),
         #os.path.join(config["outpath"],"snoDB_rbp_as_host_gene.tsv"),
         #os.path.join(config["outpath"],"snoglobe_sno_bind_to_rbp_transcript.tsv"),
-        os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
+        #os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
         #os.path.join(config["outpath"],"STRING_physical_binding.tsv"),
         #os.path.join(config["outpath"],"significant_snoglobe_sno_rbp_target_overlaps.tsv")
         #os.path.join(config["outpath"],"interaction_counts.tsv"),
