@@ -1,18 +1,18 @@
 {
   "data":{
-    "rbp_ENCODE": "/home/kris98/scratch/network_analysis/network_data/ENCODE_RBP/",
-    "rbp_formatted": "/home/kris98/scratch/network_analysis/network_data/ENCODE_RBP_formatted/",
-    "snoglobe": "/home/kris98/scratch/network_analysis/network_data/snoglobe_predictions/",
-    "snoglobe_formatted": "/home/kris98/scratch/network_analysis/network_data/snoglobe_formatted/",
+    "rbp_ENCODE": "../network_data/ENCODE_RBP/",
+    "rbp_formatted": "../network_data/ENCODE_RBP_formatted/",
+    "snoglobe": "../network_data/snoglobe_predictions/",
+    "snoglobe_formatted": "../network_data/snoglobe_formatted/",
     "snoRNA_list" : "../network_data/snoRNA.tsv",
     "ENCODE_rbp_list" : "../network_data/ENCODE_rbp.tsv",
     "rbp_list" : "../network_data/rbp.tsv",
-    "rbp_list_with_protein_id" : "/home/kris98/scratch/network_analysis/network_data/rbp_protein_id.tsv",
+    "rbp_list_with_protein_id" : "../network_data/rbp_protein_id.tsv",
     "annotation": "../network_data/hg38_Ensembl_V101_Scottlab_2020.tsv",
-    "chrLength": "/home/kris98/scratch/network_analysis/network_data/chrNameLength.txt",
+    "chrLength": "../network_data/chrNameLength.txt",
     "snoDB": "../network_data/snoDB.tsv",
-    "STRING": "/home/kris98/scratch/network_analysis/network_data/STRING.9606.protein.actions.v11.0.txt.gz",
-    "HTRRI": "/home/kris98/scratch/network_analysis/network_data/htrri_interactions_P_L_S.tsv",
+    "STRING": "../network_data/STRING.9606.protein.actions.v11.0.txt.gz",
+    "HTRRI": "../network_data/htrri_interactions_P_L_S.tsv",
     "tpm": "../network_data/coco_tpm.tsv"
   },
 
@@ -21,8 +21,8 @@
   "STRING_score_threshold": 900,
   "ovlp_p_val_threshold": 100000,
   
-  "logs": "/home/kris98/scratch/network_analysis/network_data/logs/",
-  "temp": "/home/kris98/scratch/network_analysis/network_data/temp/",
+  "logs": "../network_data/logs/",
+  "temp": "../network_data/temp/",
 
   "outpath": "../network_output/"
 }

@@ -23,7 +23,7 @@ rule get_sno_transcripts:
 rule sno_rbp_transcript_bedtools_intersect:
     """ bedtools intersect snoglobe predictions and RBP transcripts """
     input:
-        left = rules.snoglobe_uniq.output,
+        left = os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), ### FIX BACK TO: rules.snoglobe_uniq.output,
         right = rules.get_rbp_transcripts.output
     output:
         temp(os.path.join(config["temp"],"{sno}_rbp_transcript_intersect.tsv"))
@@ -37,7 +37,7 @@ rule sno_rbp_transcript_bedtools_intersect:
 rule rbp_sno_transcript_bedtools_intersect:
     """ bedtools intersect ENCODE RBP interactions and snoRNA transcripts """
     input:
-        left = rules.rbp_final_sort.output,
+        left = os.path.join(config["data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"), ### FIX BACK TO: rules.rbp_final_sort.output,
         right = rules.get_sno_transcripts.output
     output:
         temp(os.path.join(config["temp"],"{rbp}_sno_transcript_intersect.tsv"))

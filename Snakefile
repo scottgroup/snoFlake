@@ -17,7 +17,7 @@ configfile:"config.json" # store paths and user-specific variables
 #### load snoRNA and RBP list ####
 # Need to get "nodes" output before importing these files
 #sno_list = pd.read_table(config["data"]["snoRNA_list"]).id.values.tolist()
-#rbp_list = pd.read_table(config["data"]["rbp_list"]).name1.values.tolist()
+#rbp_list = pd.read_table(config["data"]["rbp_list"]).RBP1.values.tolist()
 
 
 
@@ -43,12 +43,14 @@ rule all:
             os.path.join(config["outpath"],"snoRNA_ranking.tsv"),
             os.path.join(config["outpath"],"rbp_ranking.tsv")
         }
+        #interactions = { # interactions to be included in network
+        #    os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
+        #}
         #expand(os.path.join(config["data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"),rbp=rbp_list),
         #expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list),
         #os.path.join(config["outpath"],"filtered_HTRRI.tsv"),
         #os.path.join(config["outpath"],"snoDB_rbp_as_host_gene.tsv"),
         #os.path.join(config["outpath"],"snoglobe_sno_bind_to_rbp_transcript.tsv"),
-        #os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
         #os.path.join(config["outpath"],"STRING_physical_binding.tsv"),
         #os.path.join(config["outpath"],"significant_snoglobe_sno_rbp_target_overlaps.tsv")
         #os.path.join(config["outpath"],"interaction_counts.tsv"),
