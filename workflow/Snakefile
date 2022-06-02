@@ -5,7 +5,7 @@ import os
 import glob
 import pandas as pd
 
-configfile:"../config/config.json" # store paths and user-specific variables
+configfile:"config/config.yaml" # store paths and user-specific variables
 
 
 #### global wildcard ####
