@@ -3,3 +3,7 @@
 
 # Byte-compiled / optimized / DLL files
 scripts/__pycache__/
+
+# output files
+results
+results/*

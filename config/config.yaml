@@ -23,4 +23,4 @@ ovlp_p_val_threshold: 100000
 logs: ../network_data/logs/
 temp: ../network_data/temp/
 
-outpath: ../network_output/
+outpath: results/
