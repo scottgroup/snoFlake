@@ -1,5 +1,5 @@
 rule get_sno:
-    message: "Create a list of snoRNAs from the annotation and keepy highly expressed ones."
+    message: "Create a list of snoRNAs from the annotation and keep highly expressed ones."
     input:
         config["data"]["annotation"]
     output:
@@ -40,6 +40,5 @@ rule format_rbp:
     output:
         config["data"]["rbp_list"]
     shell:
-        "awk '{{print $2\"\t\"$2\"\t\"$7}}' {input} > {output}; "
-        "sed -i 1d {output}; "
-        "sed -i '1 i\RBP1\tRBP2\ttype' {output}"
+        "echo -e \"id\tname\ttype\" >> {output} && "
+        "awk '{{print $1\"\t\"$2\"\t\"$7}}' {input} | sed 1d >> {output} "

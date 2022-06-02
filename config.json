@@ -5,7 +5,7 @@
     "snoglobe": "../network_data/snoglobe_predictions/",
     "snoglobe_formatted": "../network_data/snoglobe_formatted/",
     "snoRNA_list" : "../network_data/snoRNA.tsv",
-    "ENCODE_rbp_list" : "../network_data/ENCODE_rbp.tsv",
+    "ENCODE_rbp_list" : "../network_data/ENCODE_rbp_list.tsv",
     "rbp_list" : "../network_data/rbp.tsv",
     "rbp_list_with_protein_id" : "../network_data/rbp_protein_id.tsv",
     "annotation": "../network_data/hg38_Ensembl_V101_Scottlab_2020.tsv",
