@@ -4,6 +4,8 @@
 # Byte-compiled / optimized / DLL files
 scripts/__pycache__/
 
-# output files
+# input and output files
 results
 results/*
+resources
+resources/*
