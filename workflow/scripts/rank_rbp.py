@@ -60,14 +60,14 @@ def main():
     
     df_rbp = pd.read_csv(rbp_file,sep='\t',header=0).iloc[:,0] 
     
-    df_exp_level = pd.DataFrame(columns=['id','RBP','mean_TPM','max_TPM','min_TPM'])
+    df_exp_level = pd.DataFrame(columns=['id','name','mean_TPM','max_TPM','min_TPM'])
 
     for i in range(len(df_rbp)):
         curr_rbp = df_rbp.iloc[i]
         if curr_rbp == "TROVE2": # TROVE2 exists as RO60 in annotation (synonyms)
             curr_rbp = "RO60"
         id,avg, min, max = get_tpm(curr_rbp,df_tpm)
-        result = pd.DataFrame({'id': id, 'RBP':curr_rbp,'mean_TPM':[avg],'max_TPM':[max],'min_TPM':[min]})
+        result = pd.DataFrame({'id': id, 'name':curr_rbp,'mean_TPM':[avg],'max_TPM':[max],'min_TPM':[min]})
         df_exp_level = pd.concat([df_exp_level,result],ignore_index=True)
 
     # replace RO60 back to TROVE2
@@ -80,6 +80,10 @@ def main():
     # Get RBP TPM info --> filter by TPM --> rank by TPM
     df_final = rank_rbp(filter_tpm(df_exp_level))
     df_final['type'] = 'RBP'
+    
+    # change column orders
+    df_final = df_final[['id','name','type','mean_TPM','max_TPM','min_TPM','TPM_rank']]
+
     df_final.to_csv(outfile,sep='\t',index=None)
 
 if __name__ == '__main__':

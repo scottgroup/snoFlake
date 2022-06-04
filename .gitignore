@@ -2,7 +2,7 @@
 .snakemake
 
 # Byte-compiled / optimized / DLL files
-scripts/__pycache__/
+workflow/scripts/__pycache__/
 
 # input and output files
 results
