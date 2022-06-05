@@ -5,10 +5,8 @@ from doctest import DocFileSuite
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
-import sys
-import math
 
-""" Rank RBP by TPM. """
+""" Filter and rank RBPs by TPM (max TPM >= 10). """
 
 def get_tpm(name,tpm):
     # Compute TPM metrics for RBP
@@ -50,9 +48,9 @@ def rank_rbp(df):
     return df
 
 def main():
-    rbp_file = sys.argv[1] # RBP list (min 1 column: 'name')
-    tpm_path = sys.argv[2] # file path for coco_tpm.tsv
-    outfile = sys.argv[3] # file path for ranked RBPs
+    rbp_file = snakemake.input[0] # RBP list (min 1 column: 'name')
+    tpm_path = snakemake.params[0] # file path for coco_tpm.tsv
+    outfile = snakemake.output[0] # file path for ranked RBPs
 
     # get TPM for cell lines not in tissue
     df_tpm = pd.read_csv(tpm_path,sep='\t',usecols=['gene_id','gene_name','HCT116_1','HCT116_2','MCF7_1','MCF7_2',
@@ -73,10 +71,6 @@ def main():
     # replace RO60 back to TROVE2
     df_exp_level = df_exp_level.replace("RO60","TROVE2")
 
-    # Get RBP TPM info 
-    #df_exp_level.to_csv(outfile,sep='\t',index=None)
-    # Filter RBP by TPM
-    #filter_tpm(df_exp_level).to_csv(outfile,sep='\t',index=None)
     # Get RBP TPM info --> filter by TPM --> rank by TPM
     df_final = rank_rbp(filter_tpm(df_exp_level))
     df_final['type'] = 'RBP'

@@ -4,11 +4,19 @@ from cmath import nan
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import numpy as np
-import sys
 import math
 
 """ Obtain snoRNA characteristics and create a ranking system. """
 
+
+def sno_in_annotation(file):
+    # extract snoRNAs from annotation
+    df = pd.read_csv(file,sep='\t',usecols=['feature','gene_biotype','gene_name','gene_id'])
+    df = df[df['feature']=='transcript']
+    df = df[df['gene_biotype']=='snoRNA']
+    df.drop(['feature', 'gene_biotype'], axis=1, inplace=True)
+    df.drop_duplicates(inplace=True,ignore_index=True)
+    return df
 
 def get_tpm(id,tpm):
     # Compute TPM metrics for snoRNA
@@ -25,6 +33,46 @@ def get_tpm(id,tpm):
         min = np.amin(values)
         max = np.amax(values)
     return avg, min, max
+
+def filter_tpm(df,tpm):
+    # filter snoRNAs found in annotation by TPM
+    # get TPM for cell lines not in tissue
+    df_tpm = pd.read_csv(tpm,sep='\t',usecols=['gene_id','gene_name','HCT116_1','HCT116_2','MCF7_1','MCF7_2',
+                                                    'PC3_1','PC3_2','SKOV_frg_1','SKOV_frg_2','TOV112D_1','TOV112D_2'])
+    # IF snoRNA TPM >= 10 in at least one cell line, THEN the snoRNA is kept in the list
+    sno = pd.DataFrame(columns=['id','name'])
+    for i in range(len(df)):
+        _,_,max = get_tpm(df.loc[i,'gene_id'],df_tpm)
+        if max >= 10:
+            curr_sno = pd.DataFrame({'id':[df.loc[i,'gene_id']],'name':[df.loc[i,'gene_name']]})
+            sno = pd.concat([sno,curr_sno],ignore_index=True)
+    return sno
+
+def filter_box(df,snodb):
+    # snoDB in df
+    df_snodb = pd.read_csv(snodb,sep='\t',usecols=['ensembl_id','refseq_id','gene_name','box_type'])
+
+    # filter out snoRNAs with weird gene_ids
+    df = df[~df['id'].str.contains('cluster',na=False)].reset_index(drop=True)
+    df = df[~df['id'].str.contains('snoDB',na=False)].reset_index(drop=True)
+
+    # remove box H/ACA snoRNAs, U3, U8,SNORD116
+    for n in ['SNORA','U3','U8','SNORD116','SCA']:
+        df = df[~df['name'].str.contains(n,na=False)].reset_index(drop=True)
+
+    # check box type for snoRNAs with names not starting with 'SNORD'
+    cd = df[df['name'].str.contains('SNORD',na=False)].reset_index(drop=True)
+    others = df[~df['name'].str.contains('SNORD',na=False)].reset_index(drop=True)
+    # check box type from snoDB for others
+    for i in range(len(others)):
+        id = others.loc[i,'id']
+        info = df_snodb[df_snodb['ensembl_id'].str.contains(id,na=False)].reset_index(drop=True)
+        if len(info) == 0:
+            info = df_snodb[df_snodb['refseq_id']==id]
+        if len(info) != 0 and info.loc[0,'box_type'] == 'C/D':
+            curr_sno = pd.DataFrame({'id':[id],'name':[others.loc[i,'name']]})
+            cd = pd.concat([cd,curr_sno],ignore_index=True)
+    return cd
 
 def get_rfam_members(curr_rfam,snodb):
     # split curr_rfam by ; to detect more than one Rfam ID
@@ -85,7 +133,7 @@ def get_sno_info(id,name,tpm,snodb):
     num_members = len(fam_members_list)
 
     # 0 --> no Rfam ID present for that snoRNA
-    result = pd.DataFrame({'snoRNA': name, 'Ensembl_ID/RefSeq_ID':id,'snoDB_ID': snodb_id, 'rfam_id':rfam_id,'num_fam_members':[num_members],
+    result = pd.DataFrame({'name': name, 'Ensembl_ID/RefSeq_ID':id,'snoDB_ID': snodb_id, 'rfam_id':rfam_id,'num_fam_members':[num_members],
                             'num_highly_exp_fam_members':[highly_exp_members],'mean_TPM':[avg],'max_TPM':[max],'min_TPM':[min]})
     return result
 
@@ -113,10 +161,14 @@ def rank_snornas(df):
     return df_result
 
 def main():
-    sno_file = sys.argv[1] # snoRNA list (min 2 columns: 'id', 'name', ...)
-    tpm_path = sys.argv[2] # file path for coco_tpm.tsv
-    snodb_path = sys.argv[3] # file path for snoDB
-    outfile = sys.argv[4] # file path for ranked snoRNAs
+    annotation = snakemake.input[0] # annotation tsv file  # snoRNA list (min 2 columns: 'id', 'name', ...)
+    tpm_path = snakemake.params[0] # file path for coco_tpm.tsv
+    snodb_path = snakemake.params[1] # file path for snoDB
+    outfile = snakemake.output[0] # file path for ranked snoRNAs
+    
+    initial_sno = sno_in_annotation(annotation)
+    tpm_10 = filter_tpm(initial_sno,tpm_path)
+    df_sno = filter_box(tpm_10,snodb_path)
 
     # get TPM for cell lines not in tissue
     df_tpm = pd.read_csv(tpm_path,sep='\t',usecols=['gene_id','gene_name','HCT116_1','HCT116_2','MCF7_1','MCF7_2',
@@ -124,20 +176,23 @@ def main():
     # snoDB in df
     df_snodb = pd.read_csv(snodb_path,sep='\t',usecols=['snodb_id','ensembl_id','rfam_id','refseq_id','gene_name','box_type','length','sequence'])
 
-    df_sno = pd.read_csv(sno_file,sep='\t',usecols=['id','name']) 
     # extract 'id' and 'name' columns
     id_list = df_sno['id'].values.tolist()
     name_list = df_sno['name'].values.tolist()
 
-    sno_char = pd.DataFrame(columns=['snoRNA','Ensembl_ID/RefSeq_ID','snoDB_ID','rfam_id','num_fam_members','num_highly_exp_fam_members','mean_TPM','max_TPM','min_TPM'])
+    sno_char = pd.DataFrame(columns=['name','Ensembl_ID/RefSeq_ID','snoDB_ID','rfam_id','num_fam_members','num_highly_exp_fam_members','mean_TPM','max_TPM','min_TPM'])
     # get all characteristics for each snoRNA in the input list
     for i in range(len(id_list)):
         sno_char = pd.concat([sno_char,get_sno_info(id_list[i],name_list[i],df_tpm,df_snodb)],ignore_index=True)
     
-    # ONLY WANT SNO INFO
-    #sno_char.to_csv(outfile,sep='\t',index=None)
-    # RANK SNO
-    rank_snornas(sno_char).to_csv(outfile,sep='\t',index=None)
+    # rank snoRNAs
+    df_final = rank_snornas(sno_char)
+
+    # reformat df columns
+    df_final['type'] = 'snoRNA'
+    df_final = df_final[['Ensembl_ID/RefSeq_ID','name','type','snoDB_ID','rfam_id','num_fam_members','num_highly_exp_fam_members','mean_TPM','max_TPM','min_TPM']]    
+    df_final['rank'] = df_final.reset_index().index + 1
+    df_final.to_csv(outfile,sep='\t',index=None)
 
 if __name__ == '__main__':
     main()

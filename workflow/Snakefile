@@ -25,10 +25,9 @@ configfile:"config/config.yaml" # store paths and user-specific variables
 
 include: "rules/rank_sno_rbp.smk"
 #include: "rules/format_rbp.smk"
-#include: "rules/format_snoglobe.smk"
-#include: "rules/htrri.smk"
+#include: "rules/format_sno.smk"
 #include: "rules/snodb.smk"
-#include: "rules/binding.smk"
+include: "rules/binding.smk"
 #include: "rules/string.smk"
 #include: "rules/overlaps.smk"
 
@@ -39,12 +38,11 @@ rule all:
         # Run FIRST!!!
         nodes = {
             config["nodes"]["snoRNA_list"],
-            config["nodes"]["rbp_list"],
-            os.path.join(config["outpath"],"snoRNA_ranking.tsv")
+            config["nodes"]["rbp_list"]
+        },
+        interactions = { # interactions to be included in the network
+            os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
         }
-        #interactions = { # interactions to be included in network
-        #    os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
-        #}
         #expand(os.path.join(config["data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"),rbp=rbp_list),
         #expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list),
         #os.path.join(config["outpath"],"filtered_HTRRI.tsv"),

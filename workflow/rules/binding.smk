@@ -10,7 +10,7 @@ rule get_rbp_transcripts:
         'python scripts/get_transcripts.py rbp {input.annotation} {input.rbp} {input.sno} {output}'
 
 rule get_sno_transcripts:
-    """ Get transcripts for all snoRNAs in the list """
+    message: "Get transcripts for all snoRNAs in the list."
     input:
         annotation = config["data"]["annotation"],
         rbp = config["data"]["rbp_list"],
@@ -35,7 +35,7 @@ rule sno_rbp_transcript_bedtools_intersect:
         "v1.3.2/bio/bedtools/intersect"
 
 rule rbp_sno_transcript_bedtools_intersect:
-    """ bedtools intersect ENCODE RBP interactions and snoRNA transcripts """
+    message: "bedtools intersect ENCODE RBP interactions and snoRNA transcripts."
     input:
         left = os.path.join(config["data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"), ### FIX BACK TO: rules.rbp_final_sort.output,
         right = rules.get_sno_transcripts.output
