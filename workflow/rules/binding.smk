@@ -2,10 +2,10 @@ rule get_rbp_transcripts:
     """ Get transcripts for all RBPs in the list """
     input:
         annotation = config["data"]["annotation"],
-        rbp = config["data"]["rbp_list"],
-        sno = config["data"]["snoRNA_list"]
+        rbp = config["nodes"]["rbp_list"],
+        sno = config["nodes"]["snoRNA_list"]
     output:
-        temp(os.path.join(config["temp"],"rbp_transcripts.tsv"))
+        temp(os.path.join(config["outpath"],"rbp_transcripts.tsv"))
     shell:
         'python scripts/get_transcripts.py rbp {input.annotation} {input.rbp} {input.sno} {output}'
 
@@ -13,20 +13,20 @@ rule get_sno_transcripts:
     message: "Get transcripts for all snoRNAs in the list."
     input:
         annotation = config["data"]["annotation"],
-        rbp = config["data"]["rbp_list"],
-        sno = config["data"]["snoRNA_list"]
+        rbp = config["nodes"]["rbp_list"],
+        sno = config["nodes"]["snoRNA_list"]
     output:
-        temp(os.path.join(config["temp"],"sno_transcripts.tsv"))
+        temp(os.path.join(config["outpath"],"sno_transcripts.tsv"))
     shell:
         'python scripts/get_transcripts.py sno {input.annotation} {input.rbp} {input.sno} {output}' 
 
 rule sno_rbp_transcript_bedtools_intersect:
     """ bedtools intersect snoglobe predictions and RBP transcripts """
     input:
-        left = os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), ### FIX BACK TO: rules.snoglobe_uniq.output,
+        left = os.path.join(config["filtered_data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), ### FIX BACK TO: rules.snoglobe_uniq.output,
         right = rules.get_rbp_transcripts.output
     output:
-        temp(os.path.join(config["temp"],"{sno}_rbp_transcript_intersect.tsv"))
+        temp(os.path.join(config["outpath"],"{sno}_rbp_transcript_intersect.tsv"))
     params:
         extra = "-wo -s"
     log:
@@ -37,10 +37,10 @@ rule sno_rbp_transcript_bedtools_intersect:
 rule rbp_sno_transcript_bedtools_intersect:
     message: "bedtools intersect ENCODE RBP interactions and snoRNA transcripts."
     input:
-        left = os.path.join(config["data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"), ### FIX BACK TO: rules.rbp_final_sort.output,
+        left = os.path.join(config["filtered_data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"), ### FIX BACK TO: rules.rbp_final_sort.output,
         right = rules.get_sno_transcripts.output
     output:
-        temp(os.path.join(config["temp"],"{rbp}_sno_transcript_intersect.tsv"))
+        temp(os.path.join(config["outpath"],"{rbp}_sno_transcript_intersect.tsv"))
     params:
         extra = "-wo -s"
     log:

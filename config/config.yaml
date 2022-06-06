@@ -15,6 +15,7 @@ data:
 #temp: ../network_data/temp/
 
 outpath: results/
+logs: results/logs/
 
 nodes:
   snoRNA_list : results/snoRNA.tsv
@@ -27,5 +28,5 @@ filters:
   ovlp_p_val_threshold: 100000
 
 filtered_data:
-  rbp_formatted : results/ENCODE_RBP_formatted/
-  snoglobe_formatted : results/snoglobe_formatted/
+  rbp_formatted : results/rbp_interactions/
+  sno_formatted : results/sno_interactions/

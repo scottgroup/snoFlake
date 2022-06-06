@@ -133,7 +133,7 @@ def get_sno_info(id,name,tpm,snodb):
     num_members = len(fam_members_list)
 
     # 0 --> no Rfam ID present for that snoRNA
-    result = pd.DataFrame({'name': name, 'Ensembl_ID/RefSeq_ID':id,'snoDB_ID': snodb_id, 'rfam_id':rfam_id,'num_fam_members':[num_members],
+    result = pd.DataFrame({'name': name, 'id':id,'snoDB_ID': snodb_id, 'rfam_id':rfam_id,'num_fam_members':[num_members],
                             'num_highly_exp_fam_members':[highly_exp_members],'mean_TPM':[avg],'max_TPM':[max],'min_TPM':[min]})
     return result
 
@@ -180,7 +180,7 @@ def main():
     id_list = df_sno['id'].values.tolist()
     name_list = df_sno['name'].values.tolist()
 
-    sno_char = pd.DataFrame(columns=['name','Ensembl_ID/RefSeq_ID','snoDB_ID','rfam_id','num_fam_members','num_highly_exp_fam_members','mean_TPM','max_TPM','min_TPM'])
+    sno_char = pd.DataFrame(columns=['name','id','snoDB_ID','rfam_id','num_fam_members','num_highly_exp_fam_members','mean_TPM','max_TPM','min_TPM'])
     # get all characteristics for each snoRNA in the input list
     for i in range(len(id_list)):
         sno_char = pd.concat([sno_char,get_sno_info(id_list[i],name_list[i],df_tpm,df_snodb)],ignore_index=True)
@@ -190,7 +190,7 @@ def main():
 
     # reformat df columns
     df_final['type'] = 'snoRNA'
-    df_final = df_final[['Ensembl_ID/RefSeq_ID','name','type','snoDB_ID','rfam_id','num_fam_members','num_highly_exp_fam_members','mean_TPM','max_TPM','min_TPM']]    
+    df_final = df_final[['id','name','type','snoDB_ID','rfam_id','num_fam_members','num_highly_exp_fam_members','mean_TPM','max_TPM','min_TPM']]    
     df_final['rank'] = df_final.reset_index().index + 1
     df_final.to_csv(outfile,sep='\t',index=None)
 

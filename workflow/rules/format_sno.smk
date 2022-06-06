@@ -1,31 +1,34 @@
-rule snoglobe_uniq:
-    """ Format snoglobe predictions for snoRNA-RBP p-val calculations. """
+rule merge_snoglobe_htrri:
+    message: "Merge snoGloBe prediction and HTRRI interactions."
     input:
         os.path.join(config["data"]["snoglobe"],"pred_{sno}.98_3.gene.tsv")
     output:
-        os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed")
+        temp(os.path.join(config["filtered_data"]["sno_formatted"],"{sno}_snoglobe_htrri.bed"))
     params:
-        config["data"]["snoglobe_formatted"]
-    shell:
-        "mkdir -p {params} && cut -f1-6 {input} | sort -k1,1 -k2,3n -u > {output}"
+        config["data"]["HTRRI"],
+        config["data"]["snoDB"],
+        "{sno}"
+    script:
+        "../scripts/merge_snoglobe_htrri.py"
 
-rule get_htrri:
-    """ Extract snoRNA-snoRNA and snoRNA-RBP mRNA interactions from HTRRI dataset (PARIS, SPLASH, LIGR-seq). """
+rule sort_sno:
+    message: "Sort sno files for bedtools merge."
     input:
-        htrri = config["data"]["HTRRI"],
-        sno = config["data"]["snoRNA_list"],
-        rbp = config["data"]["rbp_list"]
+        rules.merge_snoglobe_htrri.output
     output:
-        interactions = os.path.join(config["outpath"],"filtered_HTRRI.tsv"),
-        counts = temp(os.path.join(config["temp"],"filtered_HTRRI_count.tsv"))
+        temp(os.path.join(config["filtered_data"]["sno_formatted"],"{sno}_sorted.bed"))
     shell:
-        'python scripts/filter_htrri.py {input.htrri} {input.rbp} {input.sno} {output} && '
-        'int_cnt=$(grep -c ^ {output.interactions}) && int_cnt=$(($int_cnt-1)) && echo -e \"{rule}\t$int_cnt\" >> {output.counts}'
+        "awk \'{{print $1\"\t\"$2\"\t\"$3\"\t\"$12\"\t\"$5\"\t\"$6}}\' {input} | sort -k1,1 -k2,2n > {output}"
 
-rule combine_snoglobe_htrri:
-    message: "Combine snoGloBe predictions and HTRRI interactions."
+rule bedtools_merge_sno:
+    message: "bedtools merge overlapping interactions."
     input:
-        rules.snoglobe_uniq.output,
-        rules.get_htrri.output
+        rules.sort_sno.output
     output:
-    shell: bedtools merge
+        os.path.join(config["filtered_data"]["sno_formatted"],"{sno}.bed")
+    params:
+        extra="-s -c 4,5,6 -o distinct,mean,distinct"
+    log:
+        os.path.join(config["logs"],"bedtools_merge_sno","{sno}.log")
+    wrapper:
+        "v1.3.2/bio/bedtools/merge"

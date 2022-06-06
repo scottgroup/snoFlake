@@ -1,5 +1,5 @@
-rule filter_rbp: # filter raw ENCODE RBP data by p-value and by fold-enrichment and merge replicates
-    """"""
+rule filter_rbp:
+    message: "Filter raw ENCODE RBP data by p-value and by fold-enrichment and merge replicates."
     input:
         rep1 = os.path.join(config["data"]["rbp_ENCODE"],"{encode}","replicate1.bed.gz"),
         rep2 = os.path.join(config["data"]["rbp_ENCODE"],"{encode}","replicate2.bed.gz")

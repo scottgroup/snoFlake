@@ -16,8 +16,8 @@ configfile:"config/config.yaml" # store paths and user-specific variables
 
 #### load snoRNA and RBP list ####
 # Need to get "nodes" output before importing these files
-#sno_list = pd.read_table(config["data"]["snoRNA_list"]).id.values.tolist()
-#rbp_list = pd.read_table(config["data"]["rbp_list"]).name.values.tolist()
+sno_list = pd.read_table(config["nodes"]["snoRNA_list"]).id.values.tolist()
+rbp_list = pd.read_table(config["nodes"]["rbp_list"]).name.values.tolist()
 
 
 
@@ -25,9 +25,9 @@ configfile:"config/config.yaml" # store paths and user-specific variables
 
 include: "rules/rank_sno_rbp.smk"
 #include: "rules/format_rbp.smk"
-#include: "rules/format_sno.smk"
+include: "rules/format_sno.smk"
 #include: "rules/snodb.smk"
-include: "rules/binding.smk"
+#include: "rules/binding.smk"
 #include: "rules/string.smk"
 #include: "rules/overlaps.smk"
 
@@ -40,11 +40,17 @@ rule all:
             config["nodes"]["snoRNA_list"],
             config["nodes"]["rbp_list"]
         },
-        interactions = { # interactions to be included in the network
-            os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
-        }
-        #expand(os.path.join(config["data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"),rbp=rbp_list),
-        #expand(os.path.join(config["data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list),
+        # Interactions to be included in the network
+        sno = expand(os.path.join(config["filtered_data"]["sno_formatted"],"{sno}.bed"), sno=sno_list)
+            #expand(os.path.join(config["filtered_data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"),rbp=rbp_list),
+            #expand(os.path.join(config["filtered_data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list)
+            #os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv"),
+            #os.path.join(config["outpath"],"significant_snoglobe_sno_rbp_target_overlaps.tsv")
+        
+        # Get targets of snoRNA and RBPs
+        #targets = {
+        #    
+        #}
         #os.path.join(config["outpath"],"filtered_HTRRI.tsv"),
         #os.path.join(config["outpath"],"snoDB_rbp_as_host_gene.tsv"),
         #os.path.join(config["outpath"],"snoglobe_sno_bind_to_rbp_transcript.tsv"),
