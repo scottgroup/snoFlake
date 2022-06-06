@@ -15,7 +15,6 @@ rule sno_rbp_overlap:
         "../envs/bedtools.yaml"
     shell:
         "echo {params.sno} && "
-        "mkdir -p {params.outdir} && "
         "scripts/compute_overlaps.sh {input} {params.rbp_path} {params.gtf} {params.genome} {output} sno_rbp && "
         "echo \'Done\'"
 """
@@ -63,8 +62,7 @@ rule rbp_rbp_overlap:
 rule extract_sig_overlaps:
     message: "Extract target overlap interactions that are above limit of detection."
     input:
-        expand(os.path.join(config["outpath"],"sno_rbp_overlaps_p_vals","{sno}_rbp_overlap.tsv"),sno=sno_list)
-        #in_sno_rbp = expand(rules.sno_rbp_overlap.output,sno=sno_list),
+        in_sno_rbp = expand(rules.sno_rbp_overlap.output,sno=sno_list)
         #in_rbp_rbp = expand(rules.rbp_rbp_overlap.output,rbp=rbp_list),
         #in_sno_sno = expand(rules.sno_sno_overlap.output,sno=sno_list)
     output:
@@ -73,7 +71,7 @@ rule extract_sig_overlaps:
         #out_rbp_rbp = temp(os.path.join(config["temp"],"significant_rbp_rbp_target_overlaps.tsv")),
         #out_sno_sno = temp(os.path.join(config["temp"],"significant_sno_sno_target_overlaps.tsv"))
     params:
-        config["ovlp_p_val_threshold"]
+        config["filters"]["ovlp_p_val_threshold"]
     shell:
         "awk \'($3==\"0\") && ($4=={params}) {{print}}\' {input} >> {output}"
         #"awk \'($3==\"0\") && ($4=={params}) {{print}}\' {input.in_sno_rbp} >> {output.out_sno_rbp}; "
