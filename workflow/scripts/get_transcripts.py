@@ -53,11 +53,11 @@ def sno_transcript(df_gtf, df_sno): # get transcripts for snoRNA only
     return df
 
 def main():
-    option = sys.argv[1] # choose from: all, rbp, sno
-    annotation = sys.argv[2] # genome annotation in gtf format
-    rbp = sys.argv[3] # RBP list in tsv 
-    sno = sys.argv[4] # snoRNA list in tsv
-    out = sys.argv[5] # output file
+    option = snakemake.params[0] # choose from: all, rbp, sno
+    annotation = snakemake.input[0] # genome annotation in gtf format
+    rbp = snakemake.input[1] # RBP list in tsv 
+    sno = snakemake.input[2] # snoRNA list in tsv
+    out = snakemake.output[0] # output file
 
     transcripts = read_annotation(annotation)
 

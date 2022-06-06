@@ -10,7 +10,7 @@ configfile:"config/config.yaml" # store paths and user-specific variables
 
 #### global wildcard ####
 
-#ENCODE, = glob_wildcards(os.path.join(config["data"]["rbp_ENCODE"],"{encode}","replicate1.bed.gz"))
+ENCODE, = glob_wildcards(os.path.join(config["data"]["rbp_ENCODE"],"{encode}","replicate1.bed.gz"))
 
 
 
@@ -24,10 +24,10 @@ rbp_list = pd.read_table(config["nodes"]["rbp_list"]).name.values.tolist()
 #### load rules ####
 
 include: "rules/rank_sno_rbp.smk"
-#include: "rules/format_rbp.smk"
+include: "rules/format_rbp.smk"
 include: "rules/format_sno.smk"
 #include: "rules/snodb.smk"
-#include: "rules/binding.smk"
+include: "rules/binding.smk"
 #include: "rules/string.smk"
 #include: "rules/overlaps.smk"
 
@@ -41,7 +41,11 @@ rule all:
             config["nodes"]["rbp_list"]
         },
         # Interactions to be included in the network
-        sno = expand(os.path.join(config["filtered_data"]["sno_formatted"],"{sno}.bed"), sno=sno_list)
+        sno = expand(os.path.join(config["filtered_data"]["sno_formatted"],"{sno}.bed"), sno=sno_list),
+        rbp = expand(os.path.join(config["filtered_data"]["rbp_formatted"],"{rbp}.bed"), rbp=rbp_list),
+        interactions = {
+            os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
+        }
             #expand(os.path.join(config["filtered_data"]["rbp_formatted"],"{rbp}_uniq_regions.bed"),rbp=rbp_list),
             #expand(os.path.join(config["filtered_data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), sno=sno_list)
             #os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv"),

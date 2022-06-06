@@ -1,14 +1,14 @@
-"""
+
 rule sno_rbp_overlap:
-    message: "Caculate p-value for each snoRNA-RBP overlapping target interaction."
+    message: "Calculate p-value for each snoRNA-RBP overlapping target interaction."
     input:
-        rules.snoglobe_uniq.output
+        rules.sno_final_sort.output
     output:
         os.path.join(config["outpath"],"sno_rbp_overlaps_p_vals","{sno}_rbp_overlaps.tsv")
     params:
         gtf = config["data"]["annotation"],
         genome = config["data"]["chrLength"],
-        rbp_path = config["data"]["rbp_formatted"],
+        rbp_path = config["filtered_data"]["rbp_formatted"],
         sno = "{sno}",
         outdir = os.path.join(config["outpath"],"sno_rbp_overlaps_p_vals")
     conda:
@@ -18,7 +18,7 @@ rule sno_rbp_overlap:
         "mkdir -p {params.outdir} && "
         "scripts/compute_overlaps.sh {input} {params.rbp_path} {params.gtf} {params.genome} {output} sno_rbp && "
         "echo \'Done\'"
-
+"""
 rule sno_sno_overlap:
     message: "Caculate p-value for each snoRNA-snoRNA overlapping target interaction."
     input:
@@ -38,7 +38,7 @@ rule sno_sno_overlap:
         "mkdir -p {params.outdir} && "
         "bash scripts/compute_overlaps.sh {input} {params.sno_path} {params.gtf} {params.genome} {output} sno && "
         "echo \'Done\'"  
-"""
+
 rule rbp_rbp_overlap:
     message: "Caculate p-value for each RBP-RBP overlapping target interaction."
     input:
@@ -59,7 +59,7 @@ rule rbp_rbp_overlap:
         "mkdir -p {params.outdir} && "
         "scripts/compute_overlaps.sh {input} {params.rbp_path} {params.gtf} {params.genome} {output} rbp && "
         "echo \'Done\'"  
-"""
+
 rule extract_sig_overlaps:
     message: "Extract target overlap interactions that are above limit of detection."
     input:
