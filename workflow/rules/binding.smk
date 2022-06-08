@@ -80,6 +80,6 @@ rule rbp_sno_transcript_out_file:
         outdir = config["outpath"],
         temp_file = os.path.join(config["outpath"],"temp_rbp_bind_to_sno_transcript.tsv")
     shell:
-        "echo -e \"RBP\tsnoRNA\tinteraction\" >> {params.temp_file} && "
+        "echo -e \"source\ttarget\tinteraction\" >> {params.temp_file} && "
         "awk '{{print $4\"\t\"$10\"\trbp_sno_transcript\"}}' {params.outdir}*_sno_transcript_intersect.tsv >> {params.temp_file} && "
         "awk -F\'\t\' \'{{sub(/\_.+$/,\"\",$1)}}1\' OFS=\'\t\' {params.temp_file} | uniq > {output} && rm {params.temp_file}"
