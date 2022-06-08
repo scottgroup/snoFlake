@@ -9,3 +9,5 @@ results
 results/*
 resources
 resources/*
+workflow/scripts/logs
+workflow/scripts/logs/*
