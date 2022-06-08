@@ -7,9 +7,13 @@ rule get_rbp_transcripts:
         sno = config["nodes"]["snoRNA_list"]
     output:
         temp(os.path.join(config["outpath"],"rbp_transcripts.tsv"))
-    shell:
-        'python scripts/get_transcripts.py rbp {input.annotation} {input.rbp} {input.sno} {output}'
+    params:
+        "rbp"
+    script:
+        "../scripts/get_transcripts.py"
 """
+#### sno --> RBP transcript: extract directly from merge_snoglobe_htrri output and sort | uniq
+
 rule get_sno_transcripts:
     message: "Get transcripts for all snoRNAs in the list."
     input:
@@ -25,7 +29,7 @@ rule get_sno_transcripts:
 
 """
 rule sno_rbp_transcript_bedtools_intersect:
-    message: "bedtools intersect snoglobe predictions and RBP transcripts."
+    message: "bedtools intersect snoGloBe predictions and RBP transcripts."
     input:
         left = os.path.join(config["filtered_data"]["snoglobe_formatted"],"{sno}_uniq_regions.bed"), ### FIX BACK TO: rules.snoglobe_uniq.output,
         right = rules.get_rbp_transcripts.output

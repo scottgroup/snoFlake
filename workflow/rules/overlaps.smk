@@ -15,7 +15,7 @@ rule sno_rbp_overlap:
         "../envs/bedtools.yaml"
     shell:
         "echo {params.sno} && "
-        "scripts/compute_overlaps.sh {input} {params.rbp_path} {params.gtf} {params.genome} {output} sno_rbp && "
+        "bash workflow/scripts/compute_overlaps.sh {input} {params.rbp_path} {params.gtf} {params.genome} {output} sno_rbp && "
         "echo \'Done\'"
 """
 rule sno_sno_overlap:

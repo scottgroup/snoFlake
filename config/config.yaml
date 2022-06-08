@@ -7,9 +7,9 @@ data:
   snoglobe: resources/snoglobe_predictions/
   ENCODE_rbp_list : resources/ENCODE_rbp_list.tsv
   #rbp_list_with_protein_id : ../network_data/rbp_protein_id.tsv
-  chrLength: ../network_data/chrNameLength.txt
+  chrLength: resources/chrNameLength.txt
   #STRING: ../network_data/STRING.9606.protein.actions.v11.0.txt.gz
-  HTRRI: ../network_data/htrri_interactions_P_L_S.tsv
+  HTRRI: resources/htrri_interactions_P_L_S.tsv
 
 outpath: results/
 logs: results/logs/

@@ -17,11 +17,11 @@ job_properties = read_job_properties(jobscript)
 cmdline = "sbatch "
 
 # direct slurm output and error file to a specific directory
-slurm_outdir = '../results/logs/slurmout'
+slurm_outdir = 'results/logs/slurmout'
 if not os.path.exists(slurm_outdir):
     os.makedirs(slurm_outdir)
     
-cmdline += " --output=../results/logs/slurmout/%x_%j.out --error=../results/logs/slurmout/%x_%j.err "
+cmdline += " --output=results/logs/slurmout/%x_%j.out --error=results/logs/slurmout/%x_%j.err "
 
 for param, val in job_properties['cluster'].items():
     cmdline += "--{param} {val} ".format(param=param, val=val)
