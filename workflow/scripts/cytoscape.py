@@ -3,6 +3,15 @@
 import py4cytoscape as p4c
 import pandas as pd
 
+def default_settings():
+    p4c.set_node_shape_default('ELLIPSE')
+
+    column = 'type'
+    values = ['snoRNA','RBP']
+    colors = ['#FF4949','#74A9CF']
+    p4c.set_node_color_mapping(column,values,colors,mapping_type = 'discrete')
+    return
+
 def main():
 
     # NODES
@@ -14,9 +23,12 @@ def main():
     nodes = pd.concat([sno,rbp],ignore_index=True)
 
     # EDGES
-    rbp_bind_to_sno = pd.read_csv('../../results/rbp_bind_to_sno.tsv',sep='\t')
+    rbp_bind_to_sno = pd.read_csv('../../results/rbp_bind_to_sno_transcript.tsv',sep='\t')
+    rbp_bind_to_sno.rename(columns={'RBP':'source','snoRNA':'target'},inplace=True)
+    
+    p4c.create_network_from_data_frames(nodes, rbp_bind_to_sno, title="my first network", collection="snoRNA_RBP_interaction_network")
 
-    p4c.create_network_from_data_frames(nodes, rbp_bind_to_sno, title="my first network", collection="DataFrame Example")
+    default_settings()
 
 if __name__ == '__main__':
     main()
