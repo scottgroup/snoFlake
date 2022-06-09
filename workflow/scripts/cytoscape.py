@@ -15,8 +15,9 @@ def main():
 
     # EDGES
     rbp_bind_to_sno = pd.read_csv('../../results/rbp_bind_to_sno.tsv',sep='\t')
-
-    p4c.create_network_from_data_frames(nodes, rbp_bind_to_sno, title="my first network", collection="DataFrame Example")
+    sno_rbp_target_ovlp = pd.read_csv('../../results/significant_sno_rbp_target_overlaps.tsv',sep='\t')
+    p4c.create_network_from_data_frames(nodes, rbp_bind_to_sno, title="rbp_bind_to_sno", collection="DataFrame Example")
+    p4c.create_network_from_data_frames(nodes, sno_rbp_target_ovlp, title="sno_rbp_target_ovlp", collection="DataFrame Example")
 
 if __name__ == '__main__':
     main()
