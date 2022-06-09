@@ -3,6 +3,15 @@
 import py4cytoscape as p4c
 import pandas as pd
 
+def default_settings():
+    p4c.set_node_shape_default('ELLIPSE')
+
+    column = 'type'
+    values = ['snoRNA','RBP']
+    colors = ['#FF4949','#74A9CF']
+    p4c.set_node_color_mapping(column,values,colors,mapping_type = 'discrete')
+    return
+
 def main():
 
     # NODES
@@ -14,10 +23,12 @@ def main():
     nodes = pd.concat([sno,rbp],ignore_index=True)
 
     # EDGES
-    rbp_bind_to_sno = pd.read_csv('../../results/rbp_bind_to_sno.tsv',sep='\t')
+    rbp_bind_to_sno = pd.read_csv('../../results/rbp_bind_to_sno_transcript.tsv',sep='\t')
     sno_rbp_target_ovlp = pd.read_csv('../../results/significant_sno_rbp_target_overlaps.tsv',sep='\t')
-    p4c.create_network_from_data_frames(nodes, rbp_bind_to_sno, title="rbp_bind_to_sno", collection="DataFrame Example")
-    p4c.create_network_from_data_frames(nodes, sno_rbp_target_ovlp, title="sno_rbp_target_ovlp", collection="DataFrame Example")
+    p4c.create_network_from_data_frames(nodes, rbp_bind_to_sno, title="rbp_bind_to_sno", collection="sno_RBP_network")
+    p4c.create_network_from_data_frames(nodes, sno_rbp_target_ovlp, title="sno_rbp_target_ovlp", collection="sno_RBP_network")
+
+    default_settings()
 
 if __name__ == '__main__':
     main()
