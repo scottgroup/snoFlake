@@ -43,7 +43,7 @@ rule all:
         # Interactions to be included in the network
         sno = expand(os.path.join(config["filtered_data"]["sno_formatted"],"{sno}.bed"), sno=sno_list),
         rbp = expand(os.path.join(config["filtered_data"]["rbp_formatted"],"{rbp}.bed"), rbp=rbp_list),
-        sno_rbp_ovlp_p_vals = expand(os.path.join(config["outpath"],"sno_rbp_overlaps_p_vals","{sno}_rbp_overlaps.tsv"),sno=sno_list),
+        #sno_rbp_ovlp_p_vals = expand(os.path.join(config["outpath"],"sno_rbp_overlaps_p_vals","{sno}_rbp_overlaps.tsv"),sno=sno_list),
         interactions = {
             os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv")
         }
