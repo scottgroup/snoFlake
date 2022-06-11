@@ -24,7 +24,7 @@ def read_node_list(node_list): # get RBP or snoRNA list
 def rbp_transcript(df_gtf, df_rbp): # get transcripts for RBPs only
     df = pd.DataFrame(columns=df_gtf.columns)
     for i in range(len(df_rbp)):
-        curr_rbp = df_rbp.loc[i,'name1']
+        curr_rbp = df_rbp.loc[i,'name']
         if curr_rbp == "TROVE2": # TROVE2 exists as RO60 in annotation (synonyms)
             curr_rbp = "RO60"
         df_temp = df_gtf[df_gtf["gene_name"]==curr_rbp]

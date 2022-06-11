@@ -5,7 +5,7 @@
 import pandas as pd
 import sys
 
-def rbp_list(file): # 2 columns (protein_id, name)
+def rbp_list(file): # 2 columns (name, protein_id)
     return pd.read_csv(file,sep='\t')
 
 def string_df(file): # 7 columns (item_id_a, item_id_b, mode, action, is_directional, a_is_acting, score)
@@ -46,9 +46,9 @@ def remove_duplicate_edges(df):
     return df_result
 
 def main():
-    rbp = sys.argv[1] # rbp list with protein id
-    string = sys.argv[2] # unzipped STRING interaction file
-    out = sys.argv[3] # output file
+    rbp = snakemake.input[1] # rbp list with protein id
+    string = snakemake.input[0] # unzipped STRING interaction file
+    out = snakemake.output[0] # output file
 
     df_result = select_interactions(rbp,string)
     remove_duplicate_edges(df_result).to_csv(out, sep='\t',index=False)

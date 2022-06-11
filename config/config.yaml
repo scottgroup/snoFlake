@@ -6,9 +6,8 @@ data:
   rbp_ENCODE: resources/ENCODE_RBP/
   snoglobe: resources/snoglobe_predictions/
   ENCODE_rbp_list : resources/ENCODE_rbp_list.tsv
-  #rbp_list_with_protein_id : ../network_data/rbp_protein_id.tsv
   chrLength: resources/chrNameLength.txt
-  STRING: resources/STRING.9606.protein.actions.v11.0.txt.gz
+  STRING: resources/STRING.9606.protein.actions.v11.0.txt
   HTRRI: resources/htrri_interactions_P_L_S.tsv
 
 outpath: results/
@@ -21,7 +20,7 @@ nodes:
 filters:
   ENCODE_p_threshold: 3
   ENCODE_sig_val_threshold: 3
-  #STRING_score_threshold: 900
+  STRING_score_threshold: 900
   ovlp_p_val_threshold: 100000
 
 filtered_data:

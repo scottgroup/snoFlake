@@ -56,16 +56,16 @@ def main():
     df_tpm = pd.read_csv(tpm_path,sep='\t',usecols=['gene_id','gene_name','HCT116_1','HCT116_2','MCF7_1','MCF7_2',
                                                     'PC3_1','PC3_2','SKOV_frg_1','SKOV_frg_2','TOV112D_1','TOV112D_2'])
     
-    df_rbp = pd.read_csv(rbp_file,sep='\t',header=0).iloc[:,0] 
+    df_rbp = pd.read_csv(rbp_file,sep='\t',usecols=['name','protein_id'])
     
     df_exp_level = pd.DataFrame(columns=['id','name','mean_TPM','max_TPM','min_TPM'])
 
     for i in range(len(df_rbp)):
-        curr_rbp = df_rbp.iloc[i]
+        curr_rbp = df_rbp.loc[i,'name']
         if curr_rbp == "TROVE2": # TROVE2 exists as RO60 in annotation (synonyms)
             curr_rbp = "RO60"
         id,avg, min, max = get_tpm(curr_rbp,df_tpm)
-        result = pd.DataFrame({'id': id, 'name':curr_rbp,'mean_TPM':[avg],'max_TPM':[max],'min_TPM':[min]})
+        result = pd.DataFrame({'id': id, 'name':curr_rbp,'protein_id':df_rbp.loc[i,'protein_id'],'mean_TPM':[avg],'max_TPM':[max],'min_TPM':[min]})
         df_exp_level = pd.concat([df_exp_level,result],ignore_index=True)
 
     # replace RO60 back to TROVE2
@@ -76,7 +76,7 @@ def main():
     df_final['type'] = 'RBP'
     
     # change column orders
-    df_final = df_final[['id','name','type','mean_TPM','max_TPM','min_TPM','TPM_rank']]
+    df_final = df_final[['id','name','type','protein_id','mean_TPM','max_TPM','min_TPM','TPM_rank']]
 
     df_final.to_csv(outfile,sep='\t',index=None)
 
