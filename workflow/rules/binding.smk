@@ -61,4 +61,4 @@ rule filter_targets:
         "sed -i \'s/sno_pc_targets/sno_bind_to_rbp_transcript/g\' {input} && "
         "awk \'{{print $1\",\"$2}}\' {params} | while IFS=',' read -r id name; do "
         "sed -i \"s/$id/$name/g\" {input}; done && "
-        "awk -F\'\t\' \'$2 !~ \"^(ENSG00000|trna|NR_)\"\' {input} | sed \"s/\,ENSG00000[^\t]*//g\" | sort -u > {output}"
+        "awk -F\'\t\' \'$2 !~ \"^(ENSG00000|trna|NR_)\"\' {input} | sed \"s/\,ENSG00000[^\t]*//g\" | sort -u >> {output}"
