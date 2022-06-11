@@ -3,6 +3,7 @@
 
 # Byte-compiled / optimized / DLL files
 workflow/scripts/__pycache__/
+.DS_Store
 
 # input and output files
 results

@@ -46,7 +46,6 @@ rule sno_pc_targets:
     output:
         temp(os.path.join(config["outpath"],"sno_pc_targets.tsv"))
     shell:
-        "echo -e \"source\ttarget\tinteraction\" > {output} && "
         "awk '{{print $4\"\t\"$12\"\tsno_pc_targets\"}}' {input} | sort -u >> {output}"
 
 rule filter_targets:
@@ -58,7 +57,8 @@ rule filter_targets:
     params:
         config["nodes"]["rbp_list"]
     shell:
+        "echo -e \"source\ttarget\tinteraction\" > {output} && "
         "sed -i \'s/sno_pc_targets/sno_bind_to_rbp_transcript/g\' {input} && "
-        "awk \'(NR>1) {{print $1\",\"$2}}\' {params} | while IFS=',' read -r id name; do "
+        "awk \'{{print $1\",\"$2}}\' {params} | while IFS=',' read -r id name; do "
         "sed -i \"s/$id/$name/g\" {input}; done && "
         "awk -F\'\t\' \'$2 !~ \"^(ENSG00000|trna|NR_)\"\' {input} | sed \"s/\,ENSG00000[^\t]*//g\" | sort -u > {output}"
