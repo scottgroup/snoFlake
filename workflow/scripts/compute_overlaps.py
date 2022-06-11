@@ -102,7 +102,8 @@ def main():
         res_shuffle = p.map(shuffle_val, [[bed_int, genome_file, pc_bed, i, shuffle_prefix]
                                   for i in range(max_iteration)])
 
-    # avoid re-running the source-target pair if was already computed (example if job timed out)
+    # avoid re-running the source-target pair if was already com
+    # puted (example if job timed out)
     already_done = ''
     try:
         with open(outfile) as f:

@@ -8,7 +8,7 @@ data:
   ENCODE_rbp_list : resources/ENCODE_rbp_list.tsv
   #rbp_list_with_protein_id : ../network_data/rbp_protein_id.tsv
   chrLength: resources/chrNameLength.txt
-  #STRING: ../network_data/STRING.9606.protein.actions.v11.0.txt.gz
+  STRING: resources/STRING.9606.protein.actions.v11.0.txt.gz
   HTRRI: resources/htrri_interactions_P_L_S.tsv
 
 outpath: results/

@@ -1,24 +1,24 @@
 rule unzip:
-    """ Unzip STRING interactions .gz file """
+    message: "Unzip STRING interactions .gz file."
     input:
         config["data"]["STRING"]
     output:
-        temp(os.path.join(config["temp"],"STRING_unzip.tsv"))
+        temp(os.path.join(config["outpath"],"STRING_unzip.tsv"))
     shell:
         "gunzip -c {input} > {output}"
 
 rule get_rbp_rbp:
-    """ Keep RBPs of interest only """
+    message: "Keep RBPs of interest only."
     input:
         string = rules.unzip.output,
-        rbp = config["data"]["rbp_list_with_protein_id"]
+        rbp = config["nodes"]["rbp_list_with_protein_id"]
     output:
         temp(os.path.join(config["temp"],"STRING_rbp_filtered.tsv"))
     shell:
         "python3 scripts/filter_STRING.py {input.rbp} {input.string} {output}"
 
 rule get_rbp_rbp_count:
-    """ Count number of interactions left after filtering for RBP-RBP pairs """
+    message: "Count number of interactions left after filtering for RBP-RBP pairs."
     input:
         rules.get_rbp_rbp.output
     output:

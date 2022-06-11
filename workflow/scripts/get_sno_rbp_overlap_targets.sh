@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-type=FAIL
 #SBATCH --time=20:00:00
 #SBATCH --mail-user=kristina.song@usherbrooke.ca
 #SBATCH -o ./logs/output.%j.out

@@ -99,7 +99,7 @@ rule format_outfile:
         #"awk \'{{print $1\"\t\"$2\"\t\"\"rbp_rbp_target_overlap\"}}\' {input.in_rbp_rbp} >> {output.out_rbp_rbp}; "
         #"echo -e \"snoRNA1\tsnoRNA2\tinteraction\" >> {output.out_sno_sno} && "
         #"awk \'{{print $1\"\t\"$2\"\t\"\"sno_sno_target_overlap\"}}\' {input.in_sno_sno} >> {output.out_sno_sno}; "
-
+"""
 rule get_targets:
     message: "Get overalpping targets."
     input:
@@ -125,3 +125,4 @@ rule get_overlapping_targets_bedtools_intersect:
     output:
     log:
         os.path.join(config["logs"],"get_overlapping_targets_bedtools_intersect","{rbp}.log")
+"""

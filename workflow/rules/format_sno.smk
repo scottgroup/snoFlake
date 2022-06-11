@@ -1,9 +1,10 @@
+# snoRNA interactions with targets
 rule merge_snoglobe_htrri:
     message: "Merge snoGloBe prediction and HTRRI interactions."
     input:
         os.path.join(config["data"]["snoglobe"],"pred_{sno}.98_3.gene.tsv")
     output:
-        temp(os.path.join(config["filtered_data"]["sno_formatted"],"{sno}_snoglobe_htrri.bed"))
+        os.path.join(config["filtered_data"]["sno_formatted"],"{sno}.bed")
     params:
         config["data"]["HTRRI"],
         config["data"]["snoDB"],
@@ -11,12 +12,13 @@ rule merge_snoglobe_htrri:
     script:
         "../scripts/merge_snoglobe_htrri.py"
 
+# unique snoRNA interactions without targets listed
 rule sort_sno:
     message: "Sort sno files for bedtools merge."
     input:
         rules.merge_snoglobe_htrri.output
     output:
-        temp(os.path.join(config["filtered_data"]["sno_formatted"],"{sno}_sorted.bed"))
+        temp(os.path.join(config["filtered_data"]["sno_formatted"],"uniq_interactions","{sno}_sorted.bed"))
     shell:
         "cut -f 1-6 {input} | sort -k1,1 -k2,2n > {output}"
 
@@ -25,7 +27,7 @@ rule bedtools_merge_sno:
     input:
         rules.sort_sno.output
     output:
-        temp(os.path.join(config["filtered_data"]["sno_formatted"],"{sno}_bedtools_merge.bed"))
+        temp(os.path.join(config["filtered_data"]["sno_formatted"],"uniq_interactions","{sno}_bedtools_merge.bed"))
     params:
         extra="-s -c 4,5,6 -o distinct,mean,distinct"
     log:
@@ -38,6 +40,6 @@ rule sno_final_sort:
     input:
         rules.bedtools_merge_sno.output
     output:
-        os.path.join(config["filtered_data"]["sno_formatted"],"{sno}.bed")
+        temp(os.path.join(config["filtered_data"]["sno_formatted"],"uniq_interactions","{sno}.bed"))
     shell:
         "sort -k1,1 -k2,3n -u {input} > {output}"
