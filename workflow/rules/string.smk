@@ -2,7 +2,7 @@ rule get_rbp_rbp:
     message: "Keep RBPs of interest only."
     input:
         config["data"]["STRING"],
-        config["data"]["ENCODE_rbp_list"]
+        config["nodes"]["rbp_list"]
     output:
         temp(os.path.join(config["outpath"],"STRING_rbp_filtered.tsv"))
     script:

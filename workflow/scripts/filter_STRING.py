@@ -6,7 +6,7 @@ import pandas as pd
 import sys
 
 def rbp_list(file): # 2 columns (name, protein_id)
-    return pd.read_csv(file,sep='\t')
+    return pd.read_csv(file,sep='\t',usecols=['name','protein_id'])
 
 def string_df(file): # 7 columns (item_id_a, item_id_b, mode, action, is_directional, a_is_acting, score)
     return pd.read_csv(file,sep='\t')
