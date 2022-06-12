@@ -8,8 +8,10 @@ def default_settings():
 
     column = 'type'
     values = ['snoRNA','RBP']
-    colors = ['#FF4949','#74A9CF']
+    colors = ['#FC9272','#A6BDDB']
     p4c.set_node_color_mapping(column,values,colors,mapping_type = 'discrete')
+    # edge colors
+    # STRING: '969696', rbp_sno_transcript: 'A6BDDB', sno_rbp_transcript: 'FDCDAC',sno_rbp_target_ovlp: '016450'
     return
 
 def main():
@@ -27,10 +29,14 @@ def main():
     sno_bind_to_rbp = pd.read_csv('../../results/sno_bind_to_rbp_transcript.tsv',sep='\t')
     sno_rbp_target_ovlp = pd.read_csv('../../results/significant_sno_rbp_target_overlaps.tsv',sep='\t')
     string = pd.read_csv('../../results/STRING_900_physical_binding.tsv',sep='\t')
+
+    # NETWORKS
     p4c.create_network_from_data_frames(nodes, rbp_bind_to_sno, title="rbp_bind_to_sno", collection="sno_RBP_network")
     p4c.create_network_from_data_frames(nodes, sno_bind_to_rbp, title="sno_bind_to_rbp", collection="sno_RBP_network")
     p4c.create_network_from_data_frames(nodes, sno_rbp_target_ovlp, title="sno_rbp_target_ovlp", collection="sno_RBP_network")
     p4c.create_network_from_data_frames(nodes, string, title="STRING", collection="sno_RBP_network")
+
+    #p4c.merge_networks(['rbp_bind_to_sno','sno_rbp_target_ovlp','sno_bind_to_rbp','STRING'],title='merged_network')
     default_settings()
 
 if __name__ == '__main__':
