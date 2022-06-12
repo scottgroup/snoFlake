@@ -12,12 +12,12 @@ def main():
     labels = ["C/D","H/ACA","TPM < 10"]
     explode = [0,0,0.2]
 
-    ax1.pie(y, labels = labels, explode = explode,colors = ['#FF4949','silver','silver'])
+    ax1.pie(y, labels = labels, explode = explode,colors = ['#FC9272','silver','silver'])
     
     y2 = np.array([21,91])
     labels = ["others",r"TPM$\geq$10"]
     explode = [0,0.2]
-    ax2.pie(y2,labels = labels, explode=explode, colors = ['silver','#74A9CF'])
+    ax2.pie(y2,labels = labels, explode=explode, colors = ['silver','#A6BDDB'])
     plt.show() 
 
 
