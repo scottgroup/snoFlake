@@ -12,3 +12,6 @@ resources
 resources/*
 workflow/scripts/logs
 workflow/scripts/logs/*
+
+# other files
+.swp
