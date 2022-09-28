@@ -6,33 +6,33 @@ import numpy as np
 
 def pie_rbp(ax1):
     values = np.array([31,91])
-    labels = ["TPM < 10 in all cell lines",r"TPM$\geq$10 in at least one cell line"]
+    labels = ["TPM < 10",r"TPM$\geq$10"]
     explode = [0.01,0.01]
-    ax1.pie(values,explode=explode, colors = ['lightgrey','#A6BDDB'],
+    ax1.pie(values,explode=explode, colors = ['lightgrey','#A6BDDB'], textprops={'fontsize': 24},
         autopct=lambda x: '{:.0f}'.format(x*values.sum()/100))
     patches, texts= ax1.pie(values, colors=['lightgrey','#A6BDDB'],explode=explode)
-    ax1.legend(patches, labels, loc=(0.05,-0.2),fontsize=8)
-    ax1.set_title('ENCODE RBPs',fontsize=11,y=0.97)
+    ax1.legend(patches, labels, loc=(0.22,-0.2),fontsize=18)
+    ax1.set_title('ENCODE RBPs',fontsize=24,y=0.97)
     return ax1
 
 def bar_of_pie():
     # make figure and assign axis objects
-    fig, (ax3, ax1,ax2) = plt.subplots(1, 3, figsize=(11, 5))
-    fig.suptitle('Filter Nodes by TPM',fontweight="bold")
+    fig, (ax3, ax1,ax2) = plt.subplots(1, 3, figsize=(15, 7))
+    #fig.suptitle('Filter Nodes by TPM',fontweight="bold")
     fig.subplots_adjust(wspace=0)
 
     # pie chart parameters
     y = np.array([381,185])
-    labels = ["TPM < 10 in all cell lines",r"TPM$\geq$10 in at least one cell line"]
+    labels = ["TPM < 10",r"TPM$\geq$10"]
     explode = [0.01,0.01]
     # rotate so that first wedge is split by the x-axis
-    wedges, *_ = ax1.pie(y, startangle=60,explode=explode,colors = ['lightgrey','#FC9272'],autopct=lambda x: '{:.0f}'.format(x*y.sum()/100))
-    ax1.set_title('Box C/D snoRNAs',fontsize=11,y=0.97)
-    ax1.legend(wedges, labels, loc=(0.05,-0.2),fontsize=8)
+    wedges, *_ = ax1.pie(y, startangle=60,explode=explode,colors = ['lightgrey','#FC9272'],autopct=lambda x: '{:.0f}'.format(x*y.sum()/100),textprops={'fontsize': 24})
+    ax1.set_title('Box C/D snoRNAs',fontsize=24,y=0.97)
+    ax1.legend(wedges, labels, loc=(0.22,-0.2),fontsize=18)
 
     # bar chart parameters
     age_ratios = [155,30]
-    age_labels = ['Less than 10','Greater than 10']
+    age_labels = ['#copies < 10','#copies$\geq$10']
     #colors = ['lightgrey','salmon']
     bottom = 1
     width = .15
@@ -42,10 +42,10 @@ def bar_of_pie():
         bottom -= height
         bc = ax2.bar(0, height, width, bottom=bottom, color=['salmon'], label=label,
                     alpha=0.1 + 0.25 * j)
-        ax2.bar_label(bc, labels=[f"{height}"], label_type='center')
+        ax2.bar_label(bc, labels=[f"{height}"], label_type='center',fontsize=22)
 
-    ax2.set_title('num of'+"\n"+'snoRNA copies',fontsize=8,y=0.95)
-    ax2.legend(loc=(0.7,0),fontsize=8)
+    ax2.set_title('# of snoRNA copies',fontsize=18,y=0.95)
+    ax2.legend(loc=(0.63,0),fontsize=13)
     ax2.axis('off')
     ax2.set_xlim(- 2.5 * width, 2.5 * width)
 
@@ -73,9 +73,9 @@ def bar_of_pie():
     con.set_linewidth(0.5)
     #"""
     pie_rbp(ax3)
-    plt.figtext(0.47,0.75,"Total = 566",fontsize=9)
-    plt.figtext(0.21,0.75,"Total = 122",fontsize=9)
-    plt.figtext(0.5,0.05,"* cell lines: HCT116, MCF7, PC3, SKOV_frg, TOV112D",fontsize=8)
+    #plt.figtext(0.47,0.75,"Total = 566",fontsize=14)
+    #plt.figtext(0.21,0.75,"Total = 122",fontsize=14)
+    #plt.figtext(0.5,0.05,"* cell lines: HCT116, MCF7, PC3, SKOV_frg, TOV112D",fontsize=10)
     plt.savefig('../../results/node_bar_pie.png')
     return
 
