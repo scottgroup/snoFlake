@@ -24,11 +24,11 @@ rbp_list = pd.read_table(config["nodes"]["rbp_list"]).name.values.tolist()
 #### load rules ####
 
 include: "rules/rank_sno_rbp.smk"
-include: "rules/format_rbp.smk"
-include: "rules/format_sno.smk"
+#include: "rules/format_rbp.smk"
+#include: "rules/format_sno.smk"
 #include: "rules/snodb.smk"
 #include: "rules/binding.smk"
-include: "rules/string.smk"
+#include: "rules/string.smk"
 #include: "rules/overlaps.smk"
 
 
