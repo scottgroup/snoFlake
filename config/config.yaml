@@ -1,28 +1,22 @@
 ---
-data:
-  annotation: resources/hg38_Ensembl_V101_Scottlab_2020.tsv
-  snoDB: resources/snoDB.tsv
-  tpm: resources/coco_tpm.tsv
-  rbp_ENCODE: resources/ENCODE_RBP/
-  snoglobe: resources/snoglobe_predictions/
-  ENCODE_rbp_list : resources/ENCODE_rbp_list.tsv
-  chrLength: resources/chrNameLength.txt
+path:
+  gtf: /home/kris98/scratch/annotation_datasets/Homo_sapiens.GRCh38.110_snoRNAs_tRNAs.gtf
+  snoDB: /home/kris98/scratch/annotation_datasets/snoDB_All_V2.0.tsv
+  tpm: /home/kris98/scratch/annotation_datasets/TGIRT_Seq_v110_cell_lines/coco_cc/homo_sapiens_merged_tpm.tsv
+  ENCODE: /home/kris98/scratch/annotation_datasets/ENCODE_RBP_2023/
+  snoglobe: /home/kris98/scratch/run_snoglobe/snoglobe_predictions_2024/
+  chrNameLength: /home/kris98/scratch/annotation_datasets/star_index/chrNameLength.txt
   STRING: resources/STRING.9606.protein.actions.v11.0.txt
-  HTRRI: resources/htrri_interactions_P_L_S.tsv
+  #HTRRI: resources/htrri_interactions_P_L_S.tsv
+  snoRNA_list: /home/kris98/scratch/annotation_datasets/filtered_genes/sig_exp_CD_snoRNAs.tsv
+  RBP_list: /home/kris98/scratch/annotation_datasets/filtered_genes/exp_RBPs.tsv
 
-outpath: results/
-logs: results/logs/
 
 nodes:
   snoRNA_list : results/snoRNA.tsv
   rbp_list : results/rbp.tsv
 
 filters:
-  ENCODE_p_threshold: 3
-  ENCODE_sig_val_threshold: 3
+
   STRING_score_threshold: 900
   ovlp_p_val_threshold: 100000
-
-filtered_data:
-  rbp_formatted : results/rbp_interactions/
-  sno_formatted : results/sno_interactions/

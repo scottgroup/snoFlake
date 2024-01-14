@@ -6,12 +6,5 @@ workflow/scripts/__pycache__/
 .DS_Store
 
 # input and output files
-results
-results/*
-resources
-resources/*
-workflow/scripts/logs
-workflow/scripts/logs/*
-
-# other files
-.swp
+results/
+resources/

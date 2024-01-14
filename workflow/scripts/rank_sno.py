@@ -2,12 +2,13 @@
 
 import pandas as pd
 import numpy as np
-import sys
 import math
 pd.options.mode.chained_assignment = None  # default='warn'
 
+
 """ Obtain snoRNA characteristics and create a ranking system. """
 """ Box C/D count --> TPM filter --> # copies """
+
 
 def sno_in_annotation(file):
     # extract snoRNAs from annotation

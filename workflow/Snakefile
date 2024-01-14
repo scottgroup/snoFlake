@@ -1,52 +1,45 @@
 __author__ = "Kristina Song"
 __email__ = "kristina.song@usherbrooke.ca"
 
+
 import os
 import glob
 import pandas as pd
 
-configfile:"config/config.yaml" # store paths and user-specific variables
 
-
-#### global wildcard ####
-
-ENCODE, = glob_wildcards(os.path.join(config["data"]["rbp_ENCODE"],"{encode}","replicate1.bed.gz"))
-
+##### store paths and user-specific variables #####
+configfile: "config/config.yaml"
 
 
 #### load snoRNA and RBP list ####
-# Need to get "nodes" output before importing these files
-sno_list = pd.read_table(config["nodes"]["snoRNA_list"]).id.values.tolist()
-rbp_list = pd.read_table(config["nodes"]["rbp_list"]).name.values.tolist()
+sno_list = pd.read_table(config["path"]["snoRNA_list"]).gene_id.values.tolist()
+rbp_list = pd.read_table(config["path"]["RBP_list"]).gene_name.values.tolist()
 
 
+#############################
+## Load rules
+#############################
 
-#### load rules ####
-
-include: "rules/rank_sno_rbp.smk"
-#include: "rules/format_rbp.smk"
-#include: "rules/format_sno.smk"
-#include: "rules/snodb.smk"
+include: "rules/filter.smk"
+include: "rules/interactions.smk"
 #include: "rules/binding.smk"
 #include: "rules/string.smk"
 #include: "rules/overlaps.smk"
 
 
+#############################
+## Target rules
+#############################
+
 rule all:
     input:
-        # Filtering and sorting snoRNAs and RBPs for node selection
-        # Run FIRST!!!
-        nodes = {
-            config["nodes"]["snoRNA_list"],
-            config["nodes"]["rbp_list"]
-        },
-        # Interactions to be included in the network
-        #sno = expand(os.path.join(config["filtered_data"]["sno_formatted"],"{sno}.bed"), sno=sno_list),
-        #rbp = expand(os.path.join(config["filtered_data"]["rbp_formatted"],"{rbp}.bed"), rbp=rbp_list),
-        #sno_rbp_ovlp_p_vals = expand(os.path.join(config["outpath"],"sno_rbp_overlaps_p_vals","{sno}_rbp_overlaps.tsv"),sno=sno_list),
-        interactions = {
-            os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv"),
-            os.path.join(config["outpath"],"sno_bind_to_rbp_transcript.tsv"),
-            os.path.join(config["outpath"],"significant_sno_rbp_target_overlaps.tsv"),
-            os.path.join(config["outpath"],"STRING_900_physical_binding.tsv")
-        }
+        # Generate snoRNA and RBP interactions
+        RBP_interactions = expand("results/interactions/ENCODE/{rbp}.bed", rbp=rbp_list),
+        sno_interactions = expand("results/interactions/snoGloBe/{sno}.bed", sno=sno_list),
+        sno_RBP_target_overlap = expand("results/interactions/sno_RBP_target_overlap/{sno}_RBP.tsv",sno=sno_list),
+        #interactions = {
+        #    os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv"),
+        #    os.path.join(config["outpath"],"sno_bind_to_rbp_transcript.tsv"),
+        #    os.path.join(config["outpath"],"significant_sno_rbp_target_overlaps.tsv"),
+        #    os.path.join(config["outpath"],"STRING_900_physical_binding.tsv")
+        #}

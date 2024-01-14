@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 
+
 import pandas as pd
 from pybedtools import BedTool, helpers
+import pyranges as pr
 import sys
 import os
 from multiprocessing import Pool
 
+
 """ Adapted from Gabrielle's script """
-""" Compute p-values for overlapping target interactions for 2 entities: snoRNA-snoRNA, RBP-RBP, snoRNA-RBP """
+""" Compute p-values for overlapping snoRNA-RBP target interactions."""
+
 
 def shuffle_val(args):
     bed_int, genome_file, pc_bed, i, outfile_prefix = args
@@ -31,65 +35,42 @@ def calc_overlap(args):
     os.remove(out_fn)
     return n
 
-def sno_ovlp(int_file): # format snoGloBe predictions for snoRNA overlap calculations
-    df = pd.read_csv(int_file,
-                     sep='\t',
-                     names=['seqname', 'target_window_start', 'target_window_end', 'snoid', 'count', 'strand']) 
-    return df
-
-def rbp_rbp_ovlp(int_file): # format ENCODE RBP binding interactions for RBP overlap calculations
-    df = pd.read_csv(int_file,
-                     sep='\t',
-                     names=['seqname', 'target_window_start', 'target_window_end',
-                            'rep', 'score', 'strand']) 
-    df.rename(columns={"rep": "rbp_name"},inplace=True)
-    rbp = os.path.basename(int_file).split("_")
-    df['rbp_name'] = rbp[0]
-    return df
 
 def get_name(f_name): # extract snoRNA or RBP name from file name
-    name = os.path.basename(f_name).split("_")
-    if name[0] == "NR": # snoRNAs with id staring with 'NR'
-        name = '_'.join([name[0],name[1]])
-    else: # snoRNAs with id starting with 'ENSG00000' or RBP
-        name = name[0]
+    name = os.path.basename(f_name).split(".")[0]
     return name
+
 
 def main():
     int_file = sys.argv[1] # source file (snoGloBe predicted interactions for sno-RBP overlap calculation)
     target_path = sys.argv[2] # target file (path to all rbp merged bed for sno-RBP overlap calculation)
-    gtf_file = sys.argv[3] # full human gtf file in tsv format
+    gtf_file = sys.argv[3] # full human gtf file
     genome_file = sys.argv[4] # tsv file with name and length of every chromosome
     outfile = sys.argv[5] # output file name with complete path (one file per source)
     nb_threads = int(sys.argv[6]) # nb of threads to use in parallel
     temp_dir = sys.argv[7] # $SLURM_TMPDIR
-    ovlp_type = sys.argv[8] # choose between: sno, rbp, sno_rbp
 
     helpers.set_tempdir(temp_dir)
 
     # create pc_region +- 12 nts bed
-    df_gtf = pd.read_csv(gtf_file, sep='\t', usecols=['seqname', 'start', 'end', 'strand', 'feature', 'gene_biotype'], # gtf
-                         dtype={'seqname': str})
-    df_gtf = df_gtf[(df_gtf.feature == 'gene') & (df_gtf.gene_biotype == 'protein_coding')]
-    df_gtf['start'] -= 12
-    df_gtf['end'] += 12
-    df_gtf['name'] = 'pc'
-    df_gtf['score'] = 0
-    df_gtf[['start', 'end']] = df_gtf[['start', 'end']].astype(int)
-    df_gtf = df_gtf.sort_values(['seqname', 'start', 'end'])
-    pc_bed = BedTool.from_dataframe(df_gtf[['seqname', 'start', 'end', 'name', 'score', 'strand']])
+    df_gtf = pr.read_gtf(gtf_file).df
+    df_gtf = df_gtf[['Chromosome', 'Start', 'End', 'Strand', 'Feature', 'gene_biotype']]
+    df_gtf = df_gtf[(df_gtf.Feature == 'gene') & (df_gtf.gene_biotype == 'protein_coding')]
+    df_gtf['Start'] -= 12
+    df_gtf['End'] += 12
+    df_gtf['Name'] = 'pc'
+    df_gtf['Score'] = 0
+    df_gtf[['Start', 'End']] = df_gtf[['Start', 'End']].astype(int)
+    df_gtf = df_gtf.sort_values(['Chromosome', 'Start', 'End'])
+    pc_bed = BedTool.from_dataframe(df_gtf[['Chromosome', 'Start', 'End', 'Name', 'Score', 'Strand']])
     del df_gtf
 
     target_list = os.listdir(target_path)
 
-    # intersect source & target interactions depending on overlap type
-    df = None
-    if ovlp_type == "sno_rbp" or ovlp_type == "sno":
-        df = sno_ovlp(int_file)
-    elif ovlp_type == "rbp":
-        df = rbp_rbp_ovlp(int_file)
-    else:
-        sys.exit('Option not supported by this script. Please choose between: sno_rbp, sno, rbp.')
+    # intersect source & target interactions
+    df = pd.read_csv(int_file,
+                     sep='\t',
+                     names=['seqname', 'target_window_start', 'target_window_end', 'snoid', 'count', 'strand']) 
 
     bed_int = BedTool.from_dataframe(df) # source interactions in bed format
 
@@ -102,8 +83,7 @@ def main():
         res_shuffle = p.map(shuffle_val, [[bed_int, genome_file, pc_bed, i, shuffle_prefix]
                                   for i in range(max_iteration)])
 
-    # avoid re-running the source-target pair if was already com
-    # puted (example if job timed out)
+    # avoid re-running the source-target pair if was already computed (example if job timed out)
     already_done = ''
     try:
         with open(outfile) as f:
@@ -113,15 +93,10 @@ def main():
         pass
 
     for target_file in target_list:
-        if os.path.basename(int_file) == os.path.basename(target_file): # don't run self pairs for sno-sno and rbp-rbp overlap calculations
-            continue
         if os.path.basename(target_file) in already_done:
             continue
-        bed_target = None
-        if ovlp_type == "sno":
-            bed_target = BedTool.from_dataframe(sno_ovlp(os.path.join(target_path, target_file)))
-        else: # rbp file as target
-            bed_target = BedTool(os.path.join(target_path, target_file))
+        # rbp file as target
+        bed_target = BedTool(os.path.join(target_path, target_file))
         # intersect bed int target
         bed_out = bed_target.intersect(bed_int, s=True, u=True)
         # count nb of intersections
@@ -151,6 +126,7 @@ def main():
         # the resulting file will have the followin columns:
         # source filename, target filename, nb of times shuffled >= real, number of tests done
         # the p-val = nb of times shuffled >= real / number of tests done
+
 
 if __name__ == '__main__':
     main()
