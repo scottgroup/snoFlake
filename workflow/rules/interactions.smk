@@ -112,3 +112,19 @@ rule extract_STRING:
         "Extract RBP-RBP physical binding interactions of interest."
     script:
         "../scripts/STRING.py"
+
+
+rule RBP_binds_to_sno:
+    input:
+        expand(rules.bedtools_merge_ENCODE.output,rbp=rbp_list)
+    output:
+        "results/interactions/RBP_binds_to_sno/all_RBP_binding_to_sno.tsv"
+    params:
+        preprocessed_ENCODE = "results/interactions/ENCODE",
+        sno_annotation = config['path']['snoRNA_list']
+    conda:
+        "../envs/bedtools.yaml"
+    message:
+        "Find ENCODE RBPs that bind to snoRNAs."
+    script:
+        "../scripts/RBP_binds_to_sno.py"

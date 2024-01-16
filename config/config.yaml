@@ -11,13 +11,3 @@ path:
   #HTRRI: resources/htrri_interactions_P_L_S.tsv
   snoRNA_list: /home/kris98/scratch/annotation_datasets/filtered_genes/sig_exp_CD_snoRNAs.tsv
   RBP_list: /home/kris98/scratch/annotation_datasets/filtered_genes/exp_RBPs.tsv
-
-
-nodes:
-  snoRNA_list : results/snoRNA.tsv
-  rbp_list : results/rbp.tsv
-
-filters:
-
-  STRING_score_threshold: 900
-  ovlp_p_val_threshold: 100000
