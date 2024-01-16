@@ -6,7 +6,8 @@ path:
   ENCODE: /home/kris98/scratch/annotation_datasets/ENCODE_RBP_2023/
   snoglobe: /home/kris98/scratch/run_snoglobe/snoglobe_predictions_2024/
   chrNameLength: /home/kris98/scratch/annotation_datasets/star_index/chrNameLength.txt
-  STRING: resources/STRING.9606.protein.actions.v11.0.txt
+  STRING_interactions: /home/kris98/scratch/annotation_datasets/STRING_v12/9606.protein.physical.links.v12.0.txt.gz
+  STRING_info: /home/kris98/scratch/annotation_datasets/STRING_v12/9606.protein.info.v12.0.txt.gz
   #HTRRI: resources/htrri_interactions_P_L_S.tsv
   snoRNA_list: /home/kris98/scratch/annotation_datasets/filtered_genes/sig_exp_CD_snoRNAs.tsv
   RBP_list: /home/kris98/scratch/annotation_datasets/filtered_genes/exp_RBPs.tsv

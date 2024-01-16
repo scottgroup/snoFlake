@@ -54,6 +54,7 @@ def main():
 
     # create pc_region +- 12 nts bed
     df_gtf = pr.read_gtf(gtf_file).df
+    df_gtf['Chromosome'] = df['Chromosome'].astype(str)
     df_gtf = df_gtf[['Chromosome', 'Start', 'End', 'Strand', 'Feature', 'gene_biotype']]
     df_gtf = df_gtf[(df_gtf.Feature == 'gene') & (df_gtf.gene_biotype == 'protein_coding')]
     df_gtf['Start'] -= 12

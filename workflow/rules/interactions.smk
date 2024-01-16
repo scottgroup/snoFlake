@@ -79,3 +79,36 @@ rule get_overlapping_targets_bedtools_intersect:
     log:
         os.path.join(config["logs"],"get_overlapping_targets_bedtools_intersect","{rbp}.log")
 """
+
+
+rule filter_STRING:
+    input:
+        interactions = config['path']['STRING_interactions'],
+        info = config['path']['STRING_info']
+    output:
+        interactions = "results/interactions/STRING/protein_physical_interactions_700.tsv",
+        info = "results/interactions/STRING/protein_info.tsv"
+    params:
+        score_thres = 700
+    message:
+        "Extract STRING physical binding interactions that are above the combined score threshold."
+    shell:
+        "echo -e \"protein1\tprotein2\tcombined_score\" > {output.interactions} && "
+        "gunzip -c {input.interactions} | awk \'(NR>1 && $3>{params.score_thres}) {{print}}\' >> {output.interactions} && "
+        "gunzip -c {input.info} > {output.info}"
+
+
+rule extract_STRING:
+    input:
+        interactions = rules.filter_STRING.output.interactions,
+        info = rules.filter_STRING.output.info
+    output:
+        "results/interactions/STRING/physical_RBP_RBP_700.tsv"
+    params:
+        RBP_list = config['path']['RBP_list']
+    conda:
+        "../envs/python.yaml"
+    message:
+        "Extract RBP-RBP physical binding interactions of interest."
+    script:
+        "../scripts/STRING.py"

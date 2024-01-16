@@ -1,6 +1,6 @@
 rule filter_merge_ENCODE:
     output:
-        temp("results/interactions/ENCODE/{rbp}_filtered_merged.bed")
+        "results/interactions/ENCODE/{rbp}_filtered_merged.bed"
     params:
         p_val_thres = 2,
         in_dir = config["path"]["ENCODE"],
@@ -34,7 +34,7 @@ rule format_snoGloBe:
     input:
         os.path.join(config["path"]["snoglobe"],"pred_{sno}.95_3.gene.tsv")
     output:
-        temp("results/interactions/snoGloBe/{sno}_tmp.bed")
+        "results/interactions/snoGloBe/{sno}_tmp.bed"
     message:
         "Format snoGloBe predictions for {wildcards.sno} to run bedtools merge."
     shell:

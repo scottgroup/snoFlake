@@ -22,9 +22,6 @@ rbp_list = pd.read_table(config["path"]["RBP_list"]).gene_name.values.tolist()
 
 include: "rules/filter.smk"
 include: "rules/interactions.smk"
-#include: "rules/binding.smk"
-#include: "rules/string.smk"
-#include: "rules/overlaps.smk"
 
 
 #############################
@@ -36,10 +33,5 @@ rule all:
         # Generate snoRNA and RBP interactions
         RBP_interactions = expand("results/interactions/ENCODE/{rbp}.bed", rbp=rbp_list),
         sno_interactions = expand("results/interactions/snoGloBe/{sno}.bed", sno=sno_list),
-        sno_RBP_target_overlap = expand("results/interactions/sno_RBP_target_overlap/{sno}_RBP.tsv",sno=sno_list),
-        #interactions = {
-        #    os.path.join(config["outpath"],"rbp_bind_to_sno_transcript.tsv"),
-        #    os.path.join(config["outpath"],"sno_bind_to_rbp_transcript.tsv"),
-        #    os.path.join(config["outpath"],"significant_sno_rbp_target_overlaps.tsv"),
-        #    os.path.join(config["outpath"],"STRING_900_physical_binding.tsv")
-        #}
+        STRING = "results/interactions/STRING/physical_RBP_RBP_700.tsv"
+        #sno_RBP_target_overlap = expand("results/interactions/sno_RBP_target_overlap/{sno}_RBP.tsv",sno=sno_list),
