@@ -12,4 +12,4 @@ __default__:
   error: results/logs/slurmout/{rule}.{wildcards}.err
 
 sno_RBP_overlap:
-  time: 1800
+  time: 4320

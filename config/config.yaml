@@ -11,3 +11,4 @@ path:
   #HTRRI: resources/htrri_interactions_P_L_S.tsv
   snoRNA_list: /home/kris98/scratch/annotation_datasets/filtered_genes/sig_exp_CD_snoRNAs.tsv
   RBP_list: /home/kris98/scratch/annotation_datasets/filtered_genes/exp_RBPs.tsv
+  virtualenv: /home/kris98/venv3.11/bin/activate

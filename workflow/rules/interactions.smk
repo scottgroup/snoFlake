@@ -1,4 +1,5 @@
 rule sno_RBP_overlap:
+    # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
     input:
         rules.bedtools_merge_snoGloBe.output
     output:
@@ -6,29 +7,28 @@ rule sno_RBP_overlap:
     params:
         gtf = config["path"]["gtf"],
         genome = config["path"]["chrNameLength"],
-        preprocessed_ENCODE = "results/interactions/ENCODE"
-    conda:
-        "../envs/bedtools.yaml"
+        preprocessed_ENCODE = "results/interactions/ENCODE",
+        virtualenv = config["path"]["virtualenv"]
     message:
         "Calculate p-values for {wildcards.sno}-RBP target overlap interactions."
     shell:
+        "module load bedtools && "
+        "source {params.virtualenv} && "
         "bash workflow/scripts/compute_overlaps.sh {input} {params.preprocessed_ENCODE} {params.gtf} {params.genome} {output}"
 
 """
 rule extract_sig_sno_RBP_overlap:
     input:
-        in_sno_rbp = expand(rules.sno_rbp_overlap.output,sno=sno_list)
+        expand(rules.sno_RBP_overlap.output,sno=sno_list)
     output:
         temp(os.path.join(config["outpath"],"temp_significant_sno_rbp_target_overlaps.tsv"))
         #out_sno_rbp = temp(os.path.join(config["temp"],"significant_sno_rbp_target_overlaps.tsv")),
-        #out_rbp_rbp = temp(os.path.join(config["temp"],"significant_rbp_rbp_target_overlaps.tsv")),
-        #out_sno_sno = temp(os.path.join(config["temp"],"significant_sno_sno_target_overlaps.tsv"))
     params:
-        config["filters"]["ovlp_p_val_threshold"]
+        p_val_thres = 100000
     message:
-        "Extract significant snoRNA-RBP target overlap interactions."
+        "Extract significant {wildcards.sno}-RBP target overlap interactions."
     shell:
-        "awk \'($3==\"0\") && ($4=={params}) {{print}}\' {input} >> {output}"
+        "awk \'($3==\"0\") && ($4=={params.p_val_thres}) {{print}}\' {input} >> {output}"
         
 
 rule format_outfile:
@@ -48,10 +48,7 @@ rule format_outfile:
         "sed 's/.bed//g' {input} | awk \'{{print $1\"\t\"$2\"\t\"\"sno_rbp_target_overlap\"}}\' >> {output}; "
         #"echo -e \"snoRNA\tRBP\tinteraction\" >> {output.out_sno_rbp} && "
         #"awk \'{{print $1\"\t\"$2\"\t\"\"sno_rbp_target_overlap\"}}\' {input.in_sno_rbp} >> {output.out_sno_rbp}; "
-        #"echo -e \"RBP1\tRBP2\tinteraction\" >> {output.out_rbp_rbp} && "
-        #"awk \'{{print $1\"\t\"$2\"\t\"\"rbp_rbp_target_overlap\"}}\' {input.in_rbp_rbp} >> {output.out_rbp_rbp}; "
-        #"echo -e \"snoRNA1\tsnoRNA2\tinteraction\" >> {output.out_sno_sno} && "
-        #"awk \'{{print $1\"\t\"$2\"\t\"\"sno_sno_target_overlap\"}}\' {input.in_sno_sno} >> {output.out_sno_sno}; "
+        
 
 rule get_targets:
     message: "Get overalpping targets."
