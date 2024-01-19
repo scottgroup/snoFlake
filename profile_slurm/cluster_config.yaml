@@ -4,12 +4,32 @@ __default__:
   mail-type: FAIL
   job-name: "smk_{rule}_{wildcards}"
   time: 180 # minutes
-  nodes: 1
-  ntasks: 1
   mem: 16000M
   cpus-per-task: 8
   output: results/logs/slurmout/{rule}.{wildcards}.out
   error: results/logs/slurmout/{rule}.{wildcards}.err
+  
 
-sno_RBP_overlap:
+sno_RBP_overlap_1:
+  account: def-sabou
   time: 4320
+  cpus-per-task: 44
+  mem: 191840M
+
+sno_RBP_overlap_2:
+  account: def-sabou
+  time: 4320
+  cpus-per-task: 44
+  mem: 191840M
+
+sno_RBP_overlap_3:
+  account: def-sabou
+  time: 4320
+  cpus-per-task: 44
+  mem: 191840M
+
+sno_RBP_overlap_4:
+  account: def-sabou
+  time: 4320
+  cpus-per-task: 44
+  mem: 191840M

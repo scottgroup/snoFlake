@@ -1,82 +1,123 @@
+rule sno_RBP_overlap_1:
+    # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
+    input:
+        sno = rules.bedtools_merge_snoGloBe.output,
+        cleanup = rules.cleanup_files.output
+    output:
+        "results/interactions/sno_RBP_target_overlap_1/{sno}_RBP.tsv"
+    params:
+        gtf = config["path"]["gtf"],
+        genome = config["path"]["chrNameLength"],
+        preprocessed_ENCODE = "results/interactions/ENCODE_1",
+        virtualenv = config["path"]["virtualenv"],
+        env_req = "workflow/envs/overlap_requirements.txt"
+    message:
+        "Calculate p-values for {wildcards.sno}-RBP target overlap interactions."
+    shell:
+        "module load bedtools && "
+        "source {params.virtualenv} && "
+        "pip install -r {params.env_req} && "
+        "bash workflow/scripts/compute_overlaps.sh {input.sno} {params.preprocessed_ENCODE} {params.gtf} {params.genome} {output}"
+
+rule sno_RBP_overlap_2:
+    # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
+    input:
+        sno = rules.bedtools_merge_snoGloBe.output,
+        cleanup = rules.cleanup_files.output
+    output:
+        "results/interactions/sno_RBP_target_overlap_2/{sno}_RBP.tsv"
+    params:
+        gtf = config["path"]["gtf"],
+        genome = config["path"]["chrNameLength"],
+        preprocessed_ENCODE = "results/interactions/ENCODE_2",
+        virtualenv = config["path"]["virtualenv"],
+        env_req = "workflow/envs/overlap_requirements.txt"
+    message:
+        "Calculate p-values for {wildcards.sno}-RBP target overlap interactions."
+    shell:
+        "module load bedtools && "
+        "source {params.virtualenv} && "
+        "pip install -r {params.env_req} && "
+        "bash workflow/scripts/compute_overlaps.sh {input.sno} {params.preprocessed_ENCODE} {params.gtf} {params.genome} {output}"
+
+rule sno_RBP_overlap_3:
+    # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
+    input:
+        sno = rules.bedtools_merge_snoGloBe.output,
+        cleanup = rules.cleanup_files.output
+    output:
+        "results/interactions/sno_RBP_target_overlap_3/{sno}_RBP.tsv"
+    params:
+        gtf = config["path"]["gtf"],
+        genome = config["path"]["chrNameLength"],
+        preprocessed_ENCODE = "results/interactions/ENCODE_3",
+        virtualenv = config["path"]["virtualenv"],
+        env_req = "workflow/envs/overlap_requirements.txt"
+    message:
+        "Calculate p-values for {wildcards.sno}-RBP target overlap interactions."
+    shell:
+        "module load bedtools && "
+        "source {params.virtualenv} && "
+        "pip install -r {params.env_req} && "
+        "bash workflow/scripts/compute_overlaps.sh {input.sno} {params.preprocessed_ENCODE} {params.gtf} {params.genome} {output}"
+
+rule sno_RBP_overlap_4:
+    # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
+    input:
+        sno = rules.bedtools_merge_snoGloBe.output,
+        cleanup = rules.cleanup_files.output
+    output:
+        "results/interactions/sno_RBP_target_overlap_4/{sno}_RBP.tsv"
+    params:
+        gtf = config["path"]["gtf"],
+        genome = config["path"]["chrNameLength"],
+        preprocessed_ENCODE = "results/interactions/ENCODE_4",
+        virtualenv = config["path"]["virtualenv"],
+        env_req = "workflow/envs/overlap_requirements.txt"
+    message:
+        "Calculate p-values for {wildcards.sno}-RBP target overlap interactions."
+    shell:
+        "module load bedtools && "
+        "source {params.virtualenv} && "
+        "pip install -r {params.env_req} && "
+        "bash workflow/scripts/compute_overlaps.sh {input.sno} {params.preprocessed_ENCODE} {params.gtf} {params.genome} {output}"
+
+"""
 rule sno_RBP_overlap:
     # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
     input:
-        rules.bedtools_merge_snoGloBe.output
+        sno = rules.bedtools_merge_snoGloBe.output,
+        cleanup = rules.cleanup_files.output
     output:
         "results/interactions/sno_RBP_target_overlap/{sno}_RBP.tsv"
     params:
         gtf = config["path"]["gtf"],
         genome = config["path"]["chrNameLength"],
         preprocessed_ENCODE = "results/interactions/ENCODE",
-        virtualenv = config["path"]["virtualenv"]
+        virtualenv = config["path"]["virtualenv"],
+        env_req = "workflow/envs/overlap_requirements.txt"
     message:
         "Calculate p-values for {wildcards.sno}-RBP target overlap interactions."
     shell:
         "module load bedtools && "
         "source {params.virtualenv} && "
-        "bash workflow/scripts/compute_overlaps.sh {input} {params.preprocessed_ENCODE} {params.gtf} {params.genome} {output}"
+        "pip install -r {params.env_req} && "
+        "bash workflow/scripts/compute_overlaps.sh {input.sno} {params.preprocessed_ENCODE} {params.gtf} {params.genome} {output}"
 
-"""
+
 rule extract_sig_sno_RBP_overlap:
     input:
         expand(rules.sno_RBP_overlap.output,sno=sno_list)
     output:
-        temp(os.path.join(config["outpath"],"temp_significant_sno_rbp_target_overlaps.tsv"))
-        #out_sno_rbp = temp(os.path.join(config["temp"],"significant_sno_rbp_target_overlaps.tsv")),
+        "results/interactions/sno_RBP_target_overlap/all_sig_sno_RBP_target_overlap.tsv"
     params:
         p_val_thres = 100000
     message:
-        "Extract significant {wildcards.sno}-RBP target overlap interactions."
+        "Extract significant snoRNA-RBP target overlap interactions."
     shell:
-        "awk \'($3==\"0\") && ($4=={params.p_val_thres}) {{print}}\' {input} >> {output}"
-        
-
-rule format_outfile:
-    message: "Format output files to meet network configurations."
-    input:
-        rules.extract_sig_overlaps.output
-        #in_sno_rbp = rules.extract_sig_overlaps.output.out_sno_rbp,
-        #in_rbp_rbp = rules.extract_sig_overlaps.output.out_rbp_rbp,
-        #in_sno_sno = rules.extract_sig_overlaps.output.out_sno_sno
-    output:
-        os.path.join(config["outpath"],"significant_sno_rbp_target_overlaps.tsv")
-        #out_sno_rbp = os.path.join(config["outpath"],"significant_sno_rbp_target_overlaps.tsv"),
-        #out_rbp_rbp = os.path.join(config["outpath"],"significant_rbp_rbp_target_overlaps.tsv"),
-        #out_sno_sno = os.path.join(config["outpath"],"significant_sno_sno_target_overlaps.tsv")
-    shell:
-        "echo -e \"source\ttarget\tinteraction\" >> {output} && " 
-        "sed 's/.bed//g' {input} | awk \'{{print $1\"\t\"$2\"\t\"\"sno_rbp_target_overlap\"}}\' >> {output}; "
-        #"echo -e \"snoRNA\tRBP\tinteraction\" >> {output.out_sno_rbp} && "
-        #"awk \'{{print $1\"\t\"$2\"\t\"\"sno_rbp_target_overlap\"}}\' {input.in_sno_rbp} >> {output.out_sno_rbp}; "
-        
-
-rule get_targets:
-    message: "Get overalpping targets."
-    input:
-        rule.format_outfile.output
-    output:
-        os.path.join(config["outpath"],"sno_rbp_overlaps_targets")
-    
-    shell:
-        "awk '(NR>1) {print $1\"\t\"$2}' {input} | while read line; do"
-        "done"
-
-def sig_pairs(file):
-    source = pd.read_table(file).source.values.tolist()
-    target = pd.read_table(file).target.values.tolist()
-    return expand("histone_{histone}/bin_size_{bin_size}/result.csv", zip,
-       source_node=source, target_node=target)
-
-rule get_overlapping_targets_bedtools_intersect:
-    message: "bedtools intersect to get overlapping targets."
-    input:
-        left = 
-        right = 
-    output:
-    log:
-        os.path.join(config["logs"],"get_overlapping_targets_bedtools_intersect","{rbp}.log")
+        "echo -e \"source\ttarget\tinteraction\" > {output} && " 
+        "awk \'($3==\"0\") && ($4=={params.p_val_thres}) {{print $1\"\t\"$2\"\tsno_RBP_overlap\"}}\' {input} >> {output}"
 """
-
 
 rule filter_STRING:
     input:

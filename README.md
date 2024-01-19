@@ -2,8 +2,6 @@ A pipeline to gather snoRNA and RBP interactions to perform a sno-RBP interactio
 
 **Dependencies:**
 - snakemake
-- bedtools=2.29.0
-- pandas
 
 **Author:** Kristina Sungeun Song kristina.song@usherbrooke.ca
 
@@ -18,16 +16,12 @@ A pipeline to gather snoRNA and RBP interactions to perform a sno-RBP interactio
 
 **Types of snoRNA-RBP Interactions:**
 - Overlap of target sites:
-    - snoRNA-snoRNA
-    - RBP-RBP
     - snoRNA-RBP
 - Direct binding interactions:
-    - snoRNA binds to RBP mRNA transcript
     - RBP binds to snoRNA transcript
 - Interactions from external database:
     - STRING RBP-RBP binding interactions
     - High-throughput RNA-RNA interactions: PARIS, SPLASH, LIGR-seq
-    - snoRNA embedded in host genes that encode for RBP
 
 **Requirements 2023**
 - Obtain snoGloBe predictions https://github.com/scottgroup/snoGloBe/tree/master
