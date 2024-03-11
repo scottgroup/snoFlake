@@ -3,7 +3,7 @@ rule sno_RBP_overlap_1:
     input:
         #sno = rules.bedtools_merge_snoGloBe.output,
         sno = "/home/kris98/scratch/SNORD22-project-figs/resources/interactions_bed/original/ENSG00000277194.bed",
-	cleanup = rules.cleanup_files.output
+	    cleanup = rules.cleanup_files.output
     output:
         "results/interactions/sno_RBP_target_overlap_1/{sno}_RBP.tsv"
     params:

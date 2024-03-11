@@ -10,5 +10,5 @@ rule cleanup_files:
         "rm results/interactions/ENCODE/*_filtered_merged.bed && "
         "rm results/interactions/snoGloBe_HTRRI/*_tmp.bed && "
         "rm results/interactions/snoGloBe_HTRRI/*.sorted.bed && "
-	"echo -e \"Preprocessing of snoRNA and RBP interactions complete.\" > {output} && "
+	    "echo -e \"Preprocessing of snoRNA and RBP interactions complete.\" > {output} && "
         "echo -e \"Computing network interactions.\" >> {output}"

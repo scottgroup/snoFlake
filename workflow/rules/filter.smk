@@ -33,41 +33,17 @@ rule bedtools_merge_ENCODE:
 rule format_snoGloBe_HTRRI:
     input:
         snoglobe = os.path.join(config["path"]["snoglobe"],"pred_{sno}.95_3.gene.tsv"),
-	htrri = config["path"]["HTRRI"]
-    output:
-        "results/interactions/snoGloBe_HTRRI/{sno}.sorted.bed"
-    params:
-        tmp_file = "results/interactions/snoGloBe_HTRRI/{sno}_tmp.bed",
-	snoglobe_thres = 0.95,
-	support_thres = 5
-    message:
-        "Format snoRNA interactions obtained from snoGloBe predictions and HTRRI for {wildcards.sno} to run bedtools merge."
-    shell:
-        "awk -v var=\"{wildcards.sno}\" \'(NR>1) && ($11>={params.snoglobe_thres}) {{print $1\"\t\"$2\"\t\"$3\"\t\"var\"\t\"$5\"\t\"$6}}\' {input.snoglobe} | "
-	"sort -k1,1 -k2,2n > {params.tmp_file}; "
-	"count1=$(grep {wildcards.sno} {input.htrri} | grep \'protein_coding\' | "
-	"awk -v var=\"{wildcards.sno}\" \'($15>={params.support_thres}) && ($13==\"snoRNA\")\' | wc -l); "
-	"if [ \"$count1\" -gt \"0\" ]; then "
-	"grep {wildcards.sno} {input.htrri} | grep \'protein_coding\' | "
-	"awk -v var=\"{wildcards.sno}\" \'($15>={params.support_thres}) && ($13==\"snoRNA\") {{print $5\"\t\"$6\"\t\"$7\"\t\"var\"\t3\t\"$8}}\' >> {params.tmp_file} "
-	"fi; "
-	"count2=$(grep {wildcards.sno} {input.htrri} | grep \'protein_coding\' | "
-	"awk -v var=\"{wildcards.sno}\" \'($15>={params.support_thres}) && ($14==\"snoRNA\")\' | wc -l); "
-	"if [ \"$count2\" -gt \"0\" ]; then "
-	"grep {wildcards.sno} {input.htrri} | grep \'protein_coding\' | "
-	"awk -v var=\"{wildcards.sno}\" \'($15>={params.support_thres}) && ($14==\"snoRNA\") {{print $1\"\t\"$2\"\t\"$3\"\t\"var\"\t3\t\"$4}}\' >> {params.tmp_file} "
-	"fi; "
-	"sort -k1,1 -k2,2n {params.tmp_file} > {output}"
-
-
-rule bedtools_merge_snoGloBe_HTRRI:
-    input:
-        rules.format_snoGloBe_HTRRI.output
+	    htrri = config["path"]["HTRRI"]
     output:
         "results/interactions/snoGloBe_HTRRI/{sno}.bed"
+    params:
+        tmp_file = "results/interactions/snoGloBe_HTRRI/{sno}_tmp.bed",
+	    snoglobe_thres = 0.95,
+	    support_thres = 5,
+        sno = "{wildcards.sno}"
     conda:
         "../envs/bedtools.yaml"
     message:
-        "Bedtools merge snoGloBe predictions and HTRRI for {wildcards.sno} to get unique snoRNA binding interactions."
-    shell:
-        "bedtools merge -s -c 4,5,6 -o distinct,min,distinct -i {input} | sort -k1,1 -k2,2n -u > {output}"
+        "Format snoRNA interactions obtained from snoGloBe predictions and HTRRI for {wildcards.sno} to run bedtools merge."
+    script:
+        "../scripts/merge_snoglobe_htrri.py"
