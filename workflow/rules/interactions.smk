@@ -1,8 +1,9 @@
 rule sno_RBP_overlap_1:
     # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
     input:
-        sno = rules.bedtools_merge_snoGloBe.output,
-        cleanup = rules.cleanup_files.output
+        #sno = rules.bedtools_merge_snoGloBe.output,
+        sno = "/home/kris98/scratch/SNORD22-project-figs/resources/interactions_bed/original/ENSG00000277194.bed",
+	cleanup = rules.cleanup_files.output
     output:
         "results/interactions/sno_RBP_target_overlap_1/{sno}_RBP.tsv"
     params:
@@ -22,8 +23,9 @@ rule sno_RBP_overlap_1:
 rule sno_RBP_overlap_2:
     # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
     input:
-        sno = rules.bedtools_merge_snoGloBe.output,
-        cleanup = rules.cleanup_files.output
+        #sno = rules.bedtools_merge_snoGloBe.output,
+        sno = "/home/kris98/scratch/SNORD22-project-figs/resources/interactions_bed/original/ENSG00000277194.bed",
+	cleanup = rules.cleanup_files.output
     output:
         "results/interactions/sno_RBP_target_overlap_2/{sno}_RBP.tsv"
     params:
@@ -43,8 +45,9 @@ rule sno_RBP_overlap_2:
 rule sno_RBP_overlap_3:
     # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
     input:
-        sno = rules.bedtools_merge_snoGloBe.output,
-        cleanup = rules.cleanup_files.output
+        #sno = rules.bedtools_merge_snoGloBe.output,
+        sno = "/home/kris98/scratch/SNORD22-project-figs/resources/interactions_bed/original/ENSG00000277194.bed",
+	cleanup = rules.cleanup_files.output
     output:
         "results/interactions/sno_RBP_target_overlap_3/{sno}_RBP.tsv"
     params:
@@ -64,8 +67,9 @@ rule sno_RBP_overlap_3:
 rule sno_RBP_overlap_4:
     # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
     input:
-        sno = rules.bedtools_merge_snoGloBe.output,
-        cleanup = rules.cleanup_files.output
+        #sno = rules.bedtools_merge_snoGloBe.output,
+        sno = "/home/kris98/scratch/SNORD22-project-figs/resources/interactions_bed/original/ENSG00000277194.bed",
+	cleanup = rules.cleanup_files.output
     output:
         "results/interactions/sno_RBP_target_overlap_4/{sno}_RBP.tsv"
     params:
@@ -103,11 +107,12 @@ rule sno_RBP_overlap:
         "source {params.virtualenv} && "
         "pip install -r {params.env_req} && "
         "bash workflow/scripts/compute_overlaps.sh {input.sno} {params.preprocessed_ENCODE} {params.gtf} {params.genome} {output}"
-
+"""
 
 rule extract_sig_sno_RBP_overlap:
     input:
-        expand(rules.sno_RBP_overlap.output,sno=sno_list)
+        #expand(rules.sno_RBP_overlap.output,sno=['ENSG00000277194'])
+        "results/interactions/sno_RBP_target_overlap/ENSG00000277194_RBP.tsv"
     output:
         "results/interactions/sno_RBP_target_overlap/all_sig_sno_RBP_target_overlap.tsv"
     params:
@@ -117,7 +122,26 @@ rule extract_sig_sno_RBP_overlap:
     shell:
         "echo -e \"source\ttarget\tinteraction\" > {output} && " 
         "awk \'($3==\"0\") && ($4=={params.p_val_thres}) {{print $1\"\t\"$2\"\tsno_RBP_overlap\"}}\' {input} >> {output}"
-"""
+
+
+rule exp_overlapping_targets:
+    input:
+        sno_interaction = "results/interactions/snoGloBe/ENSG00000277194.bed",
+        sno_RBP_overlap = "results/interactions/sno_RBP_target_overlap/ENSG00000277194_RBP.tsv"
+    output:
+        "results/overlapping_targets/{sno}/summary.txt"
+    params:
+        p_val_thres = 100000,
+        exp_pc_genes = config['path']['exp_pc_genes'],
+        preprocessed_ENCODE = "results/interactions/ENCODE",
+        outdir = "results/overlapping_targets/{sno}"
+    conda:
+        "../envs/bedtools.yaml"
+    message:
+        "Find overlapping targets of {wildcards.sno}-RBP that are expressed."
+    script:
+        "../scripts/exp_overlapping_targets.py"
+
 
 rule filter_STRING:
     input:

@@ -30,25 +30,44 @@ rule bedtools_merge_ENCODE:
         "bedtools merge -s -c 4,5,6 -o distinct,min,distinct -i {input} | sort -k1,1 -k2,2n -u | awk -v var=\"{wildcards.rbp}\" \'{{print $1\"\t\"$2\"\t\"$3\"\t\"var\"\t\"$5\"\t\"$6}}\' | sed 's/chrM/chrMT/g' | sed 's/^chr\|%$//g' > {output}"
 
 
-rule format_snoGloBe:
+rule format_snoGloBe_HTRRI:
     input:
-        os.path.join(config["path"]["snoglobe"],"pred_{sno}.95_3.gene.tsv")
+        snoglobe = os.path.join(config["path"]["snoglobe"],"pred_{sno}.95_3.gene.tsv"),
+	htrri = config["path"]["HTRRI"]
     output:
-        "results/interactions/snoGloBe/{sno}_tmp.bed"
+        "results/interactions/snoGloBe_HTRRI/{sno}.sorted.bed"
+    params:
+        tmp_file = "results/interactions/snoGloBe_HTRRI/{sno}_tmp.bed",
+	snoglobe_thres = 0.95,
+	support_thres = 5
     message:
-        "Format snoGloBe predictions for {wildcards.sno} to run bedtools merge."
+        "Format snoRNA interactions obtained from snoGloBe predictions and HTRRI for {wildcards.sno} to run bedtools merge."
     shell:
-        "awk -v var=\"{wildcards.sno}\" \'(NR>1) {{print $1\"\t\"$2\"\t\"$3\"\t\"var\"\t\"$5\"\t\"$6}}\' {input} | sort -k1,1 -k2,2n > {output}"
+        "awk -v var=\"{wildcards.sno}\" \'(NR>1) && ($11>={params.snoglobe_thres}) {{print $1\"\t\"$2\"\t\"$3\"\t\"var\"\t\"$5\"\t\"$6}}\' {input.snoglobe} | "
+	"sort -k1,1 -k2,2n > {params.tmp_file}; "
+	"count1=$(grep {wildcards.sno} {input.htrri} | grep \'protein_coding\' | "
+	"awk -v var=\"{wildcards.sno}\" \'($15>={params.support_thres}) && ($13==\"snoRNA\")\' | wc -l); "
+	"if [ \"$count1\" -gt \"0\" ]; then "
+	"grep {wildcards.sno} {input.htrri} | grep \'protein_coding\' | "
+	"awk -v var=\"{wildcards.sno}\" \'($15>={params.support_thres}) && ($13==\"snoRNA\") {{print $5\"\t\"$6\"\t\"$7\"\t\"var\"\t3\t\"$8}}\' >> {params.tmp_file} "
+	"fi; "
+	"count2=$(grep {wildcards.sno} {input.htrri} | grep \'protein_coding\' | "
+	"awk -v var=\"{wildcards.sno}\" \'($15>={params.support_thres}) && ($14==\"snoRNA\")\' | wc -l); "
+	"if [ \"$count2\" -gt \"0\" ]; then "
+	"grep {wildcards.sno} {input.htrri} | grep \'protein_coding\' | "
+	"awk -v var=\"{wildcards.sno}\" \'($15>={params.support_thres}) && ($14==\"snoRNA\") {{print $1\"\t\"$2\"\t\"$3\"\t\"var\"\t3\t\"$4}}\' >> {params.tmp_file} "
+	"fi; "
+	"sort -k1,1 -k2,2n {params.tmp_file} > {output}"
 
 
-rule bedtools_merge_snoGloBe:
+rule bedtools_merge_snoGloBe_HTRRI:
     input:
-        rules.format_snoGloBe.output
+        rules.format_snoGloBe_HTRRI.output
     output:
-        "results/interactions/snoGloBe/{sno}.bed"
+        "results/interactions/snoGloBe_HTRRI/{sno}.bed"
     conda:
         "../envs/bedtools.yaml"
     message:
-        "Bedtools merge snoGloBe predictions for {wildcards.sno} to get unique snoRNA binding interactions."
+        "Bedtools merge snoGloBe predictions and HTRRI for {wildcards.sno} to get unique snoRNA binding interactions."
     shell:
         "bedtools merge -s -c 4,5,6 -o distinct,min,distinct -i {input} | sort -k1,1 -k2,2n -u > {output}"

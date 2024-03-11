@@ -26,6 +26,12 @@ def bedtools_intersect(ENCODE_dir, sno_bed):
             intersect_df = intersect_df[['source','target']]
             final_interactions_df = pd.concat([final_interactions_df,intersect_df],ignore_index=True)
 
+            # get sequence on the snoRNA CHANGE MEEEEEEEEEEEEEEEEEEeeeeeeee ########
+            intersect_bed = RBP_bed.intersect(sno_bed, s=True)
+            intersect_df = intersect_bed.to_dataframe()
+            print(intersect_dfst)
+                
+
     final_interactions_df['interaction'] = 'RBP_binds_to_snoRNA'
     final_interactions_df.drop_duplicates(inplace=True, ignore_index=True)
     return final_interactions_df

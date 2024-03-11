@@ -32,10 +32,11 @@ include: "rules/interactions.smk"
 rule all:
     input:
         # Generate snoRNA and RBP interactions
-        RBP_interactions = expand("results/interactions/ENCODE/{rbp}.bed", rbp=rbp_list),
-        sno_interactions = expand("results/interactions/snoGloBe/{sno}.bed", sno=sno_list),
-        STRING = "results/interactions/STRING/physical_RBP_RBP_700.tsv",
+        #RBP_interactions = expand("results/interactions/ENCODE/{rbp}.bed", rbp=rbp_list),
+        sno_interactions = expand("results/interactions/snoGloBe_HTRRI/{sno}.bed", sno=sno_list),
+        #STRING = "results/interactions/STRING/physical_RBP_RBP_700.tsv",
         status = "results/preprocessing_status.txt",
         #sig_sno_RBP_target_overlap = "results/interactions/sno_RBP_target_overlap/all_sig_sno_RBP_target_overlap.tsv",
-        RBP_binds_to_sno = "results/interactions/RBP_binds_to_sno/all_RBP_binding_to_sno.tsv",
-        sno_RBP_target_overlaps = expand("results/interactions/sno_RBP_target_overlap_{num}/{sno}_RBP.tsv",sno=sno_list, num=['1','2','3','4'])
+        #sig_sno_RBP_target_overlap_targets = "results/overlapping_targets/ENSG00000277194/summary.txt",
+        #RBP_binds_to_sno = "results/interactions/RBP_binds_to_sno/all_RBP_binding_to_sno.tsv",
+        #sno_RBP_target_overlaps = expand("results/interactions/sno_RBP_target_overlap_{num}/{sno}_RBP.tsv",sno=['ENSG00000277194'], num=['1','4'])

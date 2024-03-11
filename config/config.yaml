@@ -8,7 +8,8 @@ path:
   chrNameLength: /home/kris98/scratch/annotation_datasets/star_index/chrNameLength.txt
   STRING_interactions: /home/kris98/scratch/annotation_datasets/STRING_v12/9606.protein.physical.links.v12.0.txt.gz
   STRING_info: /home/kris98/scratch/annotation_datasets/STRING_v12/9606.protein.info.v12.0.txt.gz
-  #HTRRI: resources/htrri_interactions_P_L_S.tsv
+  HTRRI: /home/kris98/scratch/annotation_datasets/htrri_crssant.tsv
   snoRNA_list: /home/kris98/scratch/annotation_datasets/filtered_genes/sig_exp_CD_snoRNAs.tsv
   RBP_list: /home/kris98/scratch/annotation_datasets/filtered_genes/exp_RBPs.tsv
   virtualenv: /home/kris98/venv3.11/bin/activate
+  exp_pc_genes: /home/kris98/scratch/annotation_datasets/filtered_genes/exp_pc_genes.tsv
