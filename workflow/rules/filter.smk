@@ -30,20 +30,18 @@ rule bedtools_merge_ENCODE:
         "bedtools merge -s -c 4,5,6 -o distinct,min,distinct -i {input} | sort -k1,1 -k2,2n -u | awk -v var=\"{wildcards.rbp}\" \'{{print $1\"\t\"$2\"\t\"$3\"\t\"var\"\t\"$5\"\t\"$6}}\' | sed 's/chrM/chrMT/g' | sed 's/^chr\|%$//g' > {output}"
 
 
-rule format_snoGloBe_HTRRI:
+rule bedtools_merge_snoGloBe_HTRRI:
     input:
         snoglobe = os.path.join(config["path"]["snoglobe"],"pred_{sno}.95_3.gene.tsv"),
 	    htrri = config["path"]["HTRRI"]
     output:
         "results/interactions/snoGloBe_HTRRI/{sno}.bed"
     params:
-        tmp_file = "results/interactions/snoGloBe_HTRRI/{sno}_tmp.bed",
 	    snoglobe_thres = 0.95,
-	    support_thres = 5,
-        sno = "{wildcards.sno}"
+	    support_thres = 5
     conda:
         "../envs/bedtools.yaml"
     message:
         "Format snoRNA interactions obtained from snoGloBe predictions and HTRRI for {wildcards.sno} to run bedtools merge."
-    script:
-        "../scripts/merge_snoglobe_htrri.py"
+    shell:
+        "python3 workflow/scripts/merge_snoglobe_htrri.py {input.snoglobe} {input.htrri} {wildcards.sno} {output} {params.snoglobe_thres} {params.support_thres}"
