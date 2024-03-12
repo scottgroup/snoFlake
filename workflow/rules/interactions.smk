@@ -1,9 +1,8 @@
 rule sno_RBP_overlap_1:
     # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
     input:
-        #sno = rules.bedtools_merge_snoGloBe.output,
-        sno = "/home/kris98/scratch/SNORD22-project-figs/resources/interactions_bed/original/ENSG00000277194.bed",
-	    cleanup = rules.cleanup_files.output
+        sno = rules.bedtools_merge_snoGloBe_HTRRI.output,
+	cleanup = rules.cleanup_files.output
     output:
         "results/interactions/sno_RBP_target_overlap_1/{sno}_RBP.tsv"
     params:
@@ -23,8 +22,7 @@ rule sno_RBP_overlap_1:
 rule sno_RBP_overlap_2:
     # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
     input:
-        #sno = rules.bedtools_merge_snoGloBe.output,
-        sno = "/home/kris98/scratch/SNORD22-project-figs/resources/interactions_bed/original/ENSG00000277194.bed",
+        sno = rules.bedtools_merge_snoGloBe_HTRRI.output,
 	cleanup = rules.cleanup_files.output
     output:
         "results/interactions/sno_RBP_target_overlap_2/{sno}_RBP.tsv"
@@ -45,8 +43,7 @@ rule sno_RBP_overlap_2:
 rule sno_RBP_overlap_3:
     # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
     input:
-        #sno = rules.bedtools_merge_snoGloBe.output,
-        sno = "/home/kris98/scratch/SNORD22-project-figs/resources/interactions_bed/original/ENSG00000277194.bed",
+        sno = rules.bedtools_merge_snoGloBe_HTRRI.output,
 	cleanup = rules.cleanup_files.output
     output:
         "results/interactions/sno_RBP_target_overlap_3/{sno}_RBP.tsv"
@@ -67,8 +64,7 @@ rule sno_RBP_overlap_3:
 rule sno_RBP_overlap_4:
     # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
     input:
-        #sno = rules.bedtools_merge_snoGloBe.output,
-        sno = "/home/kris98/scratch/SNORD22-project-figs/resources/interactions_bed/original/ENSG00000277194.bed",
+        sno = rules.bedtools_merge_snoGloBe_HTRRI.output,
 	cleanup = rules.cleanup_files.output
     output:
         "results/interactions/sno_RBP_target_overlap_4/{sno}_RBP.tsv"

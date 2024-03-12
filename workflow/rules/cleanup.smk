@@ -7,8 +7,6 @@ rule cleanup_files:
     message:
         "Remove temp files."
     shell:
-        "rm results/interactions/ENCODE/*_filtered_merged.bed && "
-        "rm results/interactions/snoGloBe_HTRRI/*_tmp.bed && "
-        "rm results/interactions/snoGloBe_HTRRI/*.sorted.bed && "
-	    "echo -e \"Preprocessing of snoRNA and RBP interactions complete.\" > {output} && "
+        "if test -f results/interactions/ENCODE/*_filtered_merged.bed; then rm results/interactions/ENCODE/*_filtered_merged.bed; fi  && "
+	"echo -e \"Preprocessing of snoRNA and RBP interactions complete.\" > {output} && "
         "echo -e \"Computing network interactions.\" >> {output}"
