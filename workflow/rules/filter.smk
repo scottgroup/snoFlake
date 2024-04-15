@@ -13,7 +13,7 @@ rule filter_merge_ENCODE:
             "gunzip -c {params.in_dir}/${{line}}/replicate1.bed.gz | sort -k8 -n | awk -F'\t' '$8>={params.p_val_thres}' >> {params.tmp_file}; "
             "gunzip -c {params.in_dir}/${{line}}/replicate2.bed.gz | sort -k8 -n | awk -F'\t' '$8>={params.p_val_thres}' >> {params.tmp_file}; "
         "done && "
-        "cut -f 1-6 {params.tmp_file} | sort -k1,1 -k2,2n > {output} && "
+        "awk \'{{print $1\"\t\"$2\"\t\"$3\"\t\"$4\"\t\"$8\"\t\"$6}}\' {params.tmp_file} | sort -k1,1 -k2,2n > {output} && "
         "rm {params.tmp_file}"
 
 
