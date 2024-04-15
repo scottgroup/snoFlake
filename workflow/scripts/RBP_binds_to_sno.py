@@ -48,7 +48,6 @@ def add_edge_weight(df,p_val_thres):
     stringent_thres = p_val_thres+1
     intermediate_thres = (pow(0.1, p_val_thres)+pow(0.1, stringent_thres))/2
     intermediate_thres_log = -math.log10(intermediate_thres)
-    print(intermediate_thres_log)
 
     df['weight'] = 'lenient'
 
