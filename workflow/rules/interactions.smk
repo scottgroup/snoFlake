@@ -96,10 +96,15 @@ rule RBP_binds_to_sno:
         "results/interactions/RBP_binds_to_sno/all_RBP_binding_to_sno.tsv"
     params:
         preprocessed_ENCODE = "results/interactions/ENCODE",
-        sno_annotation = config['path']['snoRNA_list']
+        sno_annotation = config['path']['snoRNA_list'],
+        fasta = config['path']['fasta'],
+        p_val_thres = rules.filter_merge_ENCODE.params.p_val_thres
     conda:
         "../envs/bedtools.yaml"
+    log:
+        "results/logs/RBP_binds_to_sno.log"
     message:
         "Find ENCODE RBPs that bind to snoRNAs."
-    script:
-        "../scripts/RBP_binds_to_sno.py"
+    shell:
+        "python3 workflow/scripts/RBP_binds_to_sno.py {params.preprocessed_ENCODE} "
+        "{params.sno_annotation} {params.fasta} {output} {params.p_val_thres} > {log}"
