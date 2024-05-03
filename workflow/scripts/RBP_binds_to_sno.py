@@ -31,7 +31,7 @@ def bedtools_intersect(ENCODE_dir, sno_bed, fasta):
 
             intersect_df = intersect_df.rename(columns={"RBP_gene_name": "source","sno_gene_id" : "target", "RBP_Score" : "p_val"})
             intersect_df = intersect_df[['source','target','p_val']]
-            intersect_df = intersect_df.groupby(by=['source','target'], as_index = False).max()
+            intersect_df = intersect_df.groupby(by=['source','target'], as_index = False).min()
             final_interactions_df = pd.concat([final_interactions_df,intersect_df],ignore_index=True)
                 
     final_interactions_df['interaction'] = 'RBP_binds_to_snoRNA'
