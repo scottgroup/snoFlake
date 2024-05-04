@@ -49,6 +49,7 @@ def main():
     outfile = sys.argv[5] # output file name with complete path (one file per source)
     nb_threads = int(sys.argv[6]) # nb of threads to use in parallel
     temp_dir = sys.argv[7] # $SLURM_TMPDIR
+    iters_thres = sys.argv[8] # max number of iterations
 
     helpers.set_tempdir(temp_dir)
 
@@ -76,7 +77,7 @@ def main():
 
     bed_int = BedTool.from_dataframe(df) # source interactions in bed format
 
-    max_iteration = 100000
+    max_iteration = int(iters_thres)
 
     shuffle_prefix = os.path.join(temp_dir, 'shuffled_%s' % (os.path.basename(int_file)))
 
@@ -98,7 +99,13 @@ def main():
         if os.path.basename(target_file) in already_done:
             continue
         # rbp file as target
-        bed_target = BedTool(os.path.join(target_path, target_file))
+        df_target = pd.read_csv(os.path.join(target_path, target_file),
+                        sep='\t',
+                        names=['seqname', 'target_window_start', 'target_window_end', 'rbpid', 'count', 'strand']) 
+        df_target['seqname'] = df_target['seqname'].astype(str)
+
+        bed_target = BedTool.from_dataframe(df_target) # target interactions in bed format
+
         # intersect bed int target
         bed_out = bed_target.intersect(bed_int, s=True, u=True)
         # count nb of intersections
@@ -109,7 +116,7 @@ def main():
         n = 0
 
 
-        # to limit the computation time, do as few tests as possible. Start by 10, if suffled >= real (n) at most once,
+        # to limit the computation time, do as few tests as possible. Start by 10, if shuffled >= real (n) at most once,
         # then continue to 100 tests, and so on until max_iteration is reached
         while n <= 1 and nb_shuffle <= max_iteration :
             with Pool(nb_threads) as p:
@@ -117,7 +124,10 @@ def main():
                                           for i in range(prev_nb_shuffle, nb_shuffle)])
             n += sum(res)
             prev_nb_shuffle = nb_shuffle
-            nb_shuffle *= 10
+            if nb_shuffle == 100000 and max_iteration == 200000:
+                nb_shuffle *= 2
+            else:
+                nb_shuffle *= 10
 
         # compute pval
         # pval = n / nb_shuffle

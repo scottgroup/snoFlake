@@ -18,7 +18,7 @@ tmp_outfile=$(basename "$5")
 outfile=$workdir/$5
 
 cd $SLURM_TMPDIR/ &&
-python3 compute_overlaps.py $in_file $target_path $gtf $genome $tmp_outfile $SLURM_CPUS_PER_TASK $SLURM_TMPDIR
+python3 compute_overlaps.py $in_file $target_path $gtf $genome $tmp_outfile $SLURM_CPUS_PER_TASK $SLURM_TMPDIR $6
 
 # copy output file in $SLURM_TMPDIR to original output directory
 cp $tmp_outfile $outfile

@@ -10,24 +10,7 @@ __default__:
   error: results/logs/slurmout/{rule}.{wildcards}.err
   
 
-sno_RBP_overlap_1:
-  time: 4320
-  cpus-per-task: 44
-  mem: 191840M
-
-sno_RBP_overlap_2:
-  account: def-sabou
-  time: 4320
-  cpus-per-task: 44
-  mem: 191840M
-
-sno_RBP_overlap_3:
-  account: def-sabou
-  time: 4320
-  cpus-per-task: 44
-  mem: 191840M
-
-sno_RBP_overlap_4:
+sno_RBP_overlap:
   time: 4320
   cpus-per-task: 44
   mem: 191840M

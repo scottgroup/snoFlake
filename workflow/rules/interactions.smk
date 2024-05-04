@@ -1,40 +1,51 @@
-"""
 rule sno_RBP_overlap:
     # Need to use virtualenv instead of conda for this rule as it requires high amount of I/O operations
     input:
-        sno = rules.bedtools_merge_snoGloBe_HTRRI.output,
-        cleanup = rules.cleanup_files.output
+        cleanup = rules.preprocessing_cleanup.output,
+        sno = "results/interactions/snoGloBe_HTRRI_{sno_thres}/{sno}.bed"
     output:
-        "results/interactions/sno_RBP_target_overlap/{sno}_RBP.tsv"
+        "results/interactions/sno_RBP_target_overlap/sno-{sno_thres}-RBP-{rbp_thres}-ovlp-{ovlp_thres}/{sno}_RBP.tsv"
     params:
         gtf = config["path"]["gtf"],
         genome = config["path"]["chrNameLength"],
-        preprocessed_ENCODE = "results/interactions/ENCODE",
+        preprocessed_ENCODE = "results/interactions/ENCODE_{rbp_thres}",
         virtualenv = config["path"]["virtualenv"],
-        env_req = "workflow/envs/overlap_requirements.txt"
+        env_req = "workflow/envs/overlap_requirements.txt",
+        max_iters = "{ovlp_thres}"
     message:
-        "Calculate p-values for {wildcards.sno}-RBP target overlap interactions."
+        "Calculate p-values for {wildcards.sno}-RBP target overlap interactions. (THRESHOLDS: {wildcards.sno_thres}, {wildcards.rbp_thres}, {wildcards.ovlp_thres})"
     shell:
         "module load bedtools && "
         "source {params.virtualenv} && "
         "pip install -r {params.env_req} && "
-        "bash workflow/scripts/compute_overlaps.sh {input.sno} {params.preprocessed_ENCODE} {params.gtf} {params.genome} {output}"
-"""
+        "bash workflow/scripts/compute_overlaps.sh {input.sno} {params.preprocessed_ENCODE} {params.gtf} {params.genome} {output} {params.max_iters}"
+
 
 rule extract_sig_sno_RBP_overlap:
     input:
-        #expand(rules.sno_RBP_overlap.output,sno=sno_list)
-        expand("results/interactions/sno_RBP_target_overlap/{sno}_RBP.tsv",sno=sno_list)
+        expand(rules.sno_RBP_overlap.output,sno=sno_list,allow_missing=True)
     output:
-        "results/interactions/sno_RBP_target_overlap/all_sig_sno_RBP_target_overlap.tsv"
+        "results/interactions/sno_RBP_target_overlap/sno-{sno_thres}-RBP-{rbp_thres}-ovlp-{ovlp_thres}/all_sig_sno_RBP_target_overlap.tsv"
     params:
-        p_val_thres = 100000
+        p_val_thres = rules.sno_RBP_overlap.params.max_iters
     message:
-        "Extract significant snoRNA-RBP target overlap interactions."
+        "Extract significant snoRNA-RBP target overlap interactions. (THRESHOLDS: {wildcards.sno_thres}, {wildcards.rbp_thres}, {wildcards.ovlp_thres})"
     shell:
         "echo -e \"source\ttarget\tinteraction\" > {output} && " 
         "awk \'($3==\"0\") && ($4=={params.p_val_thres}) {{print $1\"\t\"$2\"\tsno_RBP_overlap\"}}\' {input} >> {output}"
 
+
+rule compute_weights_sno_RBP_overlap:
+    input:
+        expand(rules.extract_sig_sno_RBP_overlap.output,zip,sno_thres=config["thresholds"]["snoGloBe_HTRRI"],rbp_thres=config["thresholds"]["ENCODE"],ovlp_thres=config["thresholds"]["ovlp"])
+    output:
+        "results/interactions/sno_RBP_target_overlap/weighted_sig_sno_RBP_target_overlap.tsv"
+    conda:
+        "../envs/bedtools.yaml"
+    message:
+        "Add weights to significant snoRNA-RBP target overlap interactions."
+    script:
+        "../scripts/compute_overlaps_weights.py"
 """
 rule exp_overlapping_targets:
     input:
@@ -63,7 +74,7 @@ rule filter_STRING:
         interactions = "results/interactions/STRING/protein_physical_interactions.tsv",
         info = "results/interactions/STRING/protein_info.tsv"
     params:
-        score_thres = 700
+        score_thres = config["thresholds"]["STRING"]
     message:
         "Extract STRING physical binding interactions that are above the combined score threshold."
     shell:
@@ -80,7 +91,7 @@ rule extract_STRING:
         "results/interactions/STRING/physical_RBP_RBP.tsv"
     params:
         RBP_list = config['path']['RBP_list'],
-        score_thres = 700
+        score_thres = rules.filter_STRING.params.score_thres
     conda:
         "../envs/python.yaml"
     message:
@@ -91,14 +102,14 @@ rule extract_STRING:
 
 rule RBP_binds_to_sno:
     input:
-        expand(rules.bedtools_merge_ENCODE.output,rbp=rbp_list)
+        expand(rules.bedtools_merge_ENCODE.output,thres=config["thresholds"]["ENCODE"][0],rbp=rbp_list)
     output:
         "results/interactions/RBP_binds_to_sno/all_RBP_binding_to_sno.tsv"
     params:
-        preprocessed_ENCODE = "results/interactions/ENCODE",
+        preprocessed_ENCODE = "results/interactions/ENCODE_"+str(config["thresholds"]["ENCODE"][0]),
         sno_annotation = config['path']['snoRNA_list'],
         fasta = config['path']['fasta'],
-        p_val_thres = rules.filter_merge_ENCODE.params.p_val_thres
+        p_val_thres = config["thresholds"]["ENCODE"][0]
     conda:
         "../envs/bedtools.yaml"
     log:
