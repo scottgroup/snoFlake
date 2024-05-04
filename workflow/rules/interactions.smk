@@ -40,6 +40,8 @@ rule compute_weights_sno_RBP_overlap:
         expand(rules.extract_sig_sno_RBP_overlap.output,zip,sno_thres=config["thresholds"]["snoGloBe_HTRRI"],rbp_thres=config["thresholds"]["ENCODE"],ovlp_thres=config["thresholds"]["ovlp"])
     output:
         "results/interactions/sno_RBP_target_overlap/weighted_sig_sno_RBP_target_overlap.tsv"
+    params:
+        max_iters = config['thresholds']['ovlp']
     conda:
         "../envs/bedtools.yaml"
     message:
