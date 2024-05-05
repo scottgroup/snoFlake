@@ -16,7 +16,7 @@ def bedtools_intersect(interactions_df,ENCODE_dir,sno_bed,exp_pc_bed,outdir):
         intersect_bed = sno_bed.intersect(RBP_bed, s=True)
         exp_overlapping_targets_bed = intersect_bed.intersect(exp_pc_bed,s=True,wo=True)
         print(exp_overlapping_targets_bed)
-        column_names = ['intersect_Chromosome','intersect_Start','intersect_End','snoRNA','intersect_Score','intersect_Strand',
+        column_names = ['intersect_ChromFpdosome','intersect_Start','intersect_End','snoRNA','intersect_Score','intersect_Strand',
                                 'pc_Chromosome','pc_Start','pc_End','pc_gene_id','pc_Score','pc_Strand']
         exp_overlapping_targets_df = exp_overlapping_targets_bed.to_dataframe(header=None,names=column_names)
         #exp_overlapping_targets_df = exp_overlapping_targets_df[['intersect_Chromosome','intersect_Start','intersect_End','pc_gene_id','intersect_Score','intersect_Strand']]

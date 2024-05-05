@@ -5,6 +5,7 @@ __email__ = "kristina.song@usherbrooke.ca"
 import os
 import glob
 import pandas as pd
+from snakemake.utils import Paramspace
 
 
 ##### store paths and user-specific variables #####
@@ -23,6 +24,7 @@ rbp_list = pd.read_table(config["path"]["RBP_list"]).gene_name.values.tolist()
 include: "rules/filter.smk"
 include: "rules/cleanup.smk"
 include: "rules/interactions.smk"
+include: "rules/cytoscape.smk"
 
 
 #############################
@@ -32,11 +34,11 @@ include: "rules/interactions.smk"
 rule all:
     input:
         # Generate snoRNA and RBP interactions
-        #RBP_interactions = expand("results/interactions/ENCODE/{rbp}.bed", rbp=rbp_list),
-        #sno_interactions = expand("results/interactions/snoGloBe_HTRRI/{sno}.bed", sno=sno_list),
-        #STRING = "results/interactions/STRING/physical_RBP_RBP_700.tsv",
-        #status = "results/preprocessing_status.txt",
-        #sig_sno_RBP_target_overlap = "results/interactions/sno_RBP_target_overlap/all_sig_sno_RBP_target_overlap.tsv",
+        RBP_interactions = expand("results/interactions/ENCODE_{thres}/{rbp}.bed", thres=config["thresholds"]["ENCODE"], rbp=rbp_list),
+        sno_interactions = expand("results/interactions/snoGloBe_HTRRI_{thres}/{sno}.bed", thres=config["thresholds"]["snoGloBe_HTRRI"], sno=sno_list),
+        STRING = "results/interactions/STRING/physical_RBP_RBP.tsv",
+        status = "results/preprocessing_status.txt",
+        sno_RBP_target_overalp = "results/interactions/sno_RBP_target_overlap/weighted_sig_sno_RBP_target_overlap.tsv",
         #sig_sno_RBP_target_overlap_targets = "results/overlapping_targets/ENSG00000277194/summary.txt",
-        #RBP_binds_to_sno = "results/interactions/RBP_binds_to_sno/all_RBP_binding_to_sno.tsv",
-        sno_RBP_target_overlaps = expand("results/interactions/sno_RBP_target_overlap_{num}/{sno}_RBP.tsv",sno=sno_list, num=['1','2','3','4'])
+        RBP_binds_to_sno = "results/interactions/RBP_binds_to_sno/all_RBP_binding_to_sno.tsv",
+        network = "results/networks/sno_RBP_network.cys"
