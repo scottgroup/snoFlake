@@ -1,5 +1,0 @@
-pandas
-pybedtools
-pyranges
-multiprocess
-py4cytoscape

@@ -8,9 +8,3 @@ __default__:
   cpus-per-task: 8
   output: results/logs/slurmout/{rule}.{wildcards}.out
   error: results/logs/slurmout/{rule}.{wildcards}.err
-  
-
-sno_RBP_overlap:
-  time: 4320
-  cpus-per-task: 44
-  mem: 191840M

@@ -1,22 +1,18 @@
 ---
 path:
-  gtf: /home/kris98/projects/def-scottmic/kris98/annotation_datasets/Homo_sapiens.GRCh38.110_snoRNAs_tRNAs.gtf
-  fasta: /home/kris98/projects/def-scottmic/kris98/annotation_datasets/Homo_sapiens.GRCh38.110.dna.primary_assembly.fa
-  snoDB: /home/kris98/projects/def-scottmic/kris98/annotation_datasets/snoDB_All_V2.0.tsv
-  tpm: /home/kris98/projects/def-scottmic/kris98/annotation_datasets/TGIRT_Seq_v110_cell_lines/coco_cc/homo_sapiens_merged_tpm.tsv
-  ENCODE: /home/kris98/projects/def-scottmic/kris98/annotation_datasets/ENCODE_RBP_2023/
-  snoglobe: /home/kris98/projects/def-scottmic/kris98/annotation_datasets/snoglobe_predictions_2024/
-  chrNameLength: /home/kris98/projects/def-scottmic/kris98/annotation_datasets/star_index_v110/chrNameLength.txt
-  STRING_interactions: /home/kris98/projects/def-scottmic/kris98/annotation_datasets/STRING_v12/9606.protein.physical.links.v12.0.txt.gz
-  STRING_info: /home/kris98/projects/def-scottmic/kris98/annotation_datasets/STRING_v12/9606.protein.info.v12.0.txt.gz
-  HTRRI: /home/kris98/projects/def-scottmic/kris98/annotation_datasets/htrri_crssant_CDsnoRNAs.tsv
-  snoRNA_list: /home/kris98/projects/def-scottmic/kris98/annotation_datasets/filtered_genes/sig_exp_CD_snoRNAs.tsv
-  RBP_list: /home/kris98/projects/def-scottmic/kris98/annotation_datasets/filtered_genes/exp_RBPs.tsv
-  virtualenv: /home/kris98/venv3.11/bin/activate
-  exp_pc_genes: /home/kris98/projects/def-scottmic/kris98/annotation_datasets/filtered_genes/exp_pc_genes.tsv
+  fasta: resources/Homo_sapiens.GRCh38.110.dna.primary_assembly.fa
+  genome: resources/Homo_sapiens.GRCh38.110.dna.primary_assembly.genome
+  ENCODE: resources/ENCODE_RBP_2023/
+  snoglobe: resources/snoglobe_predictions_2024/
+  STRING_interactions: resources/STRING_v12/9606.protein.physical.links.v12.0.txt.gz
+  STRING_info: resources/STRING_v12/9606.protein.info.v12.0.txt.gz
+  HTRRI: resources/htrri_crssant_CDsnoRNAs.tsv
+  snoRNA_list: resources/filtered_genes/sig_exp_CD_snoRNAs.tsv
+  RBP_list: resources/filtered_genes/exp_RBPs.tsv
 
 thresholds:
-  ENCODE: [2,2.25963731051,3]
-  snoGloBe_HTRRI: ["0.95_5","0.965_8","0.98_10"]
-  STRING: 700
-  ovlp: [100000,200000,1000000]
+  ENCODE: 3
+  snoGloBe: 0.98
+  HTRRI: 10
+  STRING: 900
+  sno_RBP_overlap_fdr: 0.001

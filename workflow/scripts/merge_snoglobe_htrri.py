@@ -11,7 +11,7 @@ def filter_htrri(file,sno,support_thres):
 
     df = pd.read_csv(file, sep='\t', usecols=['chr1','start1','end1','strand1','chr2','start2','end2','strand2',
                                     'gene_id1','gene_id2','gene_name1','gene_name2','gene_biotype1','gene_biotype2','support','exp'])
-    # only want significant snoRNA-mRNA pairs (support >= 5)
+    # only want significant snoRNA-mRNA pairs
     support_thres = int(support_thres)
     df1 = df[(df["gene_id1"]==sno) & (df["gene_biotype2"]=="protein_coding") & (df["support"]>=support_thres)]
     df1 = df1[['chr2','start2','end2','gene_id1','support','strand2']]
@@ -46,7 +46,7 @@ def main():
     df_snoglobe = filter_snoglobe(snoglobe,snoglobe_thres)
 
     df_merged = pd.concat([df_snoglobe,df_htrri],ignore_index=True)
-    df_merged = BedTool.from_dataframe(df_merged).sort().merge(s=True,c=[4,5,6],o=['distinct','max','distinct']).to_dataframe()
+    df_merged = BedTool.from_dataframe(df_merged).sort().merge(s=True,c=[4,5,6],o=['distinct','min','distinct']).to_dataframe()
     
     df_merged.to_csv(outfile,sep='\t',index=None,header=None)
 

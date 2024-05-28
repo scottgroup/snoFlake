@@ -5,7 +5,8 @@ import pandas as pd
 import os
 from pybedtools import BedTool
 import sys
-import math
+from composite_score_ENCODE import min_max_normalize
+
 
 def bedtools_intersect(ENCODE_dir, sno_bed, fasta):
     """
@@ -13,7 +14,7 @@ def bedtools_intersect(ENCODE_dir, sno_bed, fasta):
     """
     RBP_list = os.listdir(ENCODE_dir) # ENCODE RBP interaction directory
 
-    final_interactions_df = pd.DataFrame(columns=['source','target','p_val'])
+    final_interactions_df = pd.DataFrame(columns=['source','target','raw_score'])
 
     for RBP_file in RBP_list:
         RBP_bed = BedTool(os.path.join(ENCODE_dir, RBP_file))
@@ -29,8 +30,8 @@ def bedtools_intersect(ENCODE_dir, sno_bed, fasta):
             intersect_seq = intersect_pos_bed.sequence(fi=fasta,s=True,tab=True,name=True)
             print(open(intersect_seq.seqfn).read())
 
-            intersect_df = intersect_df.rename(columns={"RBP_gene_name": "source","sno_gene_id" : "target", "RBP_Score" : "p_val"})
-            intersect_df = intersect_df[['source','target','p_val']]
+            intersect_df = intersect_df.rename(columns={"RBP_gene_name": "source","sno_gene_id" : "target", "RBP_Score" : "raw_score"})
+            intersect_df = intersect_df[['source','target','raw_score']]
             intersect_df = intersect_df.groupby(by=['source','target'], as_index = False).min()
             final_interactions_df = pd.concat([final_interactions_df,intersect_df],ignore_index=True)
                 
@@ -39,37 +40,11 @@ def bedtools_intersect(ENCODE_dir, sno_bed, fasta):
     return final_interactions_df
 
 
-def add_edge_weight(df,p_val_thres):
-    """
-    Add edge weight for each interaction by p-value.
-    """
-
-    p_val_thres = int(p_val_thres)
-    stringent_thres = p_val_thres+1
-    intermediate_thres = (pow(0.1, p_val_thres)+pow(0.1, stringent_thres))/2
-    intermediate_thres_log = -math.log10(intermediate_thres)
-
-    df['weight'] = 'lenient'
-
-    for i in range(len(df)):
-        p_val = df.loc[i,'p_val']
-        if p_val>=stringent_thres:
-            df['weight'][i] = 'stringent'
-        elif intermediate_thres_log<=p_val<stringent_thres:
-            df['weight'][i] = 'intermediate'
-        else:
-            continue
-
-    df = df[['source','target','interaction','weight','p_val']]
-    return df
-
-
 def main():
     ENCODE_dir = sys.argv[1] # path to preprocessed ENCODE datasets
     sno_annot = sys.argv[2] # snoRNA annotation
     fasta = sys.argv[3]
     outfile = sys.argv[4]
-    p_val_thres = sys.argv[5]
 
     sno_annot_df = pd.read_csv(sno_annot,sep='\t',usecols=['Chromosome','Start','End','gene_id','Strand'])
     sno_annot_df['Score'] = 3
@@ -77,7 +52,12 @@ def main():
     sno_bed = BedTool.from_dataframe(sno_annot_df) # snoRNA location in bed format
 
     df_interaction = bedtools_intersect(ENCODE_dir,sno_bed,fasta)
-    add_edge_weight(df_interaction,p_val_thres).to_csv(outfile, sep='\t',index=False)
+
+    # normalize score
+    df_interaction['normalized_score'] = min_max_normalize(df_interaction['raw_score'])
+    df_interaction = df_interaction[['source','target','normalized_score','interaction']]
+
+    df_interaction.to_csv(outfile, sep='\t',index=False)
 
 
 if __name__ == '__main__':
