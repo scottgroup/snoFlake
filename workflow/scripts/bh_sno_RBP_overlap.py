@@ -3,7 +3,7 @@
 
 import pandas as pd
 import numpy as np
-from composite_score_ENCODE import min_max_normalize
+import math
 
 
 def bh(df,fdr):
@@ -23,34 +23,14 @@ def bh(df,fdr):
     df = df[df['right']<=df['bh_critical_vals']]
 
     # significance threshold
-    print('Significance threshold: ' + str(df.loc[len(df)-1,'right']))
+    sig_thres = df.loc[len(df)-1,'right'] # exact value
+    print('Significance threshold: ' + str(sig_thres))
+    sig_thres_exp = math.ceil(-np.log10(sig_thres)) # nearest largest exponent
+    print('Significance threshold nearest exponent: -' + str(sig_thres_exp))
+
+    df = df[df['right']<= 10 ** -sig_thres_exp]
+
     return df
-
-
-def composite_score(df):
-    """
-    Compute a composite score that considers both the p-value and enrichment ratio.
-    composite score = -log10(p-value) * enrichment ratio
-    """
-    # -log10 transform p-values
-    df['log_right'] = -np.log10(df['right'])
-    df['raw_composite_score'] = df['log_right'] * df['ratio']
-
-    # separate df by p-value
-    df_pval_zero = df[df['right']==0]
-    df_pval_nonzero = df[df['right']>0]
-
-    # normalize composite score
-    df_pval_nonzero['normalized_composite_score'] = min_max_normalize(df_pval_nonzero['raw_composite_score'])
-
-    # if p-value is 0, normalized_composite_score = 1
-    p_val_zero = df_pval_zero.index.values.tolist()
-    for i in p_val_zero:
-        df_pval_zero.at[i, 'normalized_composite_score'] = 1
-
-    df_merged = pd.concat([df_pval_zero,df_pval_nonzero],ignore_index=True)
-
-    return df_merged
 
 
 def format_df(df):
@@ -58,8 +38,9 @@ def format_df(df):
     Format dataframe to match Cytoscape input style.
     """
     df['interaction'] = "sno_RBP_overlap"
-    df = df[['snoRNA','RBP','normalized_composite_score','interaction']]
-    df.rename(columns={'snoRNA': 'source', 'RBP': 'target', 'normalized_composite_score':'normalized_score'}, inplace=True)
+    df['sno_RBP_overlap_log_pval'] = -np.log10(df['right'])
+    df = df[['snoRNA','RBP','sno_RBP_overlap_log_pval','interaction']]
+    df.rename(columns={'snoRNA': 'source', 'RBP': 'target'}, inplace=True)
     return df
 
 
@@ -71,8 +52,7 @@ def main():
     # desired false discovery rate
     fdr = snakemake.params.fdr
 
-    df = format_df(composite_score(bh(df,fdr)))
-    
+    df = format_df(bh(df,fdr))
     df.to_csv(snakemake.output.bh,sep='\t',index=None)
 
 

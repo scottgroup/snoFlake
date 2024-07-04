@@ -4,7 +4,6 @@
 """ Filter STRING interactions by only keeping RBP-RBP pairs specified in the RBP list """
 
 import pandas as pd
-from composite_score_ENCODE import min_max_normalize
 
 
 def select_interactions(interactions_df,info_df,rbp_list_df):
@@ -42,7 +41,7 @@ def remove_duplicate_edges(interactions_df):
             curr_df = pd.DataFrame([row],columns=final_interactions_df.columns)
             final_interactions_df = pd.concat([final_interactions_df,curr_df],ignore_index=True)
 
-    final_interactions_df.rename(columns={"protein1": "source", "protein2": "target"},inplace=True)
+    final_interactions_df.rename(columns={"protein1": "source", "protein2": "target","combined_score": "STRING_score"},inplace=True)
     final_interactions_df['interaction'] = "STRING"
     return final_interactions_df
 
@@ -63,9 +62,7 @@ def main():
     selected_interactions_df = select_interactions(interactions_df,info_df,rbp_list_df)
     selected_interactions_df = remove_duplicate_edges(selected_interactions_df)
 
-    # normalize score
-    selected_interactions_df['normalized_score'] = min_max_normalize(selected_interactions_df['combined_score'])
-    selected_interactions_df = selected_interactions_df[['source','target','normalized_score','interaction']]
+    selected_interactions_df = selected_interactions_df[['source','target','STRING_score','interaction']]
     selected_interactions_df.to_csv(outfile, sep='\t',index=False)
 
 

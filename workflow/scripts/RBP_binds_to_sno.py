@@ -5,7 +5,6 @@ import pandas as pd
 import os
 from pybedtools import BedTool
 import sys
-from composite_score_ENCODE import min_max_normalize
 
 
 def bedtools_intersect(ENCODE_dir, sno_bed, fasta):
@@ -30,8 +29,8 @@ def bedtools_intersect(ENCODE_dir, sno_bed, fasta):
             intersect_seq = intersect_pos_bed.sequence(fi=fasta,s=True,tab=True,name=True)
             print(open(intersect_seq.seqfn).read())
 
-            intersect_df = intersect_df.rename(columns={"RBP_gene_name": "source","sno_gene_id" : "target", "RBP_Score" : "raw_score"})
-            intersect_df = intersect_df[['source','target','raw_score']]
+            intersect_df = intersect_df.rename(columns={"RBP_gene_name": "source","sno_gene_id" : "target", "RBP_Score" : "ENCODE_log_pval"})
+            intersect_df = intersect_df[['source','target','ENCODE_log_pval']]
             intersect_df = intersect_df.groupby(by=['source','target'], as_index = False).min()
             final_interactions_df = pd.concat([final_interactions_df,intersect_df],ignore_index=True)
                 
@@ -53,9 +52,7 @@ def main():
 
     df_interaction = bedtools_intersect(ENCODE_dir,sno_bed,fasta)
 
-    # normalize score
-    df_interaction['normalized_score'] = min_max_normalize(df_interaction['raw_score'])
-    df_interaction = df_interaction[['source','target','normalized_score','interaction']]
+    df_interaction = df_interaction[['source','target','ENCODE_log_pval','interaction']]
 
     df_interaction.to_csv(outfile, sep='\t',index=False)
 

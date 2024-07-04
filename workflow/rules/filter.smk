@@ -3,35 +3,25 @@ rule filter_merge_ENCODE:
         "results/interactions/ENCODE/{rbp}_filtered_merged.bed"
     params:
         in_dir = config["path"]["ENCODE"],
+        tmp_file = "results/interactions/ENCODE/{rbp}_filtered_merged_tmp.bed",
         thres = config["thresholds"]["ENCODE"]
     message:
         "Filter raw ENCODE {wildcards.rbp} data by p-value and signal value thresholds of {params.thres} and merge replicates and cell lines."
     shell:
         "ls {params.in_dir} | grep '{wildcards.rbp}_' | while read line; "
         "do "
-            "gunzip -c {params.in_dir}/${{line}}/replicate1.bed.gz | sort -k8 -n | awk -F'\t' '$8>={params.thres} && $7>={params.thres}' >> {output}; "
-            "gunzip -c {params.in_dir}/${{line}}/replicate2.bed.gz | sort -k8 -n | awk -F'\t' '$8>={params.thres} && $7>={params.thres}' >> {output}; "
+            "gunzip -c {params.in_dir}/${{line}}/replicate1.bed.gz | sort -k8 -n | awk -F'\t' '$8>={params.thres} && $7>={params.thres}' >> {params.tmp_file}; "
+            "gunzip -c {params.in_dir}/${{line}}/replicate2.bed.gz | sort -k8 -n | awk -F'\t' '$8>={params.thres} && $7>={params.thres}' >> {params.tmp_file}; "
         "done && "
+        "awk \'{{print $1\"\t\"$2\"\t\"$3\"\t\"$4\"\t\"$8\"\t\"$6}}\' {params.tmp_file} | sort -k1,1 -k2,2n > {output} && "
+        "rm -f {params.tmp_file} && "
         "sed -i \'/random/d\' {output} && "
         "sed -i \'/Un_/d\' {output}"
-
-
-rule composite_score_ENCODE:
-    input:
-        rules.filter_merge_ENCODE.output
-    output:
-        "results/interactions/ENCODE/{rbp}_composite_score.bed"
-    conda:
-         "../envs/bedtools.yaml"
-    message:
-        "Compute composite score for ENCODE {wildcards.rbp} using its p-value and signal value."
-    script:
-        "../scripts/composite_score_ENCODE.py"
         
 
 rule bedtools_merge_ENCODE:
     input:
-        rules.composite_score_ENCODE.output
+        rules.filter_merge_ENCODE.output
     output:
         "results/interactions/ENCODE/{rbp}.bed"
     conda:
@@ -40,7 +30,7 @@ rule bedtools_merge_ENCODE:
         "Bedtools merge ENCODE {wildcards.rbp} interactions."
     shell:
         "bedtools merge -s -c 4,5,6 -o distinct,min,distinct -i {input} | sort -k1,1 -k2,2n -u | awk -v var=\"{wildcards.rbp}\" \'{{print $1\"\t\"$2\"\t\"$3\"\t\"var\"\t\"$5\"\t\"$6}}\' | sed 's/chrM/chrMT/g' | sed 's/^chr\|%$//g' > {output} && "
-        "rm {input} results/interactions/ENCODE/{wildcards.rbp}_filtered_merged.bed"
+        "rm -f {input}"
 
 
 rule bedtools_merge_snoGloBe_HTRRI:

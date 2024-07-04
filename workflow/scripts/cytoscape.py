@@ -4,6 +4,34 @@ import pandas as pd
 import sys
 
 
+def node_weight(df):
+    """
+    Compute node size/weight based on TPM.
+    """
+    df['weight'] = 1
+    df.loc[(df['max_TPM'] >= 10) & (df['max_TPM'] <100),'weight'] = 10
+    df.loc[(df['max_TPM'] >= 100) & (df['max_TPM'] <1000),'weight'] = 100
+    df.loc[df['max_TPM'] >= 1000,'weight'] = 1000
+    return df
+
+
+def edge_weight(df):
+    """
+    Compute edge thickness/weight based on p-values and scores.
+    """
+    df['weight'] = 1
+    df.loc[(df['ENCODE_log_pval'] >= 10) & (df['ENCODE_log_pval'] <20),'weight'] = 10
+    df.loc[(df['ENCODE_log_pval'] >= 20) & (df['ENCODE_log_pval'] <30),'weight'] = 100
+    df.loc[df['ENCODE_log_pval'] >= 30,'weight'] = 1000
+    df.loc[(df['sno_RBP_overlap_log_pval'] >= 10) & (df['sno_RBP_overlap_log_pval'] <20),'weight'] = 10
+    df.loc[(df['sno_RBP_overlap_log_pval'] >= 20) & (df['sno_RBP_overlap_log_pval'] <30),'weight'] = 100
+    df.loc[df['sno_RBP_overlap_log_pval'] >= 30,'weight'] = 1000
+    df.loc[(df['STRING_score'] >= 925) & (df['STRING_score'] <950),'weight'] = 10
+    df.loc[(df['STRING_score'] >= 950) & (df['STRING_score'] <975),'weight'] = 100
+    df.loc[df['STRING_score'] >= 975,'weight'] = 1000
+    return df
+
+
 def main():
 
     # NODES
@@ -14,6 +42,7 @@ def main():
 
     nodes = pd.concat([sno,rbp],ignore_index=True)
     nodes.gene_name.fillna(nodes.gene_id, inplace=True)
+    nodes = node_weight(nodes)
     nodes.to_csv(snakemake.output.nodes,sep='\t',index=None)
 
     # EDGES
@@ -21,6 +50,8 @@ def main():
     sno_rbp_ovlp = pd.read_csv(snakemake.input.sno_RBP_overlap,sep='\t')
     string = pd.read_csv(snakemake.input.STRING[0],sep='\t')
     edges = pd.concat([rbp_binds_to_sno,sno_rbp_ovlp,string],axis=0,ignore_index=True)
+    edges = edges[['source','target','interaction','ENCODE_log_pval','sno_RBP_overlap_log_pval','STRING_score']]
+    edges = edge_weight(edges)
     edges.to_csv(snakemake.output.edges,sep='\t',index=None)
 
 
