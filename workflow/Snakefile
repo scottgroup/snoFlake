@@ -32,9 +32,10 @@ include: "rules/cytoscape.smk"
 rule all:
     input:
         # Generate snoRNA and RBP interactions
-        RBP_interactions = expand("results/interactions/ENCODE/{rbp}.bed", rbp=rbp_list),
-        sno_interactions = expand("results/interactions/snoGloBe_HTRRI/{sno}.bed", sno=sno_list),
-        STRING = "results/interactions/STRING/physical_RBP_RBP.tsv",
-        sno_RBP_target_overlap = "results/interactions/sno_RBP_target_overlap/bh_sno_RBP_overlap.tsv",
-        RBP_binds_to_sno = "results/interactions/RBP_binds_to_sno/all_RBP_binding_to_sno.tsv",
-        network = expand("results/networks/{type}.tsv", type=['nodes','edges'])
+        #RBP_interactions = expand("results/interactions/ENCODE/{rbp}.bed", rbp=rbp_list),
+        #sno_interactions = expand("results/interactions/snoGloBe_HTRRI/{sno}.bed", sno=sno_list),
+        #STRING = "results/interactions/STRING/physical_RBP_RBP.tsv",
+        #sno_RBP_target_overlap = "results/interactions/sno_RBP_target_overlap/bh_sno_RBP_overlap.tsv",
+        #RBP_binds_to_sno = "results/interactions/RBP_binds_to_sno/all_RBP_binding_to_sno.tsv",
+        #network_data = expand("results/networks/{type}.tsv", type=['nodes','edges']),
+        network = "results/networks/snoFlake.cys" # CYTOSCAPE HAS TO BE OPEN
