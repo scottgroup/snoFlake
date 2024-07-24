@@ -20,11 +20,26 @@ rule network_data:
         "{input.sno_RBP_overlap} {input.snoRNA} {input.RBP}"
 
 
+rule network_motifs:
+    # Need Cytoscape app to be RUNNING
+    input:
+        edges = rules.network_data.output.edges
+    output:
+        network_motifs = "results/networks/network_motifs.tsv"
+    conda:
+        "../envs/python.yaml"
+    message:
+        "Search for double-edged network motifs."
+    script:
+        "../scripts/network_motifs.py"
+
+
 rule build_network:
     # Need Cytoscape app to be RUNNING
     input:
         nodes = rules.network_data.output.nodes,
-        edges = rules.network_data.output.edges
+        edges = rules.network_data.output.edges,
+        motifs = rules.network_motifs.output.network_motifs
     output:
         network = "results/networks/snoFlake.cys"
     params:
@@ -34,4 +49,4 @@ rule build_network:
     message:
         "Build the snoRNA-RBP interaction network via Cytoscape."
     shell:
-        "python3 workflow/scripts/cytoscape.py {params.type} {input.nodes} {input.edges} {output.network}"
+        "python3 workflow/scripts/cytoscape.py {params.type} {input.nodes} {input.edges} {input.motifs} {output.network}"

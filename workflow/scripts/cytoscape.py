@@ -38,11 +38,25 @@ def edge_weight(df):
     return df
 
 
-def build_network(nodes,edges,smk_network):
+def search_network_motifs(motifs):
+    """
+    Extract double-edged network motifs using Cytoscape.
+    """
+    for i in range(len(motifs)):
+        nodes_list = motifs.loc[i,'nodes'].split(',')
+        motif_name = nodes_list[0] + '_' + str(len(nodes_list)) + '-node_graphlet'
+        p4c.create_subnetwork(nodes=nodes_list, nodes_by_col='id', network="all_interactions", subnetwork_name=motif_name)
+        p4c.clear_edge_bends(network=motif_name)
+        p4c.layout_network('degree-circle', network=motif_name)
+
+    return
+
+
+def build_network(nodes,edges,motifs,smk_network):
     """
     Build snoFlake using Cytoscape --> Cytoscape app has to be OPEN
     """
-    p4c.create_network_from_data_frames(nodes, edges, title="all_interactions", collection="snoFlake")
+    p4c.create_network_from_data_frames(nodes, edges, title="original", collection="snoFlake")
 
     # Create style
     style_name = "snoFlake Style"
@@ -66,6 +80,16 @@ def build_network(nodes,edges,smk_network):
     # Network layout
     p4c.layout_network('degree-circle')
 
+    # Filter out nodes with 0 edges
+    p4c.create_degree_filter('degree filter', [1,5000], network="original")
+    p4c.create_subnetwork(subnetwork_name='all_interactions')
+    p4c.bundle_edges(network='all_interactions')
+    p4c.clear_selection(network="original")
+
+    # Find network motifs
+    search_network_motifs(motifs)
+
+    p4c.hide_panel('SOUTH')
     p4c.save_session(smk_network) # save session
 
     return
@@ -110,12 +134,15 @@ def main():
 
     elif smk_func == "build": # Build snoFlake using Cytoscape --> Cytoscape app has to be OPEN
 
-        smk_network = sys.argv[4]
+        smk_motifs = sys.argv[4]
+        smk_network = sys.argv[5]
+
         nodes = pd.read_csv(smk_nodes,sep='\t')
         nodes.rename(columns={"gene_id":"id","gene_name":"name","gene_biotype":"group","weight":"score"},inplace=True)
         edges = pd.read_csv(smk_edges,sep='\t')
+        motifs = pd.read_csv(smk_motifs,sep='\t')
 
-        build_network(nodes,edges,smk_network)
+        build_network(nodes,edges,motifs,smk_network)
 
 
 if __name__ == '__main__':
