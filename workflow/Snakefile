@@ -39,4 +39,4 @@ rule all:
         RBP_binds_to_sno = "results/interactions/RBP_binds_to_sno/all_RBP_binding_to_sno.tsv",
         network_data = expand("results/networks/{type}.tsv", type=['nodes','edges']),
         # Build network on Cytoscape app
-        #network = "results/networks/snoFlake.cys" # CYTOSCAPE HAS TO BE OPEN
+        network = "results/networks/snoFlake.cys" # CYTOSCAPE HAS TO BE OPEN
