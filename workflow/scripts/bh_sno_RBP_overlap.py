@@ -4,6 +4,7 @@
 import pandas as pd
 import numpy as np
 import math
+import sys
 
 
 def bh(df,fdr):
@@ -47,13 +48,13 @@ def format_df(df):
 def main():
     
     # sno_RBP_overlap df
-    df = pd.read_csv(snakemake.params.merged,sep='\t',names=['left','right','two-tail','ratio','snoRNA','RBP'])
+    df = pd.read_csv(sys.argv[1],sep='\t',names=['left','right','two-tail','ratio','snoRNA','RBP'])
     df = df[['snoRNA','RBP','left','right','two-tail','ratio']]
     # desired false discovery rate
-    fdr = snakemake.params.fdr
+    fdr = sys.argv[2]
 
     df = format_df(bh(df,fdr))
-    df.to_csv(snakemake.output.bh,sep='\t',index=None)
+    df.to_csv(sys.argv[3],sep='\t',index=None)
 
 
 if __name__ == '__main__':

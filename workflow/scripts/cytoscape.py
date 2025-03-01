@@ -22,14 +22,14 @@ def edge_weight(df):
     Compute edge thickness/weight based on p-values and scores.
     """
     df['weight'] = 1
-    df.loc[(df['ENCODE_log_pval'] >= 10) & (df['ENCODE_log_pval'] <20),'weight'] = 10
-    df.loc[(df['ENCODE_log_pval'] >= 20) & (df['ENCODE_log_pval'] <30),'weight'] = 100
+    df.loc[(df['ENCODE_log_pval'] >= 10) & (df['ENCODE_log_pval'] < 20),'weight'] = 10
+    df.loc[(df['ENCODE_log_pval'] >= 20) & (df['ENCODE_log_pval'] < 30),'weight'] = 100
     df.loc[df['ENCODE_log_pval'] >= 30,'weight'] = 1000
-    df.loc[(df['sno_RBP_overlap_log_pval'] >= 10) & (df['sno_RBP_overlap_log_pval'] <20),'weight'] = 10
-    df.loc[(df['sno_RBP_overlap_log_pval'] >= 20) & (df['sno_RBP_overlap_log_pval'] <30),'weight'] = 100
+    df.loc[(df['sno_RBP_overlap_log_pval'] >= 10) & (df['sno_RBP_overlap_log_pval'] < 20),'weight'] = 10
+    df.loc[(df['sno_RBP_overlap_log_pval'] >= 20) & (df['sno_RBP_overlap_log_pval'] < 30),'weight'] = 100
     df.loc[df['sno_RBP_overlap_log_pval'] >= 30,'weight'] = 1000
-    df.loc[(df['STRING_score'] >= 925) & (df['STRING_score'] <950),'weight'] = 10
-    df.loc[(df['STRING_score'] >= 950) & (df['STRING_score'] <975),'weight'] = 100
+    df.loc[(df['STRING_score'] >= 925) & (df['STRING_score'] < 950),'weight'] = 10
+    df.loc[(df['STRING_score'] >= 950) & (df['STRING_score'] < 975),'weight'] = 100
     df.loc[df['STRING_score'] >= 975,'weight'] = 1000
 
     # replace inf with 400 (sno_RBP_overlap)

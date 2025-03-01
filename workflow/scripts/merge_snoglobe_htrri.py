@@ -9,16 +9,15 @@ import sys
 
 def filter_htrri(file,sno,support_thres):
 
-    df = pd.read_csv(file, sep='\t', usecols=['chr1','start1','end1','strand1','chr2','start2','end2','strand2',
-                                    'gene_id1','gene_id2','gene_name1','gene_name2','gene_biotype1','gene_biotype2','support','exp'])
+    df = pd.read_csv(file, sep='\t')
     # only want significant snoRNA-mRNA pairs
     support_thres = int(support_thres)
-    df1 = df[(df["gene_id1"]==sno) & (df["gene_biotype2"]=="protein_coding") & (df["support"]>=support_thres)]
-    df1 = df1[['chr2','start2','end2','gene_id1','support','strand2']]
-    df1.rename(columns={'chr2':'chrom','start2':'start','end2':'end','gene_id1':'name','support':'score','strand2':'strand'},inplace=True)
-    df2 = df[(df["gene_biotype1"]=="protein_coding") & (df["gene_id2"]==sno) & (df["support"]>=support_thres)]
-    df2 = df2[['chr1','start1','end1','gene_id2','support','strand1']]
-    df2.rename(columns={'chr1':'chrom','start1':'start','end1':'end','gene_id2':'name','support':'score','strand1':'strand'},inplace=True)
+    df1 = df[(df["gene_id.A"]==sno) & (df["gene_type.B"]=="protein_coding") & (df["n_reads"]>=support_thres)]
+    df1 = df1[['seqnames2','start2','end2','gene_id.A','n_reads','strand2']]
+    df1.rename(columns={'seqnames2':'chrom','start2':'start','end2':'end','gene_id.A':'name','n_reads':'score','strand2':'strand'},inplace=True)
+    df2 = df[(df["gene_type.A"]=="protein_coding") & (df["gene_id.B"]==sno) & (df["n_reads"]>=support_thres)]
+    df2 = df2[['seqnames1','start1','end1','gene_id.B','n_reads','strand1']]
+    df2.rename(columns={'seqnames1':'chrom','start1':'start','end1':'end','gene_id.B':'name','n_reads':'score','strand1':'strand'},inplace=True)
     df = pd.concat([df1,df2],ignore_index=True)
     df.reset_index(drop=True,inplace=True)
     return df

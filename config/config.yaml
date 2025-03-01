@@ -6,13 +6,13 @@ path:
   snoglobe: resources/snoglobe_predictions_2024/
   STRING_interactions: resources/STRING_v12/9606.protein.physical.links.v12.0.txt.gz
   STRING_info: resources/STRING_v12/9606.protein.info.v12.0.txt.gz
-  HTRRI: resources/htrri_crssant_208_exp_CD_snoRNAs_merged.tsv
-  snoRNA_list: resources/filtered_genes/sig_exp_CD_snoRNAs.tsv
-  RBP_list: resources/filtered_genes/exp_RBPs.tsv
+  HTRRI: resources/htrri_duplexdiscoverer_dgs.tsv
+  snoRNA_list: resources/filtered_genes_CD/sig_exp_CD_snoRNAs.tsv
+  RBP_list: resources/filtered_genes_CD/exp_RBPs.tsv
 
 thresholds:
   ENCODE: 3
   snoGloBe: 0.98
-  HTRRI: 10
+  HTRRI: 5
   STRING: 900
   sno_RBP_overlap_fdr: 0.001

@@ -29,12 +29,14 @@ rule bh_sno_RBP_overlap:
     params:
         merged = rules.sno_RBP_overlap.params.merged,
         fdr = config['thresholds']['sno_RBP_overlap_fdr']
+    log:
+        "results/logs/bh_sno_RBP_overlap.log"
     conda:
         "../envs/bedtools.yaml"
     message:
         "Apply Benjamini–Hochberg procedure to find the significance threshold for sno_RBP_overlap p-values."
-    script:
-        "../scripts/bh_sno_RBP_overlap.py"
+    shell:
+        "python3 workflow/scripts/bh_sno_RBP_overlap.py {params.merged} {params.fdr} {output.bh} > {log}"
 
 
 rule filter_STRING:
