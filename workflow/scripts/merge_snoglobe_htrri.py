@@ -45,7 +45,7 @@ def main():
     df_snoglobe = filter_snoglobe(snoglobe,snoglobe_thres)
 
     df_merged = pd.concat([df_snoglobe,df_htrri],ignore_index=True)
-    df_merged = BedTool.from_dataframe(df_merged).sort().merge(s=True,c=[4,5,6],o=['distinct','min','distinct']).to_dataframe()
+    df_merged = BedTool.from_dataframe(df_merged).sort().merge(s=True,c=[4,5,6],o=['distinct','max','distinct']).to_dataframe()
     
     df_merged.to_csv(outfile,sep='\t',index=None,header=None)
 
