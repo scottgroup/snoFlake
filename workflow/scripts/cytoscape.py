@@ -112,7 +112,7 @@ def main():
         smk_RBP = sys.argv[8]
 
         # NODES
-        sno = pd.read_csv(smk_snoRNA,sep='\t',usecols=['gene_id','gene_name','gene_biotype','min_TPM','max_TPM'])
+        sno = pd.read_csv(smk_snoRNA,sep='\t',usecols=['gene_id','gene_name','gene_biotype','min_TPM','max_TPM','rfam_id'])
         rbp = pd.read_csv(smk_RBP,sep='\t',usecols=['gene_name','gene_biotype','min_TPM','max_TPM'])
         rbp['gene_id'] = rbp['gene_name']
         rbp = rbp[['gene_id','gene_name','gene_biotype','min_TPM','max_TPM']]
