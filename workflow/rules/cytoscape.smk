@@ -50,3 +50,21 @@ rule build_network:
         "Build the snoRNA-RBP interaction network via Cytoscape."
     shell:
         "python3 workflow/scripts/cytoscape.py {params.type} {input.nodes} {input.edges} {input.motifs} {output.network}"
+
+
+rule extra_node_annotations:
+    input:
+        nodes = rules.network_data.output.nodes,
+        encore_matrix = config['path']['ENCORE'],
+        rRNA_targets = config['path']['rRNA_targets'],
+        snRNA_targets = config['path']['snRNA_targets'],
+        snodb = config['path']['snoDB']
+    output:
+        RBP_anno = "results/networks/RBP_function_localization.tsv",
+        sno_anno = "results/networks/snoRNA_targets.tsv"
+    conda:
+        "../envs/python.yaml"
+    message:
+        "Add RBP function and localization data as well as snoRNA target information."
+    script:
+        "../scripts/node_annotation.py"

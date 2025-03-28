@@ -9,6 +9,10 @@ path:
   HTRRI: resources/htrri_duplexdiscoverer_dgs.tsv
   snoRNA_list: resources/filtered_genes_CD/sig_exp_CD_snoRNAs.tsv
   RBP_list: resources/filtered_genes_CD/exp_RBPs.tsv
+  snoDB: resources/snoDB_All_V2.0.tsv
+  rRNA_targets: resources/snoDB_rRNA_interactions.tsv
+  snRNA_targets: resources/SNORD_snRNA_targets.tsv
+  ENCORE: resources/ENCORE_overview_table_2024-10-06.csv
 
 thresholds:
   ENCODE: 3
