@@ -64,9 +64,10 @@ def reannotate_rbp(nodes,rbp_func,rbp_local):
     # RBP localization
     merged_loc = pd.merge(nodes, rbp_local, left_on='gene_id', right_on='RBP', how='left')
     merged_loc.drop(columns=['RBP'],inplace=True)
+    merged_loc = merged_loc.rename(columns={'PML bodies':'PML_bodies','Cajal bodies':'Cajal_bodies','P bodies':'P_bodies',
+                                        'Nuclear release mitosis':'Nuclear_release_mitosis','Cell Cortex':'Cell_cortex'})
 
     # add manual annotations (GO subcellular location)
-    #Nuclei,Nucleolus,Speckles,PML bodies,Cajal bodies,Cytoplasm,Mitochondria,Golgi,P bodies,ER,Cytoskeleton,Microtubule,Actin,Nuclear release mitosis,Cell Cortex
     merged_loc.loc[merged_loc['gene_id']=='AARS1'] = ['AARS1',1,0,0,0,0,1,1,0,0,0,0,0,0,0,0]
     merged_loc.loc[merged_loc['gene_id']=='ADAT1'] = ['ADAT1',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     merged_loc.loc[merged_loc['gene_id']=='AKAP8L'] = ['AKAP8L',1,0,1,1,0,1,0,0,0,0,0,0,0,0,0]
