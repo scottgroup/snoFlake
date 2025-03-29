@@ -131,9 +131,7 @@ def sno_target(nodes,rRNA,snRNA,snodb):
     id = id.rename(columns={'ensembl_id': 'sno_id'})
     id['sno_id'] = id['sno_id'].fillna(id['snodb_id'])
     id.drop_duplicates(subset=['sno_id'],inplace=True)
-    print(id)
     one_id = id[~id['sno_id'].str.contains(';', na=False)]
-    print(one_id)
     two_ids = id[id['sno_id'].str.contains(';', na=False)]
     two_ids['sno_id'] = two_ids['sno_id'].str.split(';')
     two_ids[['A', 'B']] = pd.DataFrame(two_ids['sno_id'].tolist(), index=two_ids.index)
@@ -152,7 +150,6 @@ def sno_target(nodes,rRNA,snRNA,snodb):
 
     # canonical targets in total
     targets['canonical_target'] = targets[['snRNA_target','rRNA_target']].max(axis=1)
-    targets.drop(columns=['snRNA_target','rRNA_target'],inplace=True)
 
     return targets
 
