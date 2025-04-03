@@ -34,7 +34,7 @@ def create_nodes(df,exp_pc_genes,nodes):
     df_nodes = df_nodes.merge(nodes,left_on='gene_name',right_on='gene_id',how='left')
     df_nodes = df_nodes[df_nodes["weight"].isna()] # remove RBPs
     df_nodes['gene_biotype'] = 'protein_coding_target'
-    df_nodes = df_nodes[['gene_id_x','gene_name_x','gene_biotype','avg_TPM','min_TPM_x','max_TPM_x']]
+    df_nodes = df_nodes[['gene_id_x','gene_name_x','gene_biotype','min_TPM_x','max_TPM_x']]
     df_nodes.rename(columns={'gene_id_x':'gene_id','gene_name_x':'gene_name',
                             'min_TPM_x':'min_TPM','max_TPM_x':'max_TPM'},inplace=True)
     df_nodes["gene_name"] = df_nodes["gene_name"].fillna(df_nodes["gene_id"])
@@ -43,6 +43,7 @@ def create_nodes(df,exp_pc_genes,nodes):
     df_nodes.loc[(df_nodes['max_TPM'] >= 10) & (df_nodes['max_TPM'] < 100),'weight'] = 10
     df_nodes.loc[(df_nodes['max_TPM'] >= 100) & (df_nodes['max_TPM'] < 1000),'weight'] = 100
     df_nodes.loc[df_nodes['max_TPM'] >= 1000,'weight'] = 1000
+    df_nodes.rename(columns={"gene_id":"id","gene_name":"name","gene_biotype":"group","weight":"score"},inplace=True)
     return df_nodes
 
 
