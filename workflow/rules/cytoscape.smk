@@ -68,3 +68,22 @@ rule extra_node_annotations:
         "Add RBP function and localization data as well as snoRNA target information."
     script:
         "../scripts/node_annotation.py"
+
+
+rule sno_RBP_overlap_targets_annotations:
+    input:
+        targets = expand(rules.sno_RBP_overlap_targets.output,sno=sno_list),
+        nodes = rules.network_data.output.nodes,
+        edges = rules.network_data.output.edges,
+        exp_pc_genes = config['path']['pc_list']
+    output:
+        nodes = "results/networks/nodes_targets.tsv",
+        edges = "results/networks/edges_targets.tsv"
+    params:
+        target_path = "results/interactions/sno_RBP_target_overlap/targets"
+    conda:
+        "../envs/python.yaml"
+    message:
+        "Generate node and edge file for significant snoRNA-RBP overlapping targets."
+    script:
+        "../scripts/cytoscape_targets.py"

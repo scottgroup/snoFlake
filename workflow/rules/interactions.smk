@@ -1,9 +1,9 @@
-rule sno_RBP_overlap:
+rule sno_RBP_overlap_significance:
     input:
         sno = rules.bedtools_merge_snoGloBe_HTRRI.output,
         rbp = expand(rules.bedtools_merge_ENCODE.output, rbp=rbp_list)
     output:
-        "results/interactions/sno_RBP_target_overlap/{sno}_RBP.tsv"
+        "results/interactions/sno_RBP_target_overlap/significance/{sno}_RBP.tsv"
     params:
         ENCODE_dir = "results/interactions/ENCODE",
         genome = config["path"]["genome"],
@@ -23,11 +23,11 @@ rule sno_RBP_overlap:
 
 rule bh_sno_RBP_overlap:
     input:
-        all = expand(rules.sno_RBP_overlap.output, sno=sno_list)
+        all = expand(rules.sno_RBP_overlap_significance.output, sno=sno_list)
     output:
         bh = "results/interactions/sno_RBP_target_overlap/bh_sno_RBP_overlap.tsv"
     params:
-        merged = rules.sno_RBP_overlap.params.merged,
+        merged = rules.sno_RBP_overlap_significance.params.merged,
         fdr = config['thresholds']['sno_RBP_overlap_fdr']
     log:
         "results/logs/bh_sno_RBP_overlap.log"
@@ -37,6 +37,42 @@ rule bh_sno_RBP_overlap:
         "Apply Benjamini–Hochberg procedure to find the significance threshold for sno_RBP_overlap p-values."
     shell:
         "python3 workflow/scripts/bh_sno_RBP_overlap.py {params.merged} {params.fdr} {output.bh} > {log}"
+
+
+rule genes:
+    input:
+        gtf = config['path']['gtf']
+    output:
+        "results/genes.bed"
+    conda:
+        "../envs/bedtools.yaml"
+    message:
+        "Extract all protein-coding gene coordinates from gtf annotation."
+    script:
+        "../scripts/genes.py"
+
+
+rule sno_RBP_overlap_targets:
+    input:
+        sno = rules.bedtools_merge_snoGloBe_HTRRI.output,
+        rbp = expand(rules.bedtools_merge_ENCODE.output, rbp=rbp_list),
+        gtf = rules.genes.output
+    output:
+        "results/interactions/sno_RBP_target_overlap/targets/{sno}_RBP.tsv"
+    params:
+        ENCODE_dir = "results/interactions/ENCODE"
+    conda:
+        "../envs/bedtools.yaml"
+    message:
+        "Find protein-coding targets for {wildcards.sno}-RBP target overlap interactions."
+    shell:
+        "echo -e \"target_chr\ttarget_start\ttarget_end\ttarget_strand\ttarget_id\tnum_ovlp_nt\tsnoRNA\tRBP\" > {output} && "
+        "ls {params.ENCODE_dir} | while read line; do "
+        "bedtools intersect -a {input.sno} -b {params.ENCODE_dir}/$line -s | "
+        "bedtools intersect -a stdin -b {input.gtf} -s -wo | "
+        "awk -v rbp=\"${{line%.*}}\" -v sno={wildcards.sno} "
+        "\'{{print $1\"\t\"$2\"\t\"$3\"\t\"$6\"\t\"$10\"\t\"$13\"\t\"sno\"\t\"rbp}}\' >> {output}; "
+        "done"
 
 
 rule filter_STRING:
