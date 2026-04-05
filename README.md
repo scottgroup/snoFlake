@@ -29,7 +29,9 @@ snoFlake is a reproducible bioinformatics pipeline that integrates multiple type
 
 **Types of snoRNA–RBP Interactions integrated by snoFlake:**
 
-> ⚠️ **TODO:** Add interaction type figure here.
+<p align="center">
+  <img src="images/snoFlake_edges.png">
+</p>
 
 ---
 
@@ -135,8 +137,6 @@ eCLIP-seq data for RNA-binding proteins are downloaded from the [ENCODE portal](
 ## Step 2: Compute snoRNA–RBP Interactions
 
 This step processes the input datasets and computes interaction evidence scores for each snoRNA–RBP pair.
-
-![snoFlake edges](images/snoFlake_edges.svg)
 
 ### 2a. Quantify RBP binding at snoRNA loci
 
