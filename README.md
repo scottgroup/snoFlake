@@ -1,5 +1,7 @@
 # **snoFlake**: snoRNA Functional Interaction Network Model
 
+![snoFlake logo](images/snoFlake_logo.svg)
+
 A Snakemake pipeline to gather snoRNA–RNA-binding protein (RBP) interactions from multiple sources and construct a snoRNA–RBP interaction network for visualization and analysis in Cytoscape.
 
 **Author:** [Kristina Sungeun Song](mailto:kristina.song@usherbrooke.ca)  
@@ -131,6 +133,8 @@ eCLIP-seq data for RNA-binding proteins are downloaded from the [ENCODE portal](
 ## Step 2: Compute snoRNA–RBP Interactions
 
 This step processes the input datasets and computes interaction evidence scores for each snoRNA–RBP pair.
+
+![snoFlake edges](images/snoFlake_edges.svg)
 
 ### 2a. Quantify RBP binding at snoRNA loci
 
