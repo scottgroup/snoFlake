@@ -1,6 +1,6 @@
 # **snoFlake**: snoRNA Functional Interaction Network Model
 
-![snoFlake logo](images/snoFlake_logo.svg)
+![snoFlake logo](images/snoFlake_logo.png)
 
 A Snakemake pipeline to gather snoRNA–RNA-binding protein (RBP) interactions from multiple sources and construct a snoRNA–RBP interaction network for visualization and analysis in Cytoscape.
 
