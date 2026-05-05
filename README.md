@@ -196,11 +196,10 @@ We recommend the **Degree-sorted Circular Layout** for visualizing large snoRNA�
 
 If you use snoFlake in your research, please cite:
 
-> ⚠️ **TODO:** Replace with final citation once the manuscript is published in *Cell Genomics*.
-
 ```
-[Author list]. snoFlake: [Full manuscript title].
-[Journal]. [Year]. DOI: [DOI]
+Song, K. S., Cyr, M., Faucher-Giguère, L., Yeo, B., Seow, V. K., Deschamps-Francoeur, G., Abou Elela, S., & Scott, M. S. (2026).
+snoFlake: A network model for snoRNA–RBP complexes reveals SNORD22 as a U5 snRNP-associated splicing regulator. bioRxiv.
+https://doi.org/10.64898/2026.04.02.716167
 ```
 
 ---
