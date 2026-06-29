@@ -15,10 +15,6 @@ A Snakemake pipeline to gather snoRNA–RNA-binding protein (RBP) interactions f
 - [Overview](#overview)
 - [Installation and Environment Setup](#installation-and-environment-setup)
 - [Running the Snakemake Workflow](#running-the-snakemake-workflow)
-- [Step 0: Configure the Pipeline](#step-0-configure-the-pipeline)
-- [Step 1: Get Input Datasets](#step-1-get-input-datasets)
-- [Step 2: Compute snoRNA–RBP Interactions](#step-2-compute-snorna-rbp-interactions)
-- [Step 3: Build snoFlake Network in Cytoscape](#step-3-build-snoflake-network-in-cytoscape)
 - [Citation](#citation)
 
 ---
