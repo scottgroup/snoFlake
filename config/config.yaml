@@ -1,19 +1,19 @@
 ---
 path:
-  fasta: resources/Homo_sapiens.GRCh38.110.dna.primary_assembly.fa
+  fasta: resources/Homo_sapiens.GRCh38.110.dna.primary_assembly.fa # genome fasta
   genome: resources/Homo_sapiens.GRCh38.110.dna.primary_assembly.genome
-  ENCODE: resources/ENCODE_RBP_2023/
-  snoglobe: resources/snoglobe_predictions_2024/
+  ENCODE: resources/ENCODE_RBP_2023/ # directory with ENCODE eCLIP data
+  snoglobe: resources/snoglobe_predictions_2024/ # directory with snoGloBe data
   STRING_interactions: resources/STRING_v12/9606.protein.physical.links.v12.0.txt.gz
-  STRING_info: resources/STRING_v12/9606.protein.info.v12.0.txt.gz
-  HTRRI: resources/htrri_duplexdiscoverer_dgs.tsv
-  snoRNA_list: resources/filtered_genes_CD/sig_exp_CD_snoRNAs.tsv
-  RBP_list: resources/filtered_genes_CD/exp_RBPs.tsv
-  pc_list: resources/filtered_genes_CD/exp_pc_genes.tsv
+  STRING_info: resources/STRING_v12/9606.protein.info.v12.0.txt.gz # STRING node id mapping
+  HTRRI: resources/htrri_duplexdiscoverer_dgs.tsv # high-throughput RNA-RNA interactions 
+  snoRNA_list: resources/filtered_genes_CD/sig_exp_CD_snoRNAs.tsv # list of snoRNAs to include in snoFlake
+  RBP_list: resources/filtered_genes_CD/exp_RBPs.tsv # list of RBPs to include in snoFlake
+  pc_list: resources/filtered_genes_CD/exp_pc_genes.tsv # list of protein-coding targets
   snoDB: resources/snoDB_All_V2.0.tsv
-  rRNA_targets: resources/snoDB_rRNA_interactions.tsv
-  snRNA_targets: resources/SNORD_snRNA_targets.tsv
-  ENCORE: resources/ENCORE_overview_table_2024-10-06.csv
+  rRNA_targets: resources/snoDB_rRNA_interactions.tsv # rRNA annotation (snoRNA modification target)
+  snRNA_targets: resources/SNORD_snRNA_targets.tsv # snRNA annotation (snoRNA modification target)
+  ENCORE: resources/ENCORE_overview_table_2024-10-06.csv # RBP function annotation
   gtf: resources/Homo_sapiens.GRCh38.110_snoRNAs_tRNAs.gtf
 
 thresholds:
